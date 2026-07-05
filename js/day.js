@@ -26,10 +26,10 @@ async function initApp() {
         try {
           const keys = await caches.keys();
           await Promise.all(keys.map(k => caches.delete(k)));
-          const reg = await navigator.serviceWorker.getRegistration();
-          if (reg) await reg.unregister();
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map(r => r.unregister()));
         } catch (e) {}
-        window.location.reload(true);
+        window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
       });
     }
 

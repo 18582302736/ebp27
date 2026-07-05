@@ -127,6 +127,11 @@ body {
   justify-content: space-between;
   padding: 14px 4px;
   margin-bottom: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  transition: background-color var(--transition);
 }
 
 .app-title {
