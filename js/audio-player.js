@@ -76,6 +76,10 @@ function createAudioPlayer(container, audioSrc, onComplete) {
   });
 
   audio.addEventListener('play', () => {
+    if (hasCompleted) {
+      audio.pause();
+      return;
+    }
     isPlaying = true;
     playBtn.textContent = '⏸';
     playBtn.classList.add('playing');
@@ -83,10 +87,11 @@ function createAudioPlayer(container, audioSrc, onComplete) {
   });
 
   audio.addEventListener('pause', () => {
+    if (hasCompleted) return;
     isPlaying = false;
     playBtn.textContent = '▶';
     playBtn.classList.remove('playing');
-    if (!hasCompleted && audio.currentTime > 0) {
+    if (audio.currentTime > 0) {
       statusEl.textContent = '已暂停';
     }
   });
