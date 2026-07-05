@@ -17,6 +17,22 @@ async function initApp() {
       themeToggle.innerHTML = next === 'dark' ? iconSun(20) : iconMoon(20);
     });
 
+    // 刷新按钮
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) {
+      refreshBtn.innerHTML = iconRefresh(20);
+      refreshBtn.addEventListener('click', async () => {
+        if (!confirm('确定要刷新缓存并重新加载页面吗？')) return;
+        try {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+          const reg = await navigator.serviceWorker.getRegistration();
+          if (reg) await reg.unregister();
+        } catch (e) {}
+        window.location.reload(true);
+      });
+    }
+
     // 设置返回图标
     const backIcon = document.getElementById('backIcon');
     if (backIcon) backIcon.innerHTML = iconArrowLeft(18);

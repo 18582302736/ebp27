@@ -61,7 +61,10 @@
   <div id="appContent" class="hidden">
   <header class="app-header">
     <a href="index.html" class="back-btn" style="margin:0;padding:0;"><span class="svg-icon" id="backIcon"></span>返回日历</a>
-    <button class="theme-toggle" id="themeToggle" aria-label="切换夜间模式"></button>
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="切换夜间模式"></button>
+      <button class="theme-toggle" id="refreshBtn" aria-label="刷新缓存"></button>
+    </div>
   </header>
   <main class="day-detail">
     <div class="day-theme" id="dayTheme"></div>
@@ -75,6 +78,9 @@
     </div>
     <a class="next-day-btn" id="nextDayBtn" href="#">进入下一天 <span class="svg-icon" style="display:inline-flex;"></span></a>
   </main>
+  <footer class="app-footer">
+    <p class="app-version">v1.0.1</p>
+  </footer>
   </div><!-- end appContent -->
 
   <script src="js/utils.js"></script>
