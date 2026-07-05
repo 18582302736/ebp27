@@ -4,11 +4,6 @@ async function initApp() {
   try {
     await initStorage();
 
-    // 初始化 GitHub 同步（拉取远程数据）
-    if (typeof initSync === 'function') {
-      initSync().catch(e => console.warn('Sync init failed:', e));
-    }
-
     // 同步指示器
     if (typeof updateSyncIndicator === 'function') {
       updateSyncIndicator();
@@ -211,6 +206,17 @@ async function initApp() {
       nextBtn.href = 'index.html';
       nextBtn.textContent = '返回首页';
       nextBtn.classList.add('visible');
+    }
+
+    // 后台同步：先用本地数据渲染，同步完成后刷新页面
+    if (typeof initSync === 'function') {
+      initSync().then(() => {
+        updateSyncIndicator();
+        if (!sessionStorage.getItem('ebp_synced_reload')) {
+          sessionStorage.setItem('ebp_synced_reload', '1');
+          window.location.reload();
+        }
+      }).catch(e => console.warn('Sync init failed:', e));
     }
   } catch (e) {
     console.error('页面初始化失败:', e);

@@ -3,11 +3,6 @@
 async function initApp() {
   await initStorage();
 
-  // 初始化 GitHub 同步（拉取远程数据）
-  if (typeof initSync === 'function') {
-    initSync().catch(e => console.warn('Sync init failed:', e));
-  }
-
   // 同步指示器
   if (typeof updateSyncIndicator === 'function') {
     updateSyncIndicator();
@@ -58,6 +53,16 @@ async function initApp() {
       entryPage.style.transition = 'opacity 0.3s ease';
       setTimeout(() => showCalendar(), 300);
     });
+  }
+
+  // 后台同步：先用本地数据渲染，同步完成后刷新
+  if (typeof initSync === 'function') {
+    initSync().then(() => {
+      if (hasStarted) {
+        renderCalendar();
+      }
+      updateSyncIndicator();
+    }).catch(e => console.warn('Sync init failed:', e));
   }
 
   async function showCalendar() {

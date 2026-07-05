@@ -74,6 +74,7 @@ function initSettingsPage() {
         // 错误已在 sync state 中记录
       }
       updateSyncUI();
+      window.location.reload();
     });
   }
 

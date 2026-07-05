@@ -172,6 +172,7 @@ async function pushToGithub() {
         }
         delete e.image_blobs;
         delete e.image_base64;
+        delete e.id;
         return e;
       })
     };

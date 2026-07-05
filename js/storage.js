@@ -182,7 +182,8 @@ async function saveJournalEntry(day, text, imageBase64s) {
   const entry = {
     day,
     text: text || '',
-    created_at: new Date().toISOString()
+    created_at: existing && existing.created_at ? existing.created_at : new Date().toISOString(),
+    updated_at: new Date().toISOString()
   };
   if (imageBase64s && imageBase64s.length > 0) {
     entry.image_base64 = imageBase64s;
@@ -256,13 +257,15 @@ async function importAllData(progressList, journalList) {
   if (journalList && journalList.length > 0) {
     for (const remote of journalList) {
       const local = await getJournalEntry(remote.day);
-      if (!local || !local.created_at || (remote.created_at && remote.created_at > local.created_at)) {
+      if (!local || !local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
         // 远程数据中的 image_blobs_base64 直接存为 image_base64
         if (remote.image_blobs_base64 && remote.image_blobs_base64.length > 0) {
           remote.image_base64 = remote.image_blobs_base64;
         }
         delete remote.image_blobs_base64;
         delete remote.image_blobs;
+        delete remote.id;
+        if (local) remote.id = local.id;
         await dbPut('journal_entries', remote);
       }
     }
