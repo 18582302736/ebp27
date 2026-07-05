@@ -6,6 +6,15 @@ const PHASES = [
   { name: "行动 · 向价值方向", range: "Day 13-25", start: 13, end: 25, cssClass: "phase-3", gridId: "phase3Grid" }
 ];
 
+function getCompletedDate(progress) {
+  if (!progress) return null;
+  const dates = [progress.task1_completed, progress.task2_completed, progress.task3_completed].filter(Boolean);
+  if (dates.length === 0) return null;
+  const latest = dates.sort().reverse()[0];
+  const d = new Date(latest);
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
 async function renderCalendar() {
   const allProgress = await getAllProgress();
   const completedCount = await getCompletedCount();
@@ -40,7 +49,9 @@ async function renderCalendar() {
 
       if (status === 'completed') {
         cell.classList.add('completed');
-        cell.innerHTML = `<span class="day-num">${d}</span><span class="day-icon">${iconCheck(18)}</span>`;
+        const completedDate = getCompletedDate(p);
+        const dateLabel = completedDate ? `<span class="day-label">${completedDate}</span>` : '';
+        cell.innerHTML = `<span class="day-num">${d}</span><span class="day-icon">${iconCheck(18)}</span>${dateLabel}`;
       } else if (status === 'in-progress') {
         cell.classList.add('in-progress');
         cell.innerHTML = `<span class="day-num">${d}</span><span class="day-label">进行中</span>`;

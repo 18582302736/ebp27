@@ -407,6 +407,11 @@ body {
   color: var(--primary);
 }
 
+.day-cell.completed .day-label {
+  color: var(--primary);
+  font-size: 0.65rem;
+}
+
 .day-cell.locked .day-icon {
   color: var(--locked-text);
 }
