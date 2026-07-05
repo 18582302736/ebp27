@@ -62,6 +62,7 @@
   <header class="app-header">
     <a href="index.html" class="back-btn" style="margin:0;padding:0;"><span class="svg-icon" id="backIcon"></span>返回日历</a>
     <div class="header-actions">
+      <button class="theme-toggle" id="settingsBtn" aria-label="设置"></button>
       <button class="theme-toggle" id="themeToggle" aria-label="切换夜间模式"></button>
       <button class="theme-toggle" id="refreshBtn" aria-label="刷新缓存"></button>
     </div>
@@ -79,20 +80,70 @@
     <a class="next-day-btn" id="nextDayBtn" href="#">进入下一天 <span class="svg-icon" style="display:inline-flex;"></span></a>
   </main>
   <footer class="app-footer">
-    <p class="app-version">v1.0.2</p>
+    <p class="app-version">v1.0.3</p>
   </footer>
   </div><!-- end appContent -->
+
+  <!-- 设置弹窗 -->
+  <div class="settings-overlay" id="settingsOverlay" style="display:none;">
+    <div class="settings-panel">
+      <div class="settings-header">
+        <h2>设置</h2>
+        <button class="settings-close" id="settingsClose">&times;</button>
+      </div>
+      <div class="settings-body">
+        <div class="settings-section">
+          <label class="settings-label">GitHub Token</label>
+          <p class="settings-hint">用于自动备份数据到 GitHub</p>
+          <div class="token-input-wrapper">
+            <input type="password" class="settings-input" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+            <button class="btn btn-small btn-secondary" id="toggleTokenVisibility">显示</button>
+          </div>
+          <button class="btn btn-primary btn-small" id="saveTokenBtn">保存 Token</button>
+          <p class="settings-token-status" id="tokenStatus"></p>
+        </div>
+        <div class="settings-section">
+          <label class="settings-label">同步状态</label>
+          <div class="sync-status" id="syncStatus">
+            <span class="sync-status-icon">○</span>
+            <span class="sync-status-text">未配置</span>
+          </div>
+          <button class="btn btn-secondary btn-small" id="syncNowBtn">立即同步</button>
+          <p class="settings-hint" id="lastSyncTime"></p>
+        </div>
+        <div class="settings-section">
+          <details class="token-guide">
+            <summary>如何获取 GitHub Token？</summary>
+            <div class="token-guide-content">
+              <ol>
+                <li>打开 <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a>（需登录 GitHub）</li>
+                <li>点击 "Generate new token" → "Generate new token (classic)"</li>
+                <li>Note 填写 "ebp27-backup"，Expiration 选择 "No expiration"</li>
+                <li>勾选 "repo" 权限</li>
+                <li>点击底部 "Generate token"</li>
+                <li>复制生成的 token（以 ghp_ 开头）</li>
+                <li>粘贴到上方输入框，点击保存</li>
+              </ol>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="js/utils.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/data.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/sync.js"></script>
+  <script src="js/settings.js"></script>
   <script src="js/audio-player.js"></script>
   <script src="js/lock.js"></script>
   <script src="js/journal.js"></script>
   <script src="js/day.js"></script>
   <script>
     initLockScreen();
+    initSettingsPage();
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }

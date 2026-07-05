@@ -3,6 +3,11 @@
 async function initApp() {
   await initStorage();
 
+  // 初始化 GitHub 同步（拉取远程数据）
+  if (typeof initSync === 'function') {
+    initSync().catch(e => console.warn('Sync init failed:', e));
+  }
+
   // 主题初始化
   const theme = getThemePreference();
   applyTheme(theme);

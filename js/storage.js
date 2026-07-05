@@ -129,6 +129,7 @@ async function getAllProgress() {
 async function saveProgress(day, data) {
   data.updated_at = new Date().toISOString();
   await dbPut('progress', data);
+  if (typeof schedulePush === 'function') schedulePush();
 }
 
 // 初始化第一天为可用
@@ -192,6 +193,7 @@ async function saveJournalEntry(day, text, imageBlobs) {
     entry.id = existing.id;
   }
   await dbPut('journal_entries', entry);
+  if (typeof schedulePush === 'function') schedulePush();
 }
 
 // 主题偏好
@@ -204,6 +206,7 @@ function getThemePreference() {
 function setThemePreference(theme) {
   localStorage.setItem('ebp_theme', theme);
   applyTheme(theme);
+  if (typeof schedulePush === 'function') schedulePush();
 }
 
 function applyTheme(theme) {
@@ -214,7 +217,86 @@ function applyTheme(theme) {
   }
 }
 
-// 初始化
+// ── 数据导出/导入（用于 GitHub 同步） ──
+
+async function exportAllData() {
+  const progress = await dbGetAll('progress');
+  const journals = await dbGetAll('journal_entries');
+
+  const processedJournals = await Promise.all(journals.map(async (entry) => {
+    const e = { ...entry };
+    if (e.image_blobs && e.image_blobs.length > 0) {
+      e.image_blobs_base64 = await Promise.all(
+        e.image_blobs.map(b => blobToBase64(b))
+      );
+      delete e.image_blobs;
+    }
+    return e;
+  }));
+
+  return { progress, journals: processedJournals };
+}
+
+async function importAllData(progressList, journalList) {
+  if (progressList && progressList.length > 0) {
+    for (const remote of progressList) {
+      const local = await getProgress(remote.day);
+      if (!local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
+        await dbPut('progress', remote);
+      }
+    }
+  }
+
+  if (journalList && journalList.length > 0) {
+    for (const remote of journalList) {
+      const local = await getJournalEntry(remote.day);
+      if (!local || !local.created_at || (remote.created_at && remote.created_at > local.created_at)) {
+        if (remote.image_blobs_base64 && !remote.image_blobs) {
+          remote.image_blobs = await Promise.all(
+            remote.image_blobs_base64.map(b64 => base64ToBlob(b64))
+          );
+        }
+        delete remote.image_blobs_base64;
+        await dbPut('journal_entries', remote);
+      }
+    }
+  }
+}
+
+function exportSettings() {
+  return {
+    theme: localStorage.getItem('ebp_theme') || 'light',
+    has_started: localStorage.getItem('ebp_has_started') || '0',
+    lock_password: localStorage.getItem('ebp_lock_password') || ''
+  };
+}
+
+function importSettings(settings) {
+  if (!settings) return;
+  if (settings.lock_password && !localStorage.getItem('ebp_lock_password')) {
+    localStorage.setItem('ebp_lock_password', settings.lock_password);
+  }
+  if (settings.theme && !localStorage.getItem('ebp_theme')) {
+    localStorage.setItem('ebp_theme', settings.theme);
+  }
+  if (settings.has_started && !localStorage.getItem('ebp_has_started')) {
+    localStorage.setItem('ebp_has_started', settings.has_started);
+  }
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
+function base64ToBlob(dataUrl) {
+  return fetch(dataUrl).then(r => r.blob());
+}
+
+// 初始化存储
 async function initStorage() {
   await initDB();
   await initDay1();
