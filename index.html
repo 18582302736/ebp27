@@ -2,11 +2,11 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#f0f3ef">
-  <title>27天情绪练习</title>
+  <title>25天情绪练习</title>
   <script>
     (function(){
       var t=localStorage.getItem('ebp_theme');
@@ -64,8 +64,8 @@
   <div class="entry-page" id="entryPage" style="display:none;">
     <div class="entry-content">
       <img src="assets/illustration.png" alt="治愈插图" class="entry-illustration">
-      <h1 class="entry-title">27天情绪练习</h1>
-      <p class="entry-desc">基于认知行为疗法与正念练习，<br>用27天，学会与情绪温柔相处。</p>
+      <h1 class="entry-title">25天情绪练习</h1>
+      <p class="entry-desc">基于认知行为疗法与正念练习，<br>用25天，学会与情绪温柔相处。</p>
       <button class="entry-btn" id="startBtn">开始练习</button>
     </div>
   </div>
@@ -73,37 +73,30 @@
   <!-- 日历首页 -->
   <div class="calendar-page" id="calendarPage" style="display:none;">
     <header class="app-header">
-      <h1 class="app-title">27天情绪练习</h1>
+      <h1 class="app-title">25天情绪练习</h1>
       <button class="theme-toggle" id="themeToggle" aria-label="切换夜间模式">🌙</button>
     </header>
 
     <main>
-      <div class="hero-illustration">
-        <img src="assets/illustration.png" alt="治愈插图" class="hero-img">
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar-header">
+          <span class="progress-label-text">练习进度</span>
+          <span class="progress-count" id="progressCount">0/25</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
       </div>
 
-      <section class="progress-section">
-        <div class="progress-header">27天练习进度</div>
-        <div class="progress-ring-container">
-          <svg class="progress-ring" width="100" height="100" viewBox="0 0 100 100">
-            <circle class="progress-ring-bg" cx="50" cy="50" r="44"/>
-            <circle class="progress-ring-fill" id="progressRing" cx="50" cy="50" r="44"
-              stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
-          </svg>
-          <div class="progress-text">
-            <div class="progress-num" id="progressNum">0/27</div>
-            <div class="progress-label">已完成</div>
-          </div>
-        </div>
-      </section>
+      <div class="phase-strip" id="phaseStrip"></div>
 
       <section class="calendar-section">
-        <div class="phase-strip" id="phaseStrip"></div>
         <div class="calendar-grid" id="calendarGrid"></div>
       </section>
 
       <footer class="app-footer">
-        每天一小步，慢慢来<br>你已经在路上了
+        <p>每天一小步，慢慢来</p>
+        <p>你已经在路上了</p>
       </footer>
     </main>
   </div>

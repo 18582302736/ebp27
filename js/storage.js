@@ -144,7 +144,7 @@ async function initDay1() {
 async function getMaxAvailableDay() {
   const all = await getAllProgress();
   let maxDay = 1;
-  for (let d = 1; d <= 27; d++) {
+  for (let d = 1; d <= 25; d++) {
     const p = all[d];
     if (!p || p.status === 'locked') {
       maxDay = d;
@@ -157,14 +157,14 @@ async function getMaxAvailableDay() {
       break;
     }
   }
-  return Math.min(maxDay, 27);
+  return Math.min(maxDay, 25);
 }
 
 // 获取已完成天数
 async function getCompletedCount() {
   const all = await getAllProgress();
   let count = 0;
-  for (let d = 1; d <= 27; d++) {
+  for (let d = 1; d <= 25; d++) {
     if (all[d] && all[d].status === 'completed') count++;
   }
   return count;
@@ -176,17 +176,17 @@ async function getJournalEntry(day) {
   return entries[0] || null;
 }
 
-async function saveJournalEntry(day, text, imageBlob) {
+async function saveJournalEntry(day, text, imageBlobs) {
   const existing = await getJournalEntry(day);
   const entry = {
     day,
     text: text || '',
     created_at: new Date().toISOString()
   };
-  if (imageBlob) {
-    entry.image_blob = imageBlob;
-  } else if (existing && existing.image_blob) {
-    entry.image_blob = existing.image_blob;
+  if (imageBlobs && imageBlobs.length > 0) {
+    entry.image_blobs = imageBlobs;
+  } else if (existing && existing.image_blobs) {
+    entry.image_blobs = existing.image_blobs;
   }
   if (existing) {
     entry.id = existing.id;

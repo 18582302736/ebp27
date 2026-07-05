@@ -1,9 +1,9 @@
 // calendar.js - 日历首页渲染
 
 const PHASES = [
-  { name: "觉察 · 投入当下", range: "Day 1-8", days: [1, 8], cssClass: "phase-1" },
-  { name: "接纳 · 认识情绪", range: "Day 9-14", days: [9, 14], cssClass: "phase-2" },
-  { name: "行动 · 向价值方向", range: "Day 15-27", days: [15, 27], cssClass: "phase-3" }
+  { name: "觉察 · 投入当下", range: "Day 1-7", days: [1, 7], cssClass: "phase-1" },
+  { name: "接纳 · 认识情绪", range: "Day 8-13", days: [8, 13], cssClass: "phase-2" },
+  { name: "行动 · 向价值方向", range: "Day 14-25", days: [14, 25], cssClass: "phase-3" }
 ];
 
 function renderPhaseStrip() {
@@ -25,19 +25,17 @@ async function renderCalendar() {
   const completedCount = await getCompletedCount();
   const maxAvailable = await getMaxAvailableDay();
 
-  // 更新进度环
-  const circumference = 276.46;
-  const progress = completedCount / 27;
-  const offset = circumference * (1 - progress);
-  const ring = document.getElementById('progressRing');
-  ring.style.strokeDashoffset = offset;
-  document.getElementById('progressNum').textContent = `${completedCount}/27`;
+  // 更新进度条
+  const progress = completedCount / 25;
+  const barFill = document.getElementById('progressBarFill');
+  barFill.style.width = `${progress * 100}%`;
+  document.getElementById('progressCount').textContent = `${completedCount}/25`;
 
   // 渲染日历网格
   const grid = document.getElementById('calendarGrid');
   grid.innerHTML = '';
 
-  for (let d = 1; d <= 27; d++) {
+  for (let d = 1; d <= 25; d++) {
     const cell = document.createElement('div');
     cell.className = 'day-cell';
 
@@ -52,11 +50,6 @@ async function renderCalendar() {
       else status = 'today';
     }
 
-    // 高亮今天
-    if (d === maxAvailable && status !== 'completed' && status !== 'in-progress') {
-      cell.classList.add('today');
-    }
-
     if (status === 'completed') {
       cell.classList.add('completed');
       cell.innerHTML = `<span class="day-num">${d}</span><span class="day-icon">✓</span>`;
@@ -68,14 +61,14 @@ async function renderCalendar() {
       cell.innerHTML = `<span class="day-num">${d}</span><span class="day-icon">🔒</span>`;
     } else {
       // today / available
+      cell.classList.add('today');
       cell.innerHTML = `<span class="day-num">${d}</span><span class="day-label">今天</span>`;
     }
 
-    if (status !== 'locked') {
-      cell.addEventListener('click', () => {
-        window.location.href = `day.html?day=${d}`;
-      });
-    }
+    // 所有天数都可以点击（锁定天数也可查看内容，但任务不可操作）
+    cell.addEventListener('click', () => {
+      window.location.href = `day.html?day=${d}`;
+    });
 
     grid.appendChild(cell);
   }
