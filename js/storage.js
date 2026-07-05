@@ -177,17 +177,17 @@ async function getJournalEntry(day) {
   return entries[0] || null;
 }
 
-async function saveJournalEntry(day, text, imageBlobs) {
+async function saveJournalEntry(day, text, imageBase64s) {
   const existing = await getJournalEntry(day);
   const entry = {
     day,
     text: text || '',
     created_at: new Date().toISOString()
   };
-  if (imageBlobs && imageBlobs.length > 0) {
-    entry.image_blobs = imageBlobs;
-  } else if (existing && existing.image_blobs) {
-    entry.image_blobs = existing.image_blobs;
+  if (imageBase64s && imageBase64s.length > 0) {
+    entry.image_base64 = imageBase64s;
+  } else if (existing && existing.image_base64) {
+    entry.image_base64 = existing.image_base64;
   }
   if (existing) {
     entry.id = existing.id;
@@ -225,6 +225,12 @@ async function exportAllData() {
 
   const processedJournals = await Promise.all(journals.map(async (entry) => {
     const e = { ...entry };
+    // 新格式：image_base64（base64 字符串数组）
+    if (e.image_base64 && e.image_base64.length > 0) {
+      e.image_blobs_base64 = e.image_base64;
+      delete e.image_base64;
+    }
+    // 旧格式兼容：image_blobs（Blob 数组）
     if (e.image_blobs && e.image_blobs.length > 0) {
       e.image_blobs_base64 = await Promise.all(
         e.image_blobs.map(b => blobToBase64(b))
@@ -251,12 +257,12 @@ async function importAllData(progressList, journalList) {
     for (const remote of journalList) {
       const local = await getJournalEntry(remote.day);
       if (!local || !local.created_at || (remote.created_at && remote.created_at > local.created_at)) {
-        if (remote.image_blobs_base64 && !remote.image_blobs) {
-          remote.image_blobs = await Promise.all(
-            remote.image_blobs_base64.map(b64 => base64ToBlob(b64))
-          );
+        // 远程数据中的 image_blobs_base64 直接存为 image_base64
+        if (remote.image_blobs_base64 && remote.image_blobs_base64.length > 0) {
+          remote.image_base64 = remote.image_blobs_base64;
         }
         delete remote.image_blobs_base64;
+        delete remote.image_blobs;
         await dbPut('journal_entries', remote);
       }
     }
@@ -300,4 +306,27 @@ function base64ToBlob(dataUrl) {
 async function initStorage() {
   await initDB();
   await initDay1();
+  await migrateBlobsToBase64();
+}
+
+// 迁移旧数据：Blob → base64
+async function migrateBlobsToBase64() {
+  try {
+    const entries = await dbGetAll('journal_entries');
+    for (const entry of entries) {
+      if (entry.image_blobs && entry.image_blobs.length > 0 && !entry.image_base64) {
+        try {
+          entry.image_base64 = await Promise.all(
+            entry.image_blobs.map(b => blobToBase64(b))
+          );
+          delete entry.image_blobs;
+          await dbPut('journal_entries', entry);
+        } catch (e) {
+          console.warn('迁移图片失败 day', entry.day, e);
+        }
+      }
+    }
+  } catch (e) {
+    // 静默处理，不影响应用启动
+  }
 }

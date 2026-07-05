@@ -9,6 +9,12 @@ async function initApp() {
       initSync().catch(e => console.warn('Sync init failed:', e));
     }
 
+    // 同步指示器
+    if (typeof updateSyncIndicator === 'function') {
+      updateSyncIndicator();
+      setInterval(updateSyncIndicator, 2000);
+    }
+
     // 主题
     const theme = getThemePreference();
     applyTheme(theme);
@@ -147,25 +153,15 @@ async function initApp() {
       task2Card.classList.add('locked');
       task2Body.innerHTML = '<div class="locked-hint">解锁后可书写练习</div>';
     } else {
-      const journal = createJournal(task2Body, day, data.worksheet);
-
-      if (!task2Done) {
-        const completeBtn = document.createElement('button');
-        completeBtn.className = 'btn btn-primary';
-        completeBtn.textContent = '标记书写完成';
-        completeBtn.style.marginTop = '12px';
-        completeBtn.addEventListener('click', async () => {
-          await journal.save();
-          task2Done = true;
-          progress.task2_completed = new Date().toISOString();
-          if (progress.status === 'available') progress.status = 'in_progress';
-          await saveProgress(day, progress);
-          updateTaskCardStatus(task2Card, true, progress.task2_completed);
-          completeBtn.remove();
-          await checkAllDone();
-        });
-        task2Body.appendChild(completeBtn);
-      }
+      const journal = createJournal(task2Body, day, data.worksheet, async () => {
+        if (task2Done) return;
+        task2Done = true;
+        progress.task2_completed = new Date().toISOString();
+        if (progress.status === 'available') progress.status = 'in_progress';
+        await saveProgress(day, progress);
+        updateTaskCardStatus(task2Card, true, progress.task2_completed);
+        await checkAllDone();
+      });
     }
     taskList.appendChild(task2Card);
 

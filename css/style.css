@@ -524,9 +524,9 @@ body {
 /* ===== Calendar Illustration ===== */
 .calendar-illustration {
   width: 100%;
-  max-width: 100%;
+  max-width: 180px;
   border-radius: 16px;
-  margin: 0 0 16px;
+  margin: 0 auto 16px;
   display: block;
 }
 
@@ -1107,6 +1107,68 @@ body {
 
 .token-guide-content a {
   color: var(--primary);
+}
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  animation: toastIn 0.3s ease;
+  pointer-events: none;
+}
+.toast.success { background: var(--success); }
+.toast.error { background: #c62828; }
+.toast-icon { font-size: 1rem; }
+.toast.out { animation: toastOut 0.3s ease forwards; }
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes toastOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ===== Sync Indicator ===== */
+.sync-time-bar {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+  padding: 0 0 8px 0;
+  min-height: 16px;
+}
+.sync-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  background: var(--text-muted);
+  transition: background 0.3s;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.sync-dot.syncing {
+  background: var(--primary);
+  animation: syncPulse 1s ease-in-out infinite;
+}
+.sync-dot.success { background: var(--success); }
+.sync-dot.error { background: #c62828; }
+@keyframes syncPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
 
 /* ===== Responsive ===== */

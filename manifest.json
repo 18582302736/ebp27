@@ -1,7 +1,7 @@
 {
-  "name": "25天情绪练习",
-  "short_name": "情绪练习",
-  "description": "25天焦虑症自助练习计划",
+  "name": "AnxietyHeal For TT",
+  "short_name": "AnxietyHeal",
+  "description": "焦虑症自助练习计划",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f7faf5",

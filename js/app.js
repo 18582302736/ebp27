@@ -8,6 +8,12 @@ async function initApp() {
     initSync().catch(e => console.warn('Sync init failed:', e));
   }
 
+  // 同步指示器
+  if (typeof updateSyncIndicator === 'function') {
+    updateSyncIndicator();
+    setInterval(updateSyncIndicator, 2000);
+  }
+
   // 主题初始化
   const theme = getThemePreference();
   applyTheme(theme);

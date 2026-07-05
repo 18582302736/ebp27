@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#f0f3ef">
-  <title>25天情绪练习</title>
+  <title>AnxietyHeal For TT</title>
   <script>
     (function(){
       var t=localStorage.getItem('ebp_theme');
@@ -63,8 +63,8 @@
   <!-- 进入页 -->
   <div class="entry-page" id="entryPage" style="display:none;">
     <div class="entry-content">
-      <img src="assets/illustration.png" alt="治愈插图" class="entry-illustration">
-      <h1 class="entry-title">25天情绪练习</h1>
+      <img src="assets/logo-lotus.png" alt="AnxietyHeal" class="entry-illustration">
+      <h1 class="entry-title">AnxietyHeal For TT</h1>
       <p class="entry-desc">基于认知行为疗法与正念练习，<br>用25天，学会与情绪温柔相处。</p>
       <button class="entry-btn" id="startBtn">开始练习</button>
     </div>
@@ -73,13 +73,14 @@
   <!-- 日历首页 -->
   <div class="calendar-page" id="calendarPage" style="display:none;">
     <header class="app-header">
-      <h1 class="app-title">25天情绪练习</h1>
+      <h1 class="app-title">AnxietyHeal For TT</h1>
       <div class="header-actions">
         <button class="theme-toggle" id="settingsBtn" aria-label="设置"></button>
         <button class="theme-toggle" id="themeToggle" aria-label="切换夜间模式"></button>
         <button class="theme-toggle" id="refreshBtn" aria-label="刷新缓存"></button>
       </div>
     </header>
+    <div class="sync-time-bar"><span id="syncTime"></span></div>
 
     <main>
       <div class="progress-bar-wrapper">
@@ -92,7 +93,7 @@
         </div>
       </div>
 
-      <img src="assets/illustration.png" alt="治愈插图" class="calendar-illustration">
+      <img src="assets/logo-lotus.png" alt="AnxietyHeal" class="calendar-illustration">
 
       <section class="calendar-section">
         <div class="phase-block phase-1">
@@ -121,7 +122,7 @@
       <footer class="app-footer">
         <p>每天一小步，慢慢来</p>
         <p>你已经在路上了</p>
-        <p class="app-version">v1.0.3</p>
+        <p class="app-version"><span class="sync-dot" id="syncDot"></span> v1.0.4</p>
       </footer>
     </main>
   </div>
@@ -176,6 +177,7 @@
 
   <script src="js/utils.js"></script>
   <script src="js/icons.js"></script>
+  <script src="js/toast.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/sync.js"></script>
   <script src="js/settings.js"></script>

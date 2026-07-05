@@ -1,6 +1,6 @@
 // journal.js - 书写练习组件
 
-function createJournal(container, day, worksheetData) {
+function createJournal(container, day, worksheetData, onSaveComplete) {
   const hasPDF = worksheetData && worksheetData.src;
   const prompt = worksheetData ? worksheetData.prompt : '记录今天的练习心得';
   const curiosityGuide = worksheetData ? worksheetData.curiosityGuide : null;
@@ -10,76 +10,66 @@ function createJournal(container, day, worksheetData) {
       ${curiosityGuide ? `<div class="curiosity-guide"><span class="svg-icon">${iconBulb(16)}</span> ${curiosityGuide}</div>` : ''}
       <textarea class="journal-textarea" placeholder="${prompt}"></textarea>
       <div class="journal-actions">
-        <button class="btn btn-secondary btn-small save-btn"><span class="svg-icon">${iconSave(16)}</span> 保存</button>
         <button class="btn btn-secondary btn-small upload-image-btn"><span class="svg-icon">${iconImage(16)}</span> 添加图片</button>
         ${hasPDF ? `<a class="pdf-link" href="${worksheetData.src}"><span class="svg-icon">${iconFile(16)}</span> 查看书写指南</a>` : `<span class="pdf-link" style="color: var(--text-muted);"><span class="svg-icon">${iconFile(16)}</span> 本日无书写指南，请根据提示自由书写</span>`}
       </div>
       <input type="file" class="hidden-input image-input" accept="image/*" multiple>
       <div class="image-preview"></div>
-      <div class="save-hint">点击「保存」按钮保存内容</div>
+      <button class="btn btn-primary save-complete-btn" style="margin-top:12px;width:100%;justify-content:center;"><span class="svg-icon">${iconSave(16)}</span> 更新保存</button>
     </div>
   `;
   container.innerHTML = html;
 
   const textarea = container.querySelector('.journal-textarea');
-  const saveHint = container.querySelector('.save-hint');
-  const saveBtn = container.querySelector('.save-btn');
   const uploadBtn = container.querySelector('.upload-image-btn');
   const imageInput = container.querySelector('.image-input');
   const imagePreview = container.querySelector('.image-preview');
   const curiosityEl = container.querySelector('.curiosity-guide');
+  const saveCompleteBtn = container.querySelector('.save-complete-btn');
 
-  let savedImageBlobs = [];
-  let loadedContent = null;
+  let savedImageBase64s = [];
+  let hasCompleted = false;
 
-  // 保存函数
+  // 保存函数（不触发完成回调）
   async function doSave() {
     try {
-      await saveJournalEntry(day, textarea.value, savedImageBlobs);
-      saveHint.textContent = '已保存';
-      saveHint.style.color = 'var(--success)';
-      setTimeout(() => {
-        saveHint.textContent = '点击「保存」按钮保存内容';
-        saveHint.style.color = '';
-      }, 2000);
+      await saveJournalEntry(day, textarea.value, savedImageBase64s);
+      return true;
     } catch (e) {
       console.error('保存失败:', e);
-      saveHint.textContent = '保存失败';
-      saveHint.style.color = '#d44';
+      throw e;
     }
   }
 
   // 加载已有内容
   getJournalEntry(day).then(entry => {
-    loadedContent = entry;
     if (entry && entry.text && !textarea.value) {
       textarea.value = entry.text;
-      saveHint.textContent = '已加载上次内容';
-      saveHint.style.color = 'var(--success)';
-      setTimeout(() => {
-        saveHint.textContent = '点击「保存」按钮保存内容';
-        saveHint.style.color = '';
-      }, 2000);
     }
-    if (entry && entry.image_blobs && entry.image_blobs.length > 0) {
-      savedImageBlobs = entry.image_blobs;
-      showImagePreviews(entry.image_blobs);
+    if (entry && entry.image_base64 && entry.image_base64.length > 0) {
+      savedImageBase64s = entry.image_base64;
+      showImagePreviews(entry.image_base64);
     }
   }).catch(e => {
     console.error('加载日志失败:', e);
   });
 
-  // 手动保存按钮
-  saveBtn.addEventListener('click', () => {
-    if (textarea.value.trim()) {
-      doSave();
+  // 更新保存按钮：保存 + 触发完成
+  saveCompleteBtn.addEventListener('click', async () => {
+    try {
+      await doSave();
+      showToast('保存成功', 'success');
+      if (onSaveComplete && !hasCompleted) {
+        hasCompleted = true;
+        await onSaveComplete();
+      }
+    } catch (e) {
+      showToast('保存失败', 'error');
     }
   });
 
   // 用户开始输入时隐藏好奇心引导
   textarea.addEventListener('input', () => {
-    saveHint.textContent = '有未保存内容';
-    saveHint.style.color = '';
     if (curiosityEl) {
       curiosityEl.style.opacity = '0';
       curiosityEl.style.maxHeight = '0';
@@ -94,39 +84,41 @@ function createJournal(container, day, worksheetData) {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
-    saveHint.textContent = '处理图片中...';
-
     for (const file of files) {
       if (file.size > 10 * 1024 * 1024) {
-        alert('单张图片不能超过10MB');
+        showToast('单张图片不能超过10MB', 'error');
         continue;
       }
       try {
         const compressed = await compressImage(file);
-        savedImageBlobs.push(compressed);
+        const base64 = await blobToBase64(compressed);
+        savedImageBase64s.push(base64);
       } catch (e) {
         console.error('图片处理失败:', e);
       }
     }
 
-    showImagePreviews(savedImageBlobs);
-    await doSave();
+    showImagePreviews(savedImageBase64s);
+    try {
+      await doSave();
+    } catch (e) {
+      showToast('图片保存失败', 'error');
+    }
     imageInput.value = '';
   });
 
-  function showImagePreviews(blobs) {
+  function showImagePreviews(base64s) {
     imagePreview.innerHTML = '';
-    blobs.forEach((blob, idx) => {
-      const url = URL.createObjectURL(blob);
+    base64s.forEach((dataUrl, idx) => {
       const wrapper = document.createElement('div');
       wrapper.className = 'image-preview-wrapper';
       wrapper.innerHTML = `
-        <img class="image-preview-item" src="${url}" alt="练习图片 ${idx + 1}">
+        <img class="image-preview-item" src="${dataUrl}" alt="练习图片 ${idx + 1}">
         <button class="image-remove-btn" data-idx="${idx}">×</button>
       `;
       wrapper.querySelector('.image-remove-btn').addEventListener('click', async () => {
-        savedImageBlobs.splice(idx, 1);
-        showImagePreviews(savedImageBlobs);
+        savedImageBase64s.splice(idx, 1);
+        showImagePreviews(savedImageBase64s);
         await doSave();
       });
       imagePreview.appendChild(wrapper);

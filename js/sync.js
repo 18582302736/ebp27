@@ -112,17 +112,7 @@ async function pullFromGithub() {
     if (journalData) {
       const content = JSON.parse(base64ToUtf8(journalData.content));
       if (content.entries && content.entries.length > 0) {
-        // 转换 base64 图片为 Blob
-        const entries = await Promise.all(content.entries.map(async (entry) => {
-          if (entry.image_blobs_base64 && entry.image_blobs_base64.length > 0) {
-            entry.image_blobs = await Promise.all(
-              entry.image_blobs_base64.map(b64 => base64ToBlob(b64))
-            );
-          }
-          delete entry.image_blobs_base64;
-          return entry;
-        }));
-        await importAllData(null, entries);
+        await importAllData(null, content.entries);
       }
     }
 
@@ -163,13 +153,11 @@ async function pushToGithub() {
       updated_at: new Date().toISOString(),
       entries: (allData.journals || []).map(entry => {
         const e = { ...entry };
-        if (e.image_blobs && e.image_blobs.length > 0) {
-          e.image_blobs_base64 = e.image_blobs.map(b => {
-            if (typeof b === 'string') return b; // 已经是 base64
-            return '__BLOB_PLACEHOLDER__'; // 不应到达这里
-          });
-          delete e.image_blobs;
+        if (e.image_blobs_base64 && e.image_blobs_base64.length > 0) {
+          // exportAllData 已经将 image_base64 映射为 image_blobs_base64
         }
+        delete e.image_blobs;
+        delete e.image_base64;
         return e;
       })
     };
@@ -253,6 +241,50 @@ async function initSync() {
   } catch (e) {
     console.warn('启动同步失败:', e.message);
   }
+}
+
+// ── 同步指示器更新 ──
+
+function updateSyncIndicator() {
+  const timeEl = document.getElementById('syncTime');
+  const dot = document.getElementById('syncDot');
+  if (!timeEl && !dot) return;
+
+  const status = getSyncStatus();
+  const hasToken = hasGithubToken();
+
+  if (!hasToken) {
+    if (timeEl) timeEl.textContent = '';
+    if (dot) { dot.className = 'sync-dot'; dot.title = '未配置同步'; }
+    return;
+  }
+
+  if (status.syncing) {
+    if (timeEl) timeEl.textContent = '同步中...';
+    if (dot) { dot.className = 'sync-dot syncing'; dot.title = '同步中'; }
+  } else if (status.lastError) {
+    if (timeEl) timeEl.textContent = status.lastSync ? formatSyncTime(status.lastSync) : '同步失败';
+    if (dot) { dot.className = 'sync-dot error'; dot.title = '同步失败: ' + status.lastError; }
+  } else if (status.lastSync) {
+    if (timeEl) timeEl.textContent = '上次同步: ' + formatSyncTime(status.lastSync);
+    if (dot) { dot.className = 'sync-dot success'; dot.title = '已同步'; }
+  } else {
+    if (timeEl) timeEl.textContent = '尚未同步';
+    if (dot) { dot.className = 'sync-dot'; dot.title = '等待同步'; }
+  }
+}
+
+function formatSyncTime(isoStr) {
+  const date = new Date(isoStr);
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+  if (seconds < 60) return '刚刚';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return minutes + '分钟前';
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return hours + '小时前';
+  const days = Math.floor(hours / 24);
+  return days + '天前';
 }
 
 // ── 工具函数 ──
