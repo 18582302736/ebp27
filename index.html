@@ -26,7 +26,7 @@
       padding: 24px;
     }
     .lock-screen.hidden { display: none; }
-    .lock-icon { font-size: 3rem; margin-bottom: 16px; }
+    .lock-icon { display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--text-secondary); }
     .lock-title { font-size: 1.25rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
     .lock-sub { font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 20px; text-align: center; }
     .lock-input {
@@ -50,7 +50,7 @@
 <body>
   <!-- 密码锁屏 -->
   <div class="lock-screen" id="lockScreen">
-    <div class="lock-icon">🔒</div>
+    <div class="lock-icon" id="lockIcon"></div>
     <div class="lock-title" id="lockTitle">设置密码</div>
     <div class="lock-sub" id="lockSub">设置一个密码来保护你的隐私</div>
     <input type="password" class="lock-input" id="lockInput" placeholder="输入密码" maxlength="20" autocomplete="off">
@@ -74,7 +74,7 @@
   <div class="calendar-page" id="calendarPage" style="display:none;">
     <header class="app-header">
       <h1 class="app-title">25天情绪练习</h1>
-      <button class="theme-toggle" id="themeToggle" aria-label="切换夜间模式">🌙</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="切换夜间模式"></button>
     </header>
 
     <main>
@@ -88,10 +88,30 @@
         </div>
       </div>
 
-      <div class="phase-strip" id="phaseStrip"></div>
+      <img src="assets/illustration.png" alt="治愈插图" class="calendar-illustration">
 
       <section class="calendar-section">
-        <div class="calendar-grid" id="calendarGrid"></div>
+        <div class="phase-block phase-1">
+          <div class="phase-header">
+            <span class="phase-name">觉察 · 投入当下</span>
+            <span class="phase-range">Day 1-7</span>
+          </div>
+          <div class="phase-grid" id="phase1Grid"></div>
+        </div>
+        <div class="phase-block phase-2">
+          <div class="phase-header">
+            <span class="phase-name">接纳 · 认识情绪</span>
+            <span class="phase-range">Day 8-12</span>
+          </div>
+          <div class="phase-grid" id="phase2Grid"></div>
+        </div>
+        <div class="phase-block phase-3">
+          <div class="phase-header">
+            <span class="phase-name">行动 · 向价值方向</span>
+            <span class="phase-range">Day 13-25</span>
+          </div>
+          <div class="phase-grid" id="phase3Grid"></div>
+        </div>
       </section>
 
       <footer class="app-footer">
@@ -103,6 +123,7 @@
   </div><!-- end appContent -->
 
   <script src="js/utils.js"></script>
+  <script src="js/icons.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/calendar.js"></script>
   <script src="js/lock.js"></script>

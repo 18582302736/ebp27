@@ -41,10 +41,10 @@
   --bg: #1a1f1a;
   --bg-card: #232b24;
   --bg-card-hover: #2c352c;
-  --primary: #6db88d;
-  --primary-light: #1e2a22;
-  --primary-dark: #8cc8a0;
-  --accent: #c9a06a;
+  --primary: #4a8b6f;
+  --primary-light: #1a2a20;
+  --primary-dark: #5a9e7a;
+  --accent: #b88950;
   --accent-light: #2e261a;
   --text: #d8ded6;
   --text-secondary: #99a396;
@@ -55,15 +55,15 @@
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.3);
   --overlay: rgba(0, 0, 0, 0.12);
-  --success: #6db88d;
+  --success: #4a8b6f;
   --warning: #c9a050;
-  --today-border: #6db88d;
-  --task-icon-bg: #1e2a22;
-  --task-done-bg: #1c261f;
+  --today-border: #4a8b6f;
+  --task-icon-bg: #1a2a20;
+  --task-done-bg: #1a261d;
   --divider: #323a30;
   --progress-track: #323a30;
   --btn-secondary-bg: #283028;
-  --btn-secondary-text: #6db88d;
+  --btn-secondary-text: #4a8b6f;
 }
 
 /* ===== Reset & Base ===== */
@@ -107,6 +107,19 @@ body {
   transition: background-color var(--transition), color var(--transition);
 }
 
+/* ===== SVG Icons ===== */
+.svg-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.svg-icon svg {
+  display: block;
+}
+
 /* ===== Header ===== */
 .app-header {
   display: flex;
@@ -129,13 +142,18 @@ body {
   border-radius: 50%;
   border: 1px solid var(--border);
   background: var(--bg-card);
-  font-size: 1.1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all var(--transition);
   -webkit-tap-highlight-color: transparent;
+  color: var(--text-secondary);
+}
+
+.theme-toggle:hover {
+  color: var(--primary);
+  border-color: var(--primary);
 }
 
 .theme-toggle:active {
@@ -248,36 +266,50 @@ body {
   background: var(--primary-dark);
 }
 
-/* ===== Phase Strip ===== */
-.phase-strip {
-  display: flex;
-  gap: 2px;
-  margin-bottom: 16px;
-  border-radius: var(--radius-sm);
+/* ===== Phase Blocks ===== */
+.phase-block {
+  margin-bottom: 20px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
   overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
-.phase-segment {
-  flex: 1;
-  text-align: center;
-  padding: 8px 4px;
-  font-size: 0.7rem;
+.phase-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #fff;
   letter-spacing: 0.02em;
-  transition: opacity var(--transition);
 }
 
-.phase-segment.phase-1 { background: #6db88d; }
-.phase-segment.phase-2 { background: #b8916a; }
-.phase-segment.phase-3 { background: #8b9dc3; }
+.phase-block.phase-1 .phase-header { background: linear-gradient(135deg, #6db88d 0%, #5a9e7a 100%); }
+.phase-block.phase-2 .phase-header { background: linear-gradient(135deg, #b8916a 0%, #a07850 100%); }
+.phase-block.phase-3 .phase-header { background: linear-gradient(135deg, #8b9dc3 0%, #7a8db5 100%); }
 
-.phase-segment .phase-name { font-size: 0.7rem; }
-.phase-segment .phase-range { font-size: 0.7rem; opacity: 0.8; margin-top: 1px; }
+[data-theme="dark"] .phase-block.phase-1 .phase-header { background: linear-gradient(135deg, #3a7058 0%, #2d5a45 100%); }
+[data-theme="dark"] .phase-block.phase-2 .phase-header { background: linear-gradient(135deg, #8b6b4a 0%, #725838 100%); }
+[data-theme="dark"] .phase-block.phase-3 .phase-header { background: linear-gradient(135deg, #5a6d8a 0%, #4a5d78 100%); }
 
-[data-theme="dark"] .phase-segment.phase-1 { background: #3a7058; }
-[data-theme="dark"] .phase-segment.phase-2 { background: #8b6b4a; }
-[data-theme="dark"] .phase-segment.phase-3 { background: #5a6d8a; }
+.phase-header .phase-name {
+  font-size: 0.85rem;
+}
+
+.phase-header .phase-range {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.phase-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px;
+}
 
 /* ===== Calendar ===== */
 .calendar-section {
@@ -305,7 +337,7 @@ body {
   border: 2px solid transparent;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  background: var(--bg-card);
+  background: var(--bg);
   color: var(--text);
   box-shadow: var(--shadow);
 }
@@ -354,21 +386,37 @@ body {
 }
 
 .day-cell .day-num {
-  font-size: 1rem;
+  font-size: 1.15rem;
   line-height: 1;
+  font-weight: 700;
 }
 
 .day-cell .day-icon {
-  font-size: 0.7rem;
-  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3px;
   line-height: 1;
+}
+
+.day-cell .day-icon svg {
+  display: block;
+}
+
+.day-cell.completed .day-icon {
+  color: var(--primary);
+}
+
+.day-cell.locked .day-icon {
+  color: var(--locked-text);
 }
 
 .day-cell .day-label {
   font-size: 0.7rem;
   color: var(--text-muted);
-  margin-top: 1px;
+  margin-top: 2px;
   line-height: 1;
+  font-weight: 500;
 }
 
 /* ===== Day Detail Page ===== */
@@ -387,6 +435,10 @@ body {
   padding: 8px 0;
   margin-bottom: 4px;
   -webkit-tap-highlight-color: transparent;
+}
+
+.back-btn .svg-icon {
+  color: var(--primary);
 }
 
 .day-theme {
@@ -436,8 +488,31 @@ body {
   margin-bottom: 14px;
 }
 
-.sensory-icon { font-size: 1rem; }
+.sensory-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .sensory-label { letter-spacing: 0.02em; }
+
+/* ===== Day Illustration ===== */
+.day-illustration {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 16px;
+  margin: 0 auto 16px;
+  display: block;
+}
+
+/* ===== Calendar Illustration ===== */
+.calendar-illustration {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 16px;
+  margin: 0 auto 16px;
+  display: block;
+}
 
 [data-theme="dark"] .sensory-badge {
   background: var(--accent-light);
@@ -456,6 +531,15 @@ body {
   transition: opacity 0.3s ease, max-height 0.3s ease, margin-bottom 0.3s ease;
   max-height: 80px;
   overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.curiosity-guide .svg-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--primary);
 }
 
 [data-theme="dark"] .curiosity-guide {
@@ -503,12 +587,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
   flex-shrink: 0;
+  color: var(--primary);
 }
 
 .task-card.completed .task-icon {
   background: var(--primary-light);
+  color: var(--primary);
+}
+
+.task-card.locked .task-icon {
+  color: var(--locked-text);
 }
 
 .task-info {
@@ -528,10 +617,11 @@ body {
 }
 
 .task-status-icon {
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   color: var(--primary);
-  font-weight: 700;
 }
 
 .task-completed-date {
@@ -559,7 +649,6 @@ body {
   border: none;
   background: var(--primary);
   color: #fff;
-  font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -567,6 +656,11 @@ body {
   flex-shrink: 0;
   transition: all var(--transition);
   -webkit-tap-highlight-color: transparent;
+  padding: 0;
+}
+
+.play-btn svg {
+  display: block;
 }
 
 .play-btn:active {
@@ -743,6 +837,11 @@ body {
   color: #c0392b;
 }
 
+.btn .svg-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
 .pdf-link {
   display: inline-flex;
   align-items: center;
@@ -752,6 +851,10 @@ body {
   text-decoration: none;
   font-weight: 500;
   padding: 7px 0;
+}
+
+.pdf-link .svg-icon {
+  color: var(--primary);
 }
 
 /* ===== Completion Banner ===== */
@@ -770,8 +873,11 @@ body {
 }
 
 .completion-banner .banner-icon {
-  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 8px;
+  color: var(--primary);
 }
 
 .completion-banner .banner-text {
@@ -831,8 +937,8 @@ body {
     padding-left: 24px;
     padding-right: 24px;
   }
-  .calendar-grid {
-    gap: 8px;
+  .phase-grid {
+    gap: 10px;
   }
   .day-cell {
     font-size: 1rem;

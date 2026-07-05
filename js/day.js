@@ -8,11 +8,18 @@ async function initApp() {
     const theme = getThemePreference();
     applyTheme(theme);
 
-    document.getElementById('themeToggle').addEventListener('click', () => {
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.innerHTML = theme === 'dark' ? iconSun(20) : iconMoon(20);
+    themeToggle.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme');
       const next = current === 'dark' ? 'light' : 'dark';
       setThemePreference(next);
+      themeToggle.innerHTML = next === 'dark' ? iconSun(20) : iconMoon(20);
     });
+
+    // 设置返回图标
+    const backIcon = document.getElementById('backIcon');
+    if (backIcon) backIcon.innerHTML = iconArrowLeft(18);
 
     // 获取天数
     const day = parseInt(getQueryParam('day')) || 1;
@@ -41,14 +48,14 @@ async function initApp() {
     if (data.sensory) {
       const badge = document.getElementById('sensoryBadge');
       badge.style.display = 'inline-flex';
-      badge.innerHTML = `<span class="sensory-icon">${data.sensory.icon}</span><span class="sensory-label">今日感官焦点：${data.sensory.label}</span>`;
+      badge.innerHTML = `<span class="sensory-icon svg-icon">${getSensoryIcon(data.sensory.icon, 16)}</span><span class="sensory-label">今日感官焦点：${data.sensory.label}</span>`;
     }
 
     // 锁定状态提示
     if (isLocked) {
       const lockBanner = document.createElement('div');
       lockBanner.className = 'lock-banner';
-      lockBanner.innerHTML = '🔒 本日内容尚未解锁，请先完成前一天的所有任务';
+      lockBanner.innerHTML = '<span class="svg-icon" style="display:inline-flex;vertical-align:middle;margin-right:4px;">' + iconLock(16) + '</span> 本日内容尚未解锁，请先完成前一天的所有任务';
       const taskList = document.getElementById('taskList');
       taskList.parentNode.insertBefore(lockBanner, taskList);
     }
@@ -84,18 +91,19 @@ async function initApp() {
     const task1Desc = readingAudios.length > 1
       ? readingAudios.map(a => a.title).join(' + ')
       : readingAudios[0].title;
-    const task1Card = createTaskCard(1, '🎧', '音频引导', task1Desc, task1Done, progress.task1_completed);
+    const task1Card = createTaskCard(1, iconHeadphones(22), '音频引导', task1Desc, task1Done, progress.task1_completed);
     const task1Body = task1Card.querySelector('.task-body');
 
     if (isLocked) {
       task1Card.classList.add('locked');
       task1Body.innerHTML = '<div class="locked-hint">解锁后可播放音频</div>';
-    } else if (!task1Done) {
+    } else {
       let completedCount = 0;
       const totalCount = readingAudios.length;
 
       readingAudios.forEach((audio, idx) => {
         createAudioPlayer(task1Body, audio.src, async () => {
+          if (task1Done) return;
           completedCount++;
           if (completedCount >= totalCount) {
             task1Done = true;
@@ -111,7 +119,7 @@ async function initApp() {
     taskList.appendChild(task1Card);
 
     // === 任务2：书写练习 ===
-    const task2Card = createTaskCard(2, '✍️', '书写练习', '记录你的练习心得', task2Done, progress.task2_completed);
+    const task2Card = createTaskCard(2, iconPen(22), '书写练习', '记录你的练习心得', task2Done, progress.task2_completed);
     const task2Body = task2Card.querySelector('.task-body');
 
     if (isLocked) {
@@ -145,18 +153,19 @@ async function initApp() {
     const task3Desc = mindfulnessAudios.length > 1
       ? mindfulnessAudios.map(a => a.title).join(' + ')
       : mindfulnessAudios[0].title;
-    const task3Card = createTaskCard(3, '🧘', '正念练习', task3Desc, task3Done, progress.task3_completed);
+    const task3Card = createTaskCard(3, iconMeditation(22), '正念练习', task3Desc, task3Done, progress.task3_completed);
     const task3Body = task3Card.querySelector('.task-body');
 
     if (isLocked) {
       task3Card.classList.add('locked');
       task3Body.innerHTML = '<div class="locked-hint">解锁后可播放音频</div>';
-    } else if (!task3Done) {
+    } else {
       let completedCount = 0;
       const totalCount = mindfulnessAudios.length;
 
       mindfulnessAudios.forEach((audio, idx) => {
         createAudioPlayer(task3Body, audio.src, async () => {
+          if (task3Done) return;
           completedCount++;
           if (completedCount >= totalCount) {
             task3Done = true;
@@ -178,6 +187,8 @@ async function initApp() {
 
     function showCompletion() {
       document.getElementById('completionBanner').classList.add('visible');
+      const bannerIcon = document.getElementById('bannerIcon');
+      if (bannerIcon) bannerIcon.innerHTML = iconStar(32);
       // 完成后返回首页
       const nextBtn = document.getElementById('nextDayBtn');
       nextBtn.href = 'index.html';
@@ -193,7 +204,7 @@ async function initApp() {
   }
 }
 
-function createTaskCard(index, icon, name, desc, done, completedDate) {
+function createTaskCard(index, iconHtml, name, desc, done, completedDate) {
   const card = document.createElement('div');
   card.className = 'task-card';
   if (done) card.classList.add('completed');
@@ -201,16 +212,17 @@ function createTaskCard(index, icon, name, desc, done, completedDate) {
   const dateHtml = done && completedDate
     ? `<div class="task-completed-date">完成于 ${formatDateWithWeekday(completedDate)}</div>`
     : '';
+  const statusHtml = done ? `<div class="task-status-icon">${iconCheck(20)}</div>` : '';
 
   card.innerHTML = `
     <div class="task-card-header">
-      <div class="task-icon">${icon}</div>
+      <div class="task-icon">${iconHtml}</div>
       <div class="task-info">
         <div class="task-name">任务${index}：${name}</div>
         <div class="task-desc">${desc}</div>
         ${dateHtml}
       </div>
-      <div class="task-status-icon">${done ? '✓' : ''}</div>
+      ${statusHtml}
     </div>
     <div class="task-body"></div>
   `;
@@ -222,7 +234,7 @@ function updateTaskCardStatus(card, done, completedDate) {
   if (done) {
     card.classList.add('completed');
     const statusIcon = card.querySelector('.task-status-icon');
-    if (statusIcon) statusIcon.textContent = '✓';
+    if (statusIcon) statusIcon.innerHTML = iconCheck(20);
     if (completedDate) {
       const taskInfo = card.querySelector('.task-info');
       let dateEl = card.querySelector('.task-completed-date');

@@ -8,10 +8,13 @@ async function initApp() {
   applyTheme(theme);
 
   // 主题切换
-  document.getElementById('themeToggle').addEventListener('click', () => {
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle.innerHTML = theme === 'dark' ? iconSun(20) : iconMoon(20);
+  themeToggle.addEventListener('click', () => {
     const current = document.documentElement.getAttribute('data-theme');
     const next = current === 'dark' ? 'light' : 'dark';
     setThemePreference(next);
+    themeToggle.innerHTML = next === 'dark' ? iconSun(20) : iconMoon(20);
   });
 
   // 检查是否已经看过进入页

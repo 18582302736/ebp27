@@ -7,12 +7,12 @@ function createJournal(container, day, worksheetData) {
 
   const html = `
     <div class="journal-section">
-      ${curiosityGuide ? `<div class="curiosity-guide">💡 ${curiosityGuide}</div>` : ''}
+      ${curiosityGuide ? `<div class="curiosity-guide"><span class="svg-icon">${iconBulb(16)}</span> ${curiosityGuide}</div>` : ''}
       <textarea class="journal-textarea" placeholder="${prompt}"></textarea>
       <div class="journal-actions">
-        <button class="btn btn-secondary btn-small save-btn">💾 保存</button>
-        <button class="btn btn-secondary btn-small upload-image-btn">📷 添加图片</button>
-        ${hasPDF ? `<a class="pdf-link" href="${worksheetData.src}" target="_blank" rel="noopener">📄 查看书写指南</a>` : `<span class="pdf-link" style="color: var(--text-muted);">📄 本日无书写指南，请根据提示自由书写</span>`}
+        <button class="btn btn-secondary btn-small save-btn"><span class="svg-icon">${iconSave(16)}</span> 保存</button>
+        <button class="btn btn-secondary btn-small upload-image-btn"><span class="svg-icon">${iconImage(16)}</span> 添加图片</button>
+        ${hasPDF ? `<a class="pdf-link" href="${worksheetData.src}"><span class="svg-icon">${iconFile(16)}</span> 查看书写指南</a>` : `<span class="pdf-link" style="color: var(--text-muted);"><span class="svg-icon">${iconFile(16)}</span> 本日无书写指南，请根据提示自由书写</span>`}
       </div>
       <input type="file" class="hidden-input image-input" accept="image/*" multiple>
       <div class="image-preview"></div>
@@ -36,7 +36,7 @@ function createJournal(container, day, worksheetData) {
   async function doSave() {
     try {
       await saveJournalEntry(day, textarea.value, savedImageBlobs);
-      saveHint.textContent = '已保存 ✓';
+      saveHint.textContent = '已保存';
       saveHint.style.color = 'var(--success)';
       setTimeout(() => {
         saveHint.textContent = '点击「保存」按钮保存内容';
@@ -54,7 +54,7 @@ function createJournal(container, day, worksheetData) {
     loadedContent = entry;
     if (entry && entry.text && !textarea.value) {
       textarea.value = entry.text;
-      saveHint.textContent = '已加载上次内容 ✓';
+      saveHint.textContent = '已加载上次内容';
       saveHint.style.color = 'var(--success)';
       setTimeout(() => {
         saveHint.textContent = '点击「保存」按钮保存内容';

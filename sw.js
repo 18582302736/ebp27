@@ -1,6 +1,6 @@
 // sw.js - Service Worker（离线缓存）
 
-const CACHE_STATIC = 'ebp-static-v8';
+const CACHE_STATIC = 'ebp-static-v12';
 const CACHE_AUDIO = 'ebp-audio-v1';
 const CACHE_PDF = 'ebp-pdf-v1';
 
@@ -11,6 +11,7 @@ const STATIC_FILES = [
   './day.html',
   './css/style.css',
   './js/utils.js',
+  './js/icons.js',
   './js/data.js',
   './js/storage.js',
   './js/app.js',

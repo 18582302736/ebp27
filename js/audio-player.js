@@ -27,28 +27,28 @@ function createAudioPlayer(container, audioSrc, onComplete) {
   let hasCompleted = false;
   let isPlaying = false;
 
-  const html = `
-    <div class="audio-player">
-      <div class="audio-controls">
-        <button class="play-btn" data-player="${playerId}">▶</button>
-        <div class="audio-progress-container">
-          <div class="audio-time">
-            <span class="current-time">0:00</span>
-            <span class="duration">--:--</span>
-          </div>
-          <input type="range" class="audio-progress-bar" data-player="${playerId}" min="0" max="100" value="0">
+  const wrapper = document.createElement('div');
+  wrapper.className = 'audio-player';
+  wrapper.innerHTML = `
+    <div class="audio-controls">
+      <button class="play-btn" data-player="${playerId}">${iconPlay(16)}</button>
+      <div class="audio-progress-container">
+        <div class="audio-time">
+          <span class="current-time">0:00</span>
+          <span class="duration">--:--</span>
         </div>
+        <input type="range" class="audio-progress-bar" data-player="${playerId}" min="0" max="100" value="0">
       </div>
-      <div class="audio-status" data-player="${playerId}">点击播放</div>
     </div>
+    <div class="audio-status" data-player="${playerId}">点击播放</div>
   `;
-  container.innerHTML = html;
+  container.appendChild(wrapper);
 
-  const playBtn = container.querySelector('.play-btn');
-  const progressBar = container.querySelector('.audio-progress-bar');
-  const currentTimeEl = container.querySelector('.current-time');
-  const durationEl = container.querySelector('.duration');
-  const statusEl = container.querySelector('.audio-status');
+  const playBtn = wrapper.querySelector('.play-btn');
+  const progressBar = wrapper.querySelector('.audio-progress-bar');
+  const currentTimeEl = wrapper.querySelector('.current-time');
+  const durationEl = wrapper.querySelector('.duration');
+  const statusEl = wrapper.querySelector('.audio-status');
 
   // 加载时长
   audio.addEventListener('loadedmetadata', () => {
@@ -63,7 +63,6 @@ function createAudioPlayer(container, audioSrc, onComplete) {
 
   // 播放/暂停
   playBtn.addEventListener('click', () => {
-    if (hasCompleted) return;
     if (isPlaying) {
       audio.pause();
     } else {
@@ -76,22 +75,21 @@ function createAudioPlayer(container, audioSrc, onComplete) {
   });
 
   audio.addEventListener('play', () => {
-    if (hasCompleted) {
-      audio.pause();
-      return;
-    }
     isPlaying = true;
-    playBtn.textContent = '⏸';
+    playBtn.innerHTML = iconPause(16);
     playBtn.classList.add('playing');
+    playBtn.style.background = '';
     statusEl.textContent = '播放中...';
   });
 
   audio.addEventListener('pause', () => {
-    if (hasCompleted) return;
     isPlaying = false;
-    playBtn.textContent = '▶';
+    playBtn.innerHTML = hasCompleted ? iconCheck(16) : iconPlay(16);
     playBtn.classList.remove('playing');
-    if (audio.currentTime > 0) {
+    if (hasCompleted) {
+      playBtn.style.background = 'var(--success)';
+    }
+    if (audio.currentTime > 0 && !hasCompleted) {
       statusEl.textContent = '已暂停';
     }
   });
@@ -105,12 +103,10 @@ function createAudioPlayer(container, audioSrc, onComplete) {
     const pct = audio.currentTime / audio.duration;
     if (!hasCompleted && pct >= COMPLETION_THRESHOLD) {
       hasCompleted = true;
-      statusEl.textContent = '已完成 ✓';
-      playBtn.textContent = '✓';
+      statusEl.textContent = '已完成';
+      playBtn.innerHTML = iconCheck(16);
       playBtn.classList.remove('playing');
       playBtn.style.background = 'var(--success)';
-      playBtn.disabled = true;
-      progressBar.disabled = true;
       if (onComplete) onComplete();
     }
   });
@@ -118,25 +114,24 @@ function createAudioPlayer(container, audioSrc, onComplete) {
   audio.addEventListener('ended', () => {
     if (!hasCompleted) {
       hasCompleted = true;
-      statusEl.textContent = '已完成 ✓';
-      playBtn.textContent = '✓';
+      statusEl.textContent = '已完成';
+      playBtn.innerHTML = iconCheck(16);
       playBtn.classList.remove('playing');
       playBtn.style.background = 'var(--success)';
-      playBtn.disabled = true;
-      progressBar.disabled = true;
       if (onComplete) onComplete();
     }
+    isPlaying = false;
   });
 
   audio.addEventListener('error', (e) => {
     console.error('Audio error:', e);
     statusEl.textContent = '加载失败，请检查文件';
-    playBtn.textContent = '⟳';
+    playBtn.innerHTML = iconPlay(16);
+    playBtn.style.opacity = '0.5';
   });
 
   // 进度条拖动
   progressBar.addEventListener('input', () => {
-    if (hasCompleted) return;
     audio.currentTime = parseFloat(progressBar.value);
     currentTimeEl.textContent = formatTime(audio.currentTime);
   });
@@ -147,11 +142,10 @@ function createAudioPlayer(container, audioSrc, onComplete) {
       hasCompleted = false;
       isPlaying = false;
       audio.currentTime = 0;
-      playBtn.textContent = '▶';
+      playBtn.innerHTML = iconPlay(16);
       playBtn.classList.remove('playing');
       playBtn.style.background = '';
-      playBtn.disabled = false;
-      progressBar.disabled = false;
+      playBtn.style.opacity = '';
       progressBar.value = 0;
       currentTimeEl.textContent = '0:00';
       statusEl.textContent = '点击播放';

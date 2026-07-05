@@ -33,8 +33,14 @@ async function initLockScreen() {
   const lockBtn = document.getElementById('lockBtn');
   const lockError = document.getElementById('lockError');
   const appContent = document.getElementById('appContent');
+  const lockIcon = document.getElementById('lockIcon');
 
   if (!lockScreen) return;
+
+  // 设置锁屏 SVG 图标
+  if (lockIcon) {
+    lockIcon.innerHTML = iconLock(40);
+  }
 
   // 已解锁则直接跳过
   if (localStorage.getItem(UNLOCK_KEY) === '1') {
