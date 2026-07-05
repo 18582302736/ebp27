@@ -73,7 +73,7 @@ async function renderCalendar() {
 
     if (status !== 'locked') {
       cell.addEventListener('click', () => {
-        window.location.href = `/day.html?day=${d}`;
+        window.location.href = `day.html?day=${d}`;
       });
     }
 

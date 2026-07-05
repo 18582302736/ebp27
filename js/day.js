@@ -17,20 +17,20 @@ async function initApp() {
     // 获取天数
     const day = parseInt(getQueryParam('day')) || 1;
     if (day < 1 || day > 27) {
-      window.location.href = '/';
+      window.location.href = 'index.html';
       return;
     }
 
     const data = getCourseData(day);
     if (!data) {
-      window.location.href = '/';
+      window.location.href = 'index.html';
       return;
     }
 
     // 检查是否可访问
     const maxAvailable = await getMaxAvailableDay();
     if (day > maxAvailable) {
-      window.location.href = '/';
+      window.location.href = 'index.html';
       return;
     }
 
@@ -139,7 +139,7 @@ async function initApp() {
       document.getElementById('completionBanner').classList.add('visible');
       if (day < 27) {
         const nextBtn = document.getElementById('nextDayBtn');
-        nextBtn.href = `/day.html?day=${day + 1}`;
+        nextBtn.href = `day.html?day=${day + 1}`;
         nextBtn.classList.add('visible');
       }
     }

@@ -1,26 +1,26 @@
 // sw.js - Service Worker（离线缓存）
 
-const CACHE_STATIC = 'ebp-static-v4';
+const CACHE_STATIC = 'ebp-static-v5';
 const CACHE_AUDIO = 'ebp-audio-v1';
 const CACHE_PDF = 'ebp-pdf-v1';
 
 // 静态资源列表（安装时预缓存）
 const STATIC_FILES = [
-  '/',
-  '/index.html',
-  '/day.html',
-  '/css/style.css',
-  '/js/utils.js',
-  '/js/data.js',
-  '/js/storage.js',
-  '/js/app.js',
-  '/js/calendar.js',
-  '/js/day.js',
-  '/js/audio-player.js',
-  '/js/journal.js',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  './',
+  './index.html',
+  './day.html',
+  './css/style.css',
+  './js/utils.js',
+  './js/data.js',
+  './js/storage.js',
+  './js/app.js',
+  './js/calendar.js',
+  './js/day.js',
+  './js/audio-player.js',
+  './js/journal.js',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
 // 安装：预缓存静态资源
@@ -61,7 +61,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // 静态资源：Cache-First
-  if (pathname.match(/\.(js|css|png|jpg|svg|ico|json)$/) || pathname === '/' || pathname.endsWith('.html')) {
+  if (pathname.match(/\.(js|css|png|jpg|svg|ico|json)$/) || pathname === '/' || pathname.endsWith('/') || pathname.endsWith('.html')) {
     event.respondWith(cacheFirst(event.request, CACHE_STATIC));
     return;
   }
