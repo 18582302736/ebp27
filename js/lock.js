@@ -59,12 +59,14 @@ function initLockScreen() {
       localStorage.setItem(LOCK_STORAGE_KEY, hash);
       lockScreen.classList.add('hidden');
       if (appContent) appContent.classList.remove('hidden');
+      if (typeof initApp === 'function') initApp();
     } else {
       const hash = await hashPassword(password);
       if (hash === savedHash) {
         lockScreen.classList.add('hidden');
         if (appContent) appContent.classList.remove('hidden');
         localStorage.removeItem('ebp_lockout_until');
+        if (typeof initApp === 'function') initApp();
       } else {
         attempts++;
         const remaining = MAX_ATTEMPTS - attempts;

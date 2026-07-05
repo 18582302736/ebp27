@@ -1,6 +1,6 @@
 // app.js - 主入口
 
-(async function () {
+async function initApp() {
   await initStorage();
 
   // 主题初始化
@@ -37,4 +37,4 @@
     calendarPage.style.display = 'block';
     await renderCalendar();
   }
-})();
+}

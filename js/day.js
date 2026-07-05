@@ -1,6 +1,6 @@
 // day.js - 每日详情页
 
-(async function () {
+async function initApp() {
   await initStorage();
 
   // 主题
@@ -135,7 +135,7 @@
       nextBtn.classList.add('visible');
     }
   }
-})();
+}
 
 function createTaskCard(index, icon, name, desc, done) {
   const card = document.createElement('div');
