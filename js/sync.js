@@ -101,7 +101,7 @@ async function pullFromGithub() {
     // 拉取 progress
     const progressData = await githubApi('progress.json', 'GET');
     if (progressData) {
-      const content = JSON.parse(atob(progressData.content));
+      const content = JSON.parse(base64ToUtf8(progressData.content));
       if (content.records && content.records.length > 0) {
         await importAllData(content.records, null);
       }
@@ -110,7 +110,7 @@ async function pullFromGithub() {
     // 拉取 journal
     const journalData = await githubApi('journal.json', 'GET');
     if (journalData) {
-      const content = JSON.parse(atob(journalData.content));
+      const content = JSON.parse(base64ToUtf8(journalData.content));
       if (content.entries && content.entries.length > 0) {
         // 转换 base64 图片为 Blob
         const entries = await Promise.all(content.entries.map(async (entry) => {
@@ -129,7 +129,7 @@ async function pullFromGithub() {
     // 拉取 settings
     const settingsData = await githubApi('settings.json', 'GET');
     if (settingsData) {
-      const content = JSON.parse(atob(settingsData.content));
+      const content = JSON.parse(base64ToUtf8(settingsData.content));
       importSettings(content);
     }
 
@@ -262,6 +262,15 @@ function utf8ToBase64(str) {
   let binary = '';
   bytes.forEach(b => binary += String.fromCharCode(b));
   return btoa(binary);
+}
+
+function base64ToUtf8(base64) {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return new TextDecoder().decode(bytes);
 }
 
 function base64ToBlob(dataUrl) {
