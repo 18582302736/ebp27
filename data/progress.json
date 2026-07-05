@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "updated_at": "2026-07-05T19:03:53.861Z",
+  "records": [
+    {
+      "day": 1,
+      "status": "in_progress",
+      "task1_completed": null,
+      "task2_completed": "2026-07-05T18:55:26.661Z",
+      "task3_completed": null,
+      "updated_at": "2026-07-05T18:55:26.661Z"
+    }
+  ]
+}
