@@ -1,0 +1,221 @@
+// storage.js - IndexedDB 数据持久化（使用 Dexie.js）
+
+const DB_NAME = 'EBPProgress';
+const DB_VERSION = 1;
+
+let db;
+
+function initDB() {
+  if (db) return Promise.resolve(db);
+
+  return new Promise((resolve, reject) => {
+    // 如果 Dexie 已加载（CDN），使用 Dexie；否则用原生 IndexedDB
+    if (typeof Dexie !== 'undefined') {
+      db = new Dexie(DB_NAME);
+      db.version(DB_VERSION).stores({
+        progress: 'day',
+        journal_entries: '++id, day'
+      });
+      db.open().then(() => resolve(db)).catch(() => {
+        // Dexie 失败，降级到原生
+        db = null;
+        initNativeDB().then(resolve).catch(reject);
+      });
+    } else {
+      initNativeDB().then(resolve).catch(reject);
+    }
+  });
+}
+
+// 原生 IndexedDB 降级方案
+function initNativeDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('progress')) {
+        db.createObjectStore('progress', { keyPath: 'day' });
+      }
+      if (!db.objectStoreNames.contains('journal_entries')) {
+        const store = db.createObjectStore('journal_entries', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('day', 'day', { unique: false });
+      }
+    };
+    request.onsuccess = (e) => {
+      db = e.target.result;
+      resolve(db);
+    };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// 通用操作封装
+function dbPut(storeName, data) {
+  if (db.put) {
+    return db[storeName].put(data);
+  }
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readwrite');
+    const store = tx.objectStore(storeName);
+    const req = store.put(data);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbGet(storeName, key) {
+  if (db[storeName] && db[storeName].get) {
+    return db[storeName].get(key);
+  }
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readonly');
+    const store = tx.objectStore(storeName);
+    const req = store.get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbGetAll(storeName) {
+  if (db[storeName] && db[storeName].toArray) {
+    return db[storeName].toArray();
+  }
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readonly');
+    const store = tx.objectStore(storeName);
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbGetByIndex(storeName, indexName, value) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readonly');
+    const store = tx.objectStore(storeName);
+    const index = store.index(indexName);
+    const req = index.getAll(value);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbDelete(storeName, key) {
+  if (db[storeName] && db[storeName].delete) {
+    return db[storeName].delete(key);
+  }
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, 'readwrite');
+    const store = tx.objectStore(storeName);
+    const req = store.delete(key);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// 进度操作
+async function getProgress(day) {
+  const p = await dbGet('progress', day);
+  return p || { day, status: 'locked', task1_completed: null, task2_completed: null, task3_completed: null };
+}
+
+async function getAllProgress() {
+  const all = await dbGetAll('progress');
+  const map = {};
+  all.forEach(p => { map[p.day] = p; });
+  return map;
+}
+
+async function saveProgress(day, data) {
+  data.updated_at = new Date().toISOString();
+  await dbPut('progress', data);
+}
+
+// 初始化第一天为可用
+async function initDay1() {
+  const p = await getProgress(1);
+  if (p.status === 'locked') {
+    p.status = 'available';
+    await saveProgress(1, p);
+  }
+}
+
+// 获取当前可操作的最大天数
+async function getMaxAvailableDay() {
+  const all = await getAllProgress();
+  let maxDay = 1;
+  for (let d = 1; d <= 27; d++) {
+    const p = all[d];
+    if (!p || p.status === 'locked') {
+      maxDay = d;
+      break;
+    }
+    if (p.status === 'completed') {
+      maxDay = d + 1;
+    } else {
+      maxDay = d;
+      break;
+    }
+  }
+  return Math.min(maxDay, 27);
+}
+
+// 获取已完成天数
+async function getCompletedCount() {
+  const all = await getAllProgress();
+  let count = 0;
+  for (let d = 1; d <= 27; d++) {
+    if (all[d] && all[d].status === 'completed') count++;
+  }
+  return count;
+}
+
+// 日志操作
+async function getJournalEntry(day) {
+  const entries = await dbGetByIndex('journal_entries', 'day', day);
+  return entries[0] || null;
+}
+
+async function saveJournalEntry(day, text, imageBlob) {
+  const existing = await getJournalEntry(day);
+  const entry = {
+    day,
+    text: text || '',
+    created_at: new Date().toISOString()
+  };
+  if (imageBlob) {
+    entry.image_blob = imageBlob;
+  } else if (existing && existing.image_blob) {
+    entry.image_blob = existing.image_blob;
+  }
+  if (existing) {
+    entry.id = existing.id;
+  }
+  await dbPut('journal_entries', entry);
+}
+
+// 主题偏好
+function getThemePreference() {
+  const stored = localStorage.getItem('ebp_theme');
+  if (stored === 'dark' || stored === 'light') return stored;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function setThemePreference(theme) {
+  localStorage.setItem('ebp_theme', theme);
+  applyTheme(theme);
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeToggle');
+  if (btn) {
+    btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+}
+
+// 初始化
+async function initStorage() {
+  await initDB();
+  await initDay1();
+}

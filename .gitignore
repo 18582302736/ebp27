@@ -1,0 +1,6 @@
+.DS_Store
+.claude/
+.wrangler/
+deploy/
+test/
+node_modules/
