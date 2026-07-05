@@ -159,8 +159,7 @@ function updateSyncUI() {
   } else if (status.lastSync) {
     statusIcon.textContent = '✓';
     statusIcon.style.color = 'var(--primary)';
-    const ago = timeAgo(new Date(status.lastSync));
-    statusText.textContent = '已同步 ' + ago;
+    statusText.textContent = '已同步 ' + formatSyncTime(status.lastSync);
     statusText.style.color = 'var(--primary)';
     if (syncBtn) syncBtn.disabled = false;
   } else {
@@ -173,18 +172,7 @@ function updateSyncUI() {
 
   if (lastSyncEl) {
     lastSyncEl.textContent = status.lastSync
-      ? '上次同步: ' + formatDateWithWeekday(status.lastSync)
+      ? '上次同步: ' + formatSyncTime(status.lastSync)
       : '';
   }
-}
-
-function timeAgo(date) {
-  const seconds = Math.floor((new Date() - date) / 1000);
-  if (seconds < 60) return '刚刚';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return minutes + '分钟前';
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return hours + '小时前';
-  const days = Math.floor(hours / 24);
-  return days + '天前';
 }

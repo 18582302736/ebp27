@@ -45,7 +45,9 @@ function getSyncStatus() {
   return {
     lastSync: state.lastSync || null,
     lastError: state.lastError || null,
-    syncing: isSyncing
+    syncing: isSyncing,
+    direction: state.direction || null,
+    files: state.files || null
   };
 }
 
@@ -97,6 +99,7 @@ async function pullFromGithub() {
   if (!hasGithubToken()) return;
 
   isSyncing = true;
+  const fileInfo = {};
   try {
     // 拉取 progress
     const progressData = await githubApi('progress.json', 'GET');
@@ -105,6 +108,10 @@ async function pullFromGithub() {
       if (content.records && content.records.length > 0) {
         await importAllData(content.records, null);
       }
+      fileInfo['progress.json'] = {
+        data_time: content.updated_at || null,
+        record_count: content.records ? content.records.length : 0
+      };
     }
 
     // 拉取 journal
@@ -114,6 +121,10 @@ async function pullFromGithub() {
       if (content.entries && content.entries.length > 0) {
         await importAllData(null, content.entries);
       }
+      fileInfo['journal.json'] = {
+        data_time: content.updated_at || null,
+        entry_count: content.entries ? content.entries.length : 0
+      };
     }
 
     // 拉取 settings
@@ -121,9 +132,12 @@ async function pullFromGithub() {
     if (settingsData) {
       const content = JSON.parse(base64ToUtf8(settingsData.content));
       importSettings(content);
+      fileInfo['settings.json'] = {
+        data_time: content.updated_at || null
+      };
     }
 
-    setSyncState({ lastSync: new Date().toISOString(), lastError: null });
+    setSyncState({ lastSync: new Date().toISOString(), lastError: null, direction: 'pull', files: fileInfo });
   } catch (e) {
     setSyncState({ lastError: e.message });
     throw e;
@@ -169,11 +183,21 @@ async function pushToGithub() {
     };
 
     // 上传三个文件
+    const now = new Date().toISOString();
     await uploadFile('progress.json', progressPayload);
     await uploadFile('journal.json', journalPayload);
     await uploadFile('settings.json', settingsPayload);
 
-    setSyncState({ lastSync: new Date().toISOString(), lastError: null });
+    setSyncState({
+      lastSync: now,
+      lastError: null,
+      direction: 'push',
+      files: {
+        'progress.json': { data_time: now, record_count: progressPayload.records.length },
+        'journal.json': { data_time: now, entry_count: journalPayload.entries.length },
+        'settings.json': { data_time: now }
+      }
+    });
   } catch (e) {
     setSyncState({ lastError: e.message });
     throw e;
@@ -230,6 +254,7 @@ async function syncNow() {
   if (!hasGithubToken()) throw new Error('请先配置 GitHub Token');
   await pullFromGithub();
   await pushToGithub();
+  setSyncState({ direction: 'both' });
 }
 
 // ── 初始化同步（应用启动时调用） ──
@@ -260,31 +285,49 @@ function updateSyncIndicator() {
   }
 
   if (status.syncing) {
-    if (timeEl) timeEl.textContent = '同步中...';
+    if (timeEl) timeEl.textContent = '⟳ 同步中...';
     if (dot) { dot.className = 'sync-dot syncing'; dot.title = '同步中'; }
   } else if (status.lastError) {
-    if (timeEl) timeEl.textContent = status.lastSync ? formatSyncTime(status.lastSync) : '同步失败';
+    if (timeEl) timeEl.textContent = '✕ 同步失败';
     if (dot) { dot.className = 'sync-dot error'; dot.title = '同步失败: ' + status.lastError; }
   } else if (status.lastSync) {
-    if (timeEl) timeEl.textContent = '上次同步: ' + formatSyncTime(status.lastSync);
-    if (dot) { dot.className = 'sync-dot success'; dot.title = '已同步'; }
+    const dirLabel = status.direction === 'pull' ? '下载' : status.direction === 'push' ? '上传' : '同步';
+    let text = '✓ ' + dirLabel + '完成 ' + formatSyncTime(status.lastSync);
+    // 追加数据明细
+    const detail = formatSyncDetail(status.files);
+    if (detail) text += ' | ' + detail;
+    if (timeEl) timeEl.textContent = text;
+    if (dot) {
+      dot.className = 'sync-dot success';
+      dot.title = '上次' + dirLabel + ': ' + formatSyncTime(status.lastSync) + '\n' + (detail || '');
+    }
   } else {
-    if (timeEl) timeEl.textContent = '尚未同步';
+    if (timeEl) timeEl.textContent = '等待同步';
     if (dot) { dot.className = 'sync-dot'; dot.title = '等待同步'; }
   }
 }
 
 function formatSyncTime(isoStr) {
-  const date = new Date(isoStr);
-  const now = new Date();
-  const seconds = Math.floor((now - date) / 1000);
-  if (seconds < 60) return '刚刚';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return minutes + '分钟前';
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return hours + '小时前';
-  const days = Math.floor(hours / 24);
-  return days + '天前';
+  const d = new Date(isoStr);
+  const pad = (n) => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+    + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+}
+
+function formatSyncDetail(files) {
+  if (!files) return '';
+  const parts = [];
+  const names = { 'progress.json': '进度', 'journal.json': '日记', 'settings.json': '设置' };
+  for (const [name, info] of Object.entries(files)) {
+    let label = names[name] || name;
+    if (info.record_count !== undefined) label += '(' + info.record_count + '条)';
+    if (info.entry_count !== undefined) label += '(' + info.entry_count + '条)';
+    if (info.data_time) {
+      label += ' ' + formatSyncTime(info.data_time);
+    }
+    parts.push(label);
+  }
+  return parts.join(' · ');
 }
 
 // ── 工具函数 ──
