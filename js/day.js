@@ -347,11 +347,11 @@ function getEBPPeerExample(day) {
     const idx = raw.indexOf(marker);
     if (idx !== -1) {
       let text = raw.substring(idx + marker.length);
-      // 清理前导换行
       text = text.replace(/^\n+/, '').trim();
       if (text.length < 5) return null;
-      // 转 HTML（双换行→段落）
+      // 双换行 → 段落，单换行 → 换行符（保留标签与正文的层次结构）
       text = text.replace(/\n{2,}/g, '</p><p>');
+      text = text.replace(/\n/g, '<br>');
       text = '<p>' + text + '</p>';
       return text;
     }

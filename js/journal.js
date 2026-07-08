@@ -47,7 +47,7 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
 
   const peerExampleHtml = peerExample ? `
     <details class="ws-example">
-      <summary><span class="svg-icon">${iconBulb(14)}</span> 同行伙伴书写示例</summary>
+      <summary>同行伙伴书写示例</summary>
       <div class="ws-example-body">${peerExample}</div>
     </details>
   ` : '';
