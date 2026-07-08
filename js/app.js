@@ -63,16 +63,13 @@ async function initApp() {
     });
   }
 
-  // 后台同步：先用本地数据渲染，同步完成后刷新
+  // 后台同步：先用本地数据渲染，同步完成后静默刷新
   if (typeof initSync === 'function') {
     initSync().then(() => {
       if (hasStarted) {
         renderCalendar();
       }
       updateSyncIndicator();
-      if (typeof showToast === 'function') {
-        showToast('数据已同步', 'success');
-      }
     }).catch(e => console.warn('Sync init failed:', e));
   }
 

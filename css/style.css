@@ -124,26 +124,25 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 4px;
+  padding: 12px 20px;
+  width: calc(100% + 32px);
+  margin-left: -16px;
+  margin-right: -16px;
   margin-bottom: 12px;
   position: sticky;
   top: 0;
   z-index: 100;
   background: var(--bg);
-  transition: background-color var(--transition), box-shadow var(--transition), backdrop-filter var(--transition);
+  transition: background-color var(--transition), box-shadow var(--transition);
 }
 
 /* 滚动后浮起效果 */
 .app-header.scrolled {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  background: rgba(var(--bg-rgb, 245, 246, 243), 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 0 var(--border), 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 [data-theme="dark"] .app-header.scrolled {
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
-  background: rgba(26, 31, 26, 0.92);
+  box-shadow: 0 1px 0 var(--border), 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .app-title {
@@ -1184,6 +1183,13 @@ body {
   body {
     padding-left: 24px;
     padding-right: 24px;
+  }
+  .app-header {
+    width: calc(100% + 48px);
+    margin-left: -24px;
+    margin-right: -24px;
+    padding-left: 28px;
+    padding-right: 28px;
   }
   .phase-grid {
     gap: 10px;

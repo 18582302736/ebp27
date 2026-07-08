@@ -242,11 +242,11 @@ async function initApp() {
         try {
           if (typeof syncNow === 'function') {
             await syncNow();
-            showToast('数据已成功同步至 GitHub', 'success');
-            detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;color:var(--success);">${iconCheck(16)}</span>同步成功！`;
+            showToast('保存成功，即将返回日历页', 'success');
+            detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;color:var(--success);">${iconCheck(16)}</span>保存成功！`;
             setTimeout(() => {
-              window.location.reload();
-            }, 1000);
+              window.location.href = 'index.html';
+            }, 800);
           }
         } catch (e) {
           showToast('同步失败: ' + e.message, 'error');
@@ -259,16 +259,6 @@ async function initApp() {
       });
     }
 
-    // 后台同步：先用本地数据渲染，同步完成后刷新页面
-    if (typeof initSync === 'function') {
-      initSync().then(() => {
-        updateSyncIndicator();
-        if (!sessionStorage.getItem('ebp_synced_reload')) {
-          sessionStorage.setItem('ebp_synced_reload', '1');
-          window.location.reload();
-        }
-      }).catch(e => console.warn('Sync init failed:', e));
-    }
   } catch (e) {
     console.error('页面初始化失败:', e);
     const taskList = document.getElementById('taskList');
