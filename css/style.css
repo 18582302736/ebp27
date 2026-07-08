@@ -85,7 +85,6 @@ input, textarea, button, select {
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
-  overflow-x: hidden;
   overscroll-behavior-x: none;
 }
 
@@ -131,8 +130,20 @@ body {
   top: 0;
   z-index: 100;
   background: var(--bg);
-  transition: background-color var(--transition), box-shadow var(--transition);
-  box-shadow: 0 1px 0 var(--border);
+  transition: background-color var(--transition), box-shadow var(--transition), backdrop-filter var(--transition);
+}
+
+/* 滚动后浮起效果 */
+.app-header.scrolled {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background: rgba(var(--bg-rgb, 245, 246, 243), 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .app-header.scrolled {
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+  background: rgba(26, 31, 26, 0.92);
 }
 
 .app-title {

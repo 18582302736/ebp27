@@ -14,6 +14,14 @@ async function initApp() {
     const theme = getThemePreference();
     applyTheme(theme);
 
+    // 顶部吸顶滚动效果
+    const appHeader = document.querySelector('.app-header');
+    if (appHeader) {
+      window.addEventListener('scroll', () => {
+        appHeader.classList.toggle('scrolled', window.scrollY > 10);
+      }, { passive: true });
+    }
+
     const themeToggle = document.getElementById('themeToggle');
     themeToggle.innerHTML = theme === 'dark' ? iconSun(20) : iconMoon(20);
     themeToggle.addEventListener('click', () => {
