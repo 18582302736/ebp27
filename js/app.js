@@ -66,12 +66,13 @@ async function initApp() {
   if (hasStarted) {
     showSharedHeader();
     await syncReady;
-    await showCourses();
-    // 检查是否从任务详情页返回，自动跳转到对应日历
+    // 检查是否从任务详情页返回，直接跳转到对应日历
     const params = new URLSearchParams(window.location.search);
     const courseParam = params.get('course');
     if (courseParam) {
       selectCourse(courseParam);
+    } else {
+      await showCourses();
     }
   } else {
     showEntryPage();
