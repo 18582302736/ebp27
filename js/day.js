@@ -282,7 +282,8 @@ function getTaskDescription(courseId, data, taskKey) {
       }
       return '听音频了解今日主题';
     case 'task2':
-      return '记录你的练习心得';
+      if (data.worksheet && data.worksheet.title) return data.worksheet.title;
+      return '完成今日书写练习';
     case 'task3':
       if (data.mindfulnessAudios && data.mindfulnessAudios.length > 0) {
         return data.mindfulnessAudios.map(a => a.title).join(' + ');
@@ -304,22 +305,129 @@ function renderTaskBody(courseId, data, taskKey, container, onComplete) {
   }
 }
 
+// ── EBP 章节解析 ──
+
+function parseEBPGuideHtml(day) {
+  const raw = (typeof getWorksheetText === 'function') ? getWorksheetText(day) : null;
+  if (!raw) return null;
+
+  // 移除 "书写模板" 和 "同行伙伴书写示例" 之后的内容
+  let text = raw;
+  const cutMarkers = ['**书写模板**', '**情緒強度參考示例**', '**情绪强度参考示例**'];
+  for (const marker of cutMarkers) {
+    const idx = text.indexOf(marker);
+    if (idx !== -1) {
+      text = text.substring(0, idx);
+      break;
+    }
+  }
+
+  // 将 **粗体标题** 转为 <h3>
+  text = text.replace(/\*\*(.+?)\*\*/g, '<h3>$1</h3>');
+
+  // 双换行 → 段落
+  text = text.replace(/\n{2,}/g, '</p><p>');
+  text = '<p>' + text + '</p>';
+
+  // 清理空段落
+  text = text.replace(/<p>\s*<\/p>/g, '');
+  // 清理 <p> 内单个 <h3>
+  text = text.replace(/<p><h3>/g, '<h3>');
+  text = text.replace(/<\/h3><\/p>/g, '</h3>');
+
+  return '<div class="guide-content"><div class="guide-section">' + text + '</div></div>';
+}
+
+function getEBPPeerExample(day) {
+  const raw = (typeof getWorksheetText === 'function') ? getWorksheetText(day) : null;
+  if (!raw) return null;
+
+  const markers = ['**同行伙伴书写示例**', '**同行夥伴書寫示例**'];
+  for (const marker of markers) {
+    const idx = raw.indexOf(marker);
+    if (idx !== -1) {
+      let text = raw.substring(idx + marker.length);
+      // 清理前导换行
+      text = text.replace(/^\n+/, '').trim();
+      if (text.length < 5) return null;
+      // 转 HTML（双换行→段落）
+      text = text.replace(/\n{2,}/g, '</p><p>');
+      text = '<p>' + text + '</p>';
+      return text;
+    }
+  }
+  return null;
+}
+
 function renderEBPTaskBody(courseId, data, taskKey, container, onComplete) {
   const day = parseInt(getQueryParam('day')) || 1;
   if (taskKey === 'task1') {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'learning-zone';
+
+    let html = '';
+
+    // 音频播放器
     const audios = data.readingAudios || [];
-    let completedCount = 0;
-    audios.forEach(audio => {
-      createAudioPlayer(container, audio.src, () => {
-        completedCount++;
-        if (completedCount >= audios.length) onComplete();
+    for (let ai = 0; ai < audios.length; ai++) {
+      html += '<div class="learning-audio">'
+        + '<div class="learning-audio-header">'
+        + '<span class="svg-icon">' + iconHeadphones(16) + '</span> ' + audios[ai].title
+        + '</div>'
+        + '<div class="audio-placeholder" data-audio-idx="' + ai + '"></div>'
+        + '</div>';
+    }
+
+    // 阅读指南文字（今日书写 + 陪伴者分享）
+    const guideHtml = parseEBPGuideHtml(day);
+    if (guideHtml) {
+      html += '<div class="learning-text">'
+        + '<div class="learning-text-header">'
+        + '<span class="svg-icon">' + iconBook(16) + '</span> 阅读指南'
+        + '</div>'
+        + '<div class="learning-text-body learning-text-html">' + guideHtml + '</div>'
+        + '</div>';
+    }
+
+    // 完成按钮
+    html += '<button class="btn btn-primary learning-done-btn">'
+      + '<span class="svg-icon">' + iconCheck(16) + '</span> 完成学习，开始书写'
+      + '</button>';
+
+    wrapper.innerHTML = html;
+    container.appendChild(wrapper);
+
+    // 绑定音频播放器
+    const audioPHs = wrapper.querySelectorAll('.audio-placeholder');
+    if (audioPHs.length > 0) {
+      let completedCount = 0;
+      audioPHs.forEach((ph, i) => {
+        if (i < audios.length) {
+          createAudioPlayer(ph, audios[i].src, () => {
+            completedCount++;
+            if (completedCount >= audios.length) onComplete();
+          });
+        }
       });
+    }
+
+    // 完成按钮事件
+    const doneBtn = wrapper.querySelector('.learning-done-btn');
+    doneBtn.addEventListener('click', () => {
+      doneBtn.disabled = true;
+      doneBtn.innerHTML = '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成';
+      doneBtn.classList.add('done');
+      onComplete();
     });
-    if (audios.length === 0) {
+
+    if (audios.length === 0 && !guideHtml) {
       container.innerHTML = '<div class="locked-hint">暂无音频内容</div>';
     }
   } else if (taskKey === 'task2') {
-    createJournal(container, courseId, day, data.worksheet, onComplete);
+    const wsData = Object.assign({}, data.worksheet, {
+      peerExample: getEBPPeerExample(day)
+    });
+    createJournal(container, courseId, day, wsData, onComplete);
   } else if (taskKey === 'task3') {
     const audios = data.mindfulnessAudios || [];
     let completedCount = 0;

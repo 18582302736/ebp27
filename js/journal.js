@@ -9,28 +9,30 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     courseId = 'ebp';
   }
   const hasPDF = worksheetData && worksheetData.src;
-  const prompt = worksheetData ? worksheetData.prompt : '记录今天的练习心得';
+  const prompt = worksheetData ? (worksheetData.prompt || '记录今天的练习心得') : '记录今天的练习心得';
   const curiosityGuide = worksheetData ? worksheetData.curiosityGuide : null;
   const prompts = worksheetData && worksheetData.prompts ? worksheetData.prompts : null;
   const worksheetHtml = worksheetData && worksheetData.worksheetHtml ? worksheetData.worksheetHtml : null;
   const writingGuideAudio = worksheetData && worksheetData.writingGuideAudio ? worksheetData.writingGuideAudio : null;
+  const peerExample = worksheetData && worksheetData.peerExample ? worksheetData.peerExample : null;
 
-  // 是否使用内联模板书写模式（模板内含多个 textarea）
-  const isInlineMode = !!worksheetHtml;
+  // EBP: 有 prompts 但没有 worksheetHtml 时，自动生成内联模板
+  const isInlineMode = !!worksheetHtml || !!prompts;
+  const generatedTemplateHtml = (!worksheetHtml && prompts) ? buildPromptsTemplate(prompts) : '';
 
   // 内联模板 HTML
-  const templateHtml = worksheetHtml ? `
+  const templateHtml = (worksheetHtml || generatedTemplateHtml) ? `
     <div class="journal-worksheet-html">
-      ${worksheetHtml}
+      ${worksheetHtml || generatedTemplateHtml}
     </div>
   ` : '';
 
-  const promptsHtml = (!worksheetHtml && prompts) ? `
+  const promptsHtml = (!isInlineMode && prompts) ? `
     <div class="journal-prompts">
       <div class="journal-prompts-title"><span class="svg-icon">${iconBulb(14)}</span> 今日书写引导</div>
-      <ol class="journal-prompts-list">
+      <ul class="journal-prompts-list">
         ${prompts.map(p => `<li>${p}</li>`).join('')}
-      </ol>
+      </ul>
     </div>
   ` : '';
 
@@ -44,6 +46,13 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     </div>
   ` : '';
 
+  const peerExampleHtml = peerExample ? `
+    <details class="ws-example">
+      <summary><span class="svg-icon">${iconBulb(14)}</span> 同行伙伴书写示例</summary>
+      <div class="ws-example-body">${peerExample}</div>
+    </details>
+  ` : '';
+
   const html = `
     <div class="journal-section">
       ${curiosityGuide ? `<div class="curiosity-guide"><span class="svg-icon">${iconBulb(16)}</span> ${curiosityGuide}</div>` : ''}
@@ -51,6 +60,13 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
       ${writingGuideHtml}
       ${promptsHtml}
       ${isInlineMode ? '' : `<textarea class="journal-textarea" placeholder="${prompt}"></textarea>`}
+      <div class="journal-actions">
+        <button class="btn btn-secondary btn-small upload-image-btn"><span class="svg-icon">${iconImage(16)}</span> 添加图片</button>
+        ${hasPDF ? `<a class="pdf-link" href="javascript:void(0)"><span class="svg-icon">${iconFile(16)}</span> 查看书写指南</a>` : ''}
+      </div>
+      <input type="file" class="hidden-input image-input" accept="image/*" multiple>
+      <div class="image-preview"></div>
+      ${peerExampleHtml}
       <button class="btn btn-primary save-complete-btn"><span class="svg-icon">${iconSave(16)}</span> 保存并完成书写</button>
     </div>
   `;
@@ -68,6 +84,13 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
   const wsTextareas = container.querySelectorAll('.ws-textarea');
   const curiosityEl = container.querySelector('.curiosity-guide');
   const saveCompleteBtn = container.querySelector('.save-complete-btn');
+  const uploadBtn = container.querySelector('.upload-image-btn');
+  const imageInput = container.querySelector('.image-input');
+  const imagePreview = container.querySelector('.image-preview');
+  const pdfLink = container.querySelector('.pdf-link');
+
+  let savedImageBase64s = [];
+  let hasCompleted = false;
 
   // 自动撑高所有 textarea
   function autoResize(ta) {
@@ -79,9 +102,6 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     ta.addEventListener('input', () => autoResize(ta));
     autoResize(ta);
   });
-
-  let savedImageBase64s = [];
-  let hasCompleted = false;
 
   // 获取当前书写文本：内联模式合并所有 ws-textarea，否则取单个 textarea
   function getText() {
@@ -129,6 +149,10 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     if (entry && entry.text && !hasContent()) {
       setText(entry.text);
     }
+    if (entry && entry.image_base64 && entry.image_base64.length > 0) {
+      savedImageBase64s = entry.image_base64;
+      showImagePreviews(entry.image_base64);
+    }
   }).catch(e => {
     console.error('加载日志失败:', e);
   });
@@ -162,9 +186,126 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     });
   });
 
+  // PDF 查看链接
+  if (pdfLink && hasPDF) {
+    pdfLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (typeof openPdfViewer === 'function') {
+        openPdfViewer(worksheetData.src, worksheetData.title || '书写指南', day);
+      } else {
+        window.open(worksheetData.src, '_blank', 'noopener');
+      }
+    });
+  }
+
+  // 图片上传
+  if (uploadBtn && imageInput) {
+    uploadBtn.addEventListener('click', () => imageInput.click());
+
+    imageInput.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+
+      for (const file of files) {
+        if (file.size > 10 * 1024 * 1024) {
+          showToast('单张图片不能超过10MB', 'error');
+          continue;
+        }
+        try {
+          const compressed = await compressImage(file);
+          const base64 = await blobToBase64(compressed);
+          savedImageBase64s.push(base64);
+        } catch (err) {
+          console.error('图片处理失败:', err);
+        }
+      }
+
+      showImagePreviews(savedImageBase64s);
+      try {
+        await doSave();
+      } catch (err) {
+        showToast('图片保存失败', 'error');
+      }
+      imageInput.value = '';
+    });
+  }
+
+  function showImagePreviews(base64s) {
+    if (!imagePreview) return;
+    imagePreview.innerHTML = '';
+    base64s.forEach((dataUrl, idx) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'image-preview-wrapper';
+      wrapper.innerHTML = `
+        <img class="image-preview-item" src="${dataUrl}" alt="练习图片 ${idx + 1}">
+        <button class="image-remove-btn" data-idx="${idx}">&times;</button>
+      `;
+      wrapper.querySelector('.image-remove-btn').addEventListener('click', async () => {
+        savedImageBase64s.splice(idx, 1);
+        showImagePreviews(savedImageBase64s);
+        await doSave();
+      });
+      imagePreview.appendChild(wrapper);
+    });
+  }
+
   return {
     save: () => doSave(),
     isSaved() { return hasContent(); },
     getText() { return getText(); }
   };
+}
+
+// 从 prompts 数组生成 ws-question/ws-textarea 内联模板
+function buildPromptsTemplate(prompts) {
+  if (!prompts || prompts.length === 0) return '';
+  return prompts.map((p, i) => {
+    const num = String(i + 1).padStart(2, '0');
+    return `<div class="ws-question">
+      <span class="ws-q-num">${num}</span>
+      <span class="ws-q-text">${p}</span>
+      <textarea class="ws-textarea" placeholder="写下你的回答..."></textarea>
+    </div>`;
+  }).join('');
+}
+
+// 图片压缩
+async function compressImage(file) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const maxWidth = 800;
+      const maxHeight = 800;
+      let { width, height } = img;
+
+      if (width > maxWidth) {
+        height = height * (maxWidth / width);
+        width = maxWidth;
+      }
+      if (height > maxHeight) {
+        width = width * (maxHeight / height);
+        height = maxHeight;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.7);
+    };
+    img.src = url;
+  });
+}
+
+// Blob 转 Base64
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
