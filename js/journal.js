@@ -4,10 +4,21 @@ function createJournal(container, day, worksheetData, onSaveComplete) {
   const hasPDF = worksheetData && worksheetData.src;
   const prompt = worksheetData ? worksheetData.prompt : '记录今天的练习心得';
   const curiosityGuide = worksheetData ? worksheetData.curiosityGuide : null;
+  const prompts = worksheetData && worksheetData.prompts ? worksheetData.prompts : null;
+
+  const promptsHtml = prompts ? `
+    <div class="journal-prompts">
+      <div class="journal-prompts-title"><span class="svg-icon">${iconBulb(14)}</span> 今日书写引导</div>
+      <ol class="journal-prompts-list">
+        ${prompts.map(p => `<li>${p}</li>`).join('')}
+      </ol>
+    </div>
+  ` : '';
 
   const html = `
     <div class="journal-section">
       ${curiosityGuide ? `<div class="curiosity-guide"><span class="svg-icon">${iconBulb(16)}</span> ${curiosityGuide}</div>` : ''}
+      ${promptsHtml}
       <textarea class="journal-textarea" placeholder="${prompt}"></textarea>
       <div class="journal-actions">
         <button class="btn btn-secondary btn-small upload-image-btn"><span class="svg-icon">${iconImage(16)}</span> 添加图片</button>

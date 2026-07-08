@@ -572,6 +572,41 @@ body {
   color: var(--primary);
 }
 
+/* 书写引导提示 */
+.journal-prompts {
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-xs);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.journal-prompts-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.journal-prompts-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.journal-prompts-list li {
+  margin-bottom: 2px;
+}
+
+.journal-prompts-list li:last-child {
+  margin-bottom: 0;
+}
+
 /* ===== Task Cards ===== */
 .task-list {
   display: flex;
