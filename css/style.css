@@ -2292,6 +2292,31 @@ body {
   gap: 6px;
 }
 
+/* details/summary 折叠模式 */
+details.learning-text summary.learning-text-header {
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+}
+details.learning-text summary.learning-text-header::-webkit-details-marker {
+  display: none;
+}
+details.learning-text summary.learning-text-header::after {
+  content: '▸';
+  margin-left: auto;
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+details.learning-text[open] summary.learning-text-header::after {
+  transform: rotate(90deg);
+}
+details.learning-text[open] summary.learning-text-header {
+  border-bottom: 1px solid var(--border);
+}
+details.learning-text:not([open]) summary.learning-text-header {
+  border-bottom: none;
+}
+
 .learning-text-body {
   font-size: 0.9rem;
   line-height: 1.8;

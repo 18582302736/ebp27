@@ -381,12 +381,12 @@ function renderEBPTaskBody(courseId, data, taskKey, container, onComplete) {
     // 阅读指南文字（今日书写 + 陪伴者分享）
     const guideHtml = parseEBPGuideHtml(day);
     if (guideHtml) {
-      html += '<div class="learning-text">'
-        + '<div class="learning-text-header">'
+      html += '<details class="learning-text">'
+        + '<summary class="learning-text-header">'
         + '<span class="svg-icon">' + iconBook(16) + '</span> 阅读指南'
-        + '</div>'
+        + '</summary>'
         + '<div class="learning-text-body learning-text-html">' + guideHtml + '</div>'
-        + '</div>';
+        + '</details>';
     }
 
     // 完成按钮

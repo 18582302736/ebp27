@@ -8,7 +8,6 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     day = courseId;
     courseId = 'ebp';
   }
-  const hasPDF = worksheetData && worksheetData.src;
   const prompt = worksheetData ? (worksheetData.prompt || '记录今天的练习心得') : '记录今天的练习心得';
   const curiosityGuide = worksheetData ? worksheetData.curiosityGuide : null;
   const prompts = worksheetData && worksheetData.prompts ? worksheetData.prompts : null;
@@ -62,7 +61,6 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
       ${isInlineMode ? '' : `<textarea class="journal-textarea" placeholder="${prompt}"></textarea>`}
       <div class="journal-actions">
         <button class="btn btn-secondary btn-small upload-image-btn"><span class="svg-icon">${iconImage(16)}</span> 添加图片</button>
-        ${hasPDF ? `<a class="pdf-link" href="javascript:void(0)"><span class="svg-icon">${iconFile(16)}</span> 查看书写指南</a>` : ''}
       </div>
       <input type="file" class="hidden-input image-input" accept="image/*" multiple>
       <div class="image-preview"></div>
@@ -87,7 +85,6 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
   const uploadBtn = container.querySelector('.upload-image-btn');
   const imageInput = container.querySelector('.image-input');
   const imagePreview = container.querySelector('.image-preview');
-  const pdfLink = container.querySelector('.pdf-link');
 
   let savedImageBase64s = [];
   let hasCompleted = false;
@@ -186,18 +183,6 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     });
   });
 
-  // PDF 查看链接
-  if (pdfLink && hasPDF) {
-    pdfLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (typeof openPdfViewer === 'function') {
-        openPdfViewer(worksheetData.src, worksheetData.title || '书写指南', day);
-      } else {
-        window.open(worksheetData.src, '_blank', 'noopener');
-      }
-    });
-  }
-
   // 图片上传
   if (uploadBtn && imageInput) {
     uploadBtn.addEventListener('click', () => imageInput.click());
@@ -264,8 +249,8 @@ function buildPromptsTemplate(prompts) {
     return `<div class="ws-question">
       <span class="ws-q-num">${num}</span>
       <span class="ws-q-text">${p}</span>
-      <textarea class="ws-textarea" placeholder="写下你的回答..."></textarea>
-    </div>`;
+    </div>
+    <textarea class="ws-textarea" placeholder="写下你的回答..."></textarea>`;
   }).join('');
 }
 
