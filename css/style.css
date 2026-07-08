@@ -1230,6 +1230,136 @@ body {
   margin: 0;
 }
 
+/* ── ACT 书写内联模板样式 ── */
+.ws-h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 18px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.ws-h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 12px 0 6px;
+}
+.ws-h4 strong { font-weight: 700; }
+.ws-p {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin: 4px 0;
+  line-height: 1.7;
+}
+.ws-question {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin-top: 10px;
+}
+.ws-q-num {
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 22px;
+  flex-shrink: 0;
+}
+.ws-q-text {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+.ws-input-inline {
+  display: inline-block;
+  min-width: 70px;
+  border: none;
+  border-bottom: 1.5px dashed var(--text-muted);
+  color: var(--text);
+  text-align: center;
+  padding: 2px 6px;
+  font-size: 16px;
+  font-family: inherit;
+  background: transparent;
+  margin: 0 2px;
+}
+.ws-input-inline:focus {
+  outline: none;
+  border-bottom-color: var(--primary);
+}
+.ws-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--text);
+  margin: 4px 0;
+  line-height: 1.6;
+}
+.ws-bullet {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.ws-hr {
+  border: none;
+  border-top: 1px dashed var(--border);
+  margin: 14px 0;
+}
+.ws-bq {
+  margin: 8px 0;
+  padding: 8px 14px;
+  border-left: 3px solid var(--primary);
+  background: rgba(74, 139, 111, 0.04);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.ws-bq strong { font-weight: 600; }
+.ws-guide {
+  margin-bottom: 16px;
+}
+.ws-template {
+  margin-bottom: 12px;
+}
+.ws-example {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-card);
+}
+.ws-example summary {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 10px 14px;
+  cursor: pointer;
+  user-select: none;
+}
+.ws-example[open] summary {
+  border-bottom: 1px solid var(--border);
+}
+.ws-example-body {
+  padding: 12px 14px;
+  font-size: 0.85rem;
+}
+.ws-example-body p {
+  margin: 4px 0;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.ws-example-body ul { margin: 4px 0; padding-left: 18px; }
+.ws-example-body li { line-height: 1.6; color: var(--text-secondary); }
+.ws-example-body h3, .ws-example-body h4 {
+  font-size: 0.9rem;
+  margin: 8px 0 4px;
+}
+[data-theme="dark"] .ws-bq {
+  background: rgba(74, 139, 111, 0.08);
+}
+[data-theme="dark"] .ws-input-inline {
+  border-bottom-color: var(--text-muted);
+}
+
 /* 书写示例（折叠） */
 .worksheet-example-section {
   margin-top: 12px;

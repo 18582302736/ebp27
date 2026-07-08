@@ -266,6 +266,14 @@ function getTaskDescription(courseId, data, taskKey) {
         return '';
     }
   }
+  if (courseId === 'act') {
+    switch (taskKey) {
+      case 'task1':
+        return '阅读今日陪伴者分享';
+      case 'task2':
+        return '完成今日书写练习';
+    }
+  }
   // EBP
   switch (taskKey) {
     case 'task1':
@@ -289,6 +297,8 @@ function getTaskDescription(courseId, data, taskKey) {
 function renderTaskBody(courseId, data, taskKey, container, onComplete) {
   if (courseId === 'cbt') {
     renderCBTTaskBody(courseId, data, taskKey, container, onComplete);
+  } else if (courseId === 'act') {
+    renderACTTaskBody(courseId, data, taskKey, container, onComplete);
   } else {
     renderEBPTaskBody(courseId, data, taskKey, container, onComplete);
   }
@@ -343,6 +353,59 @@ function renderCBTTaskBody(courseId, data, taskKey, container, onComplete) {
     };
     createJournal(container, courseId, day, wsData, onComplete);
   }
+}
+
+function renderACTTaskBody(courseId, data, taskKey, container, onComplete) {
+  const day = parseInt(getQueryParam('day')) || 1;
+  if (taskKey === 'task1') {
+    renderACTGuideZone(container, data, onComplete);
+  } else if (taskKey === 'task2') {
+    const worksheetHtml = (typeof getACTWorksheetHtml === 'function') ? getACTWorksheetHtml(day) : null;
+    const wsData = {
+      src: null,
+      title: '第' + day + '天书写练习',
+      prompt: '根据今日学习内容，完成书写练习',
+      prompts: data.worksheetPrompts || null,
+      worksheetHtml: worksheetHtml
+    };
+    createJournal(container, courseId, day, wsData, onComplete);
+  }
+}
+
+// ── ACT 阅读指南区 ──
+
+function renderACTGuideZone(container, data, onComplete) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'learning-zone';
+
+  let html = '';
+
+  if (typeof ACT_GUIDE_TEXTS !== 'undefined') {
+    const guideText = ACT_GUIDE_TEXTS[data.day];
+    if (guideText) {
+      html += '<div class="learning-text">'
+        + '<div class="learning-text-header">'
+        + '<span class="svg-icon">' + iconBook(16) + '</span> 阅读指南'
+        + '</div>'
+        + '<div class="learning-text-body learning-text-html">' + guideText + '</div>'
+        + '</div>';
+    }
+  }
+
+  html += '<button class="btn btn-primary learning-done-btn">'
+    + '<span class="svg-icon">' + iconCheck(16) + '</span> 完成阅读，开始书写'
+    + '</button>';
+
+  wrapper.innerHTML = html;
+  container.appendChild(wrapper);
+
+  const doneBtn = wrapper.querySelector('.learning-done-btn');
+  doneBtn.addEventListener('click', () => {
+    doneBtn.disabled = true;
+    doneBtn.innerHTML = '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成';
+    doneBtn.classList.add('done');
+    onComplete();
+  });
 }
 
 // ── 纯文本 → 格式化 HTML（用于 Days 4-21 的 OCR 文本自动排版）──

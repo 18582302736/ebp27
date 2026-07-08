@@ -44,10 +44,15 @@ const COURSES = [
     subtitle: '逐个击破焦虑症状',
     description: '针对具体症状类型设计行为实验，彻底解决焦虑症',
     totalDays: 21,
-    phases: [],
-    taskKeys: [],
-    taskLabels: [],
-    taskIcons: [],
+    phases: [
+      { name: '认识焦虑', range: 'Day 1-3', start: 1, end: 3, cssClass: 'phase-1', gridId: 'phase1Grid' },
+      { name: '改变认知', range: 'Day 4-7', start: 4, end: 7, cssClass: 'phase-2', gridId: 'phase2Grid' },
+      { name: '改变行为', range: 'Day 8-10', start: 8, end: 10, cssClass: 'phase-3', gridId: 'phase3Grid' },
+      { name: '直面焦虑', range: 'Day 11-21', start: 11, end: 21, cssClass: 'phase-4', gridId: 'phase4Grid' }
+    ],
+    taskKeys: ['task1', 'task2'],
+    taskLabels: ['阅读指南', '书写练习'],
+    taskIcons: ['book', 'pen'],
     color: '#b8916a',
     unlockCondition: { courseId: 'cbt', completedDays: 21 }
   }
