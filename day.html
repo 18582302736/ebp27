@@ -86,7 +86,7 @@
     </div>
   </main>
   <footer class="app-footer">
-    <p class="app-version"><span class="sync-dot" id="syncDot"></span> v1.2.1</p>
+    <p class="app-version"><span class="sync-dot" id="syncDot"></span> v1.3.0</p>
   </footer>
   </div><!-- end appContent -->
 
@@ -103,19 +103,20 @@
     </div>
   </div>
 
-  <!-- PDF 查看器弹窗 -->
-  <div class="pdf-overlay" id="pdfOverlay" style="display:none;">
-    <div class="pdf-modal">
-      <div class="pdf-header">
-        <h3 class="pdf-title" id="pdfTitle">书写指南</h3>
-        <button class="pdf-close" id="pdfClose">&times;</button>
+  <!-- 书写指南弹窗 -->
+  <div class="guide-overlay" id="guideOverlay" style="display:none;">
+    <div class="guide-modal">
+      <div class="guide-header">
+        <h3 class="guide-title" id="guideTitle">书写指南</h3>
+        <button class="guide-close" id="guideClose">&times;</button>
       </div>
-      <div class="pdf-body">
-        <div class="pdf-loading" id="pdfLoading">加载中...</div>
-        <iframe id="pdfFrame" src="" style="display:none;" allowfullscreen></iframe>
+      <div class="guide-body" id="guideBody">
+        <div class="guide-loading" id="guideLoading">加载中...</div>
+        <div class="guide-article" id="guideArticle" style="display:none;"></div>
+        <iframe id="guideFrame" src="" style="display:none;" allowfullscreen></iframe>
       </div>
-      <div class="pdf-footer">
-        <a id="pdfExternalLink" href="#" target="_blank" rel="noopener">在新窗口打开</a>
+      <div class="guide-footer">
+        <a id="guideExternalLink" href="#" target="_blank" rel="noopener">查看原版PDF</a>
       </div>
     </div>
   </div>
@@ -171,6 +172,7 @@
   <script src="js/icons.js"></script>
   <script src="js/toast.js"></script>
   <script src="js/data.js"></script>
+  <script src="js/worksheet-text.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/sync.js"></script>
   <script src="js/settings.js"></script>

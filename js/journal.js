@@ -28,11 +28,11 @@ function createJournal(container, day, worksheetData, onSaveComplete) {
   const saveCompleteBtn = container.querySelector('.save-complete-btn');
   const pdfViewBtn = container.querySelector('.pdf-view-btn');
 
-  // PDF 查看按钮：应用内弹窗
+  // 书写指南按钮：优先展示文章文本
   if (pdfViewBtn && hasPDF) {
     pdfViewBtn.addEventListener('click', () => {
       if (typeof openPdfViewer === 'function') {
-        openPdfViewer(worksheetData.src, worksheetData.title || '书写指南');
+        openPdfViewer(worksheetData.src, worksheetData.title || '书写指南', day);
       } else {
         window.open(worksheetData.src, '_blank', 'noopener');
       }

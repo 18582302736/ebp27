@@ -332,51 +332,75 @@ function updateTaskCardStatus(card, done, completedDate) {
   }
 }
 
-// PDF 查看器：应用内弹窗展示 PDF
-let _pdfOverlayReady = false;
+// 书写指南查看器：优先显示文章文本，PDF 作为备用
+let _guideOverlayReady = false;
 
 function setupPdfViewer() {
-  if (_pdfOverlayReady) return;
-  const overlay = document.getElementById('pdfOverlay');
+  if (_guideOverlayReady) return;
+  const overlay = document.getElementById('guideOverlay');
   if (!overlay) return;
 
-  document.getElementById('pdfClose').addEventListener('click', closePdfViewer);
+  document.getElementById('guideClose').addEventListener('click', closePdfViewer);
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) closePdfViewer();
   });
 
-  // iframe 加载完成
-  const frame = document.getElementById('pdfFrame');
-  const loading = document.getElementById('pdfLoading');
-  frame.addEventListener('load', () => {
-    if (loading) loading.style.display = 'none';
-    frame.style.display = '';
-  });
-
-  _pdfOverlayReady = true;
+  _guideOverlayReady = true;
 }
 
-function openPdfViewer(src, title) {
-  const overlay = document.getElementById('pdfOverlay');
+function openPdfViewer(src, title, day) {
+  const overlay = document.getElementById('guideOverlay');
   if (!overlay) { window.open(src, '_blank', 'noopener'); return; }
 
-  document.getElementById('pdfTitle').textContent = title || '书写指南';
-  document.getElementById('pdfExternalLink').href = src;
+  document.getElementById('guideTitle').textContent = title || '书写指南';
+  document.getElementById('guideExternalLink').href = src;
 
-  const frame = document.getElementById('pdfFrame');
-  const loading = document.getElementById('pdfLoading');
-  if (loading) loading.style.display = '';
-  frame.style.display = 'none';
-  frame.src = src;
+  const article = document.getElementById('guideArticle');
+  const frame = document.getElementById('guideFrame');
+  const loading = document.getElementById('guideLoading');
+
+  // 优先显示 OCR 提取的文章文本
+  const textContent = (typeof getWorksheetText === 'function' && day) ? getWorksheetText(day) : null;
+
+  const extLink = document.getElementById('guideExternalLink');
+  const footer = extLink ? extLink.parentNode : null;
+  if (loading) loading.style.display = 'none';
+
+  if (textContent) {
+    // 文章模式
+    frame.style.display = 'none';
+    article.style.display = '';
+    let formatted = textContent
+      .replace(/【第\d+页】/g, '')
+      .replace(/\/\s*([^\/\n]+?)\s*([\n\/])/g, '<h3>$1</h3>')
+      .replace(/\n{2,}/g, '\n\n');
+    article.innerHTML = formatted;
+    if (footer) footer.style.display = src ? '' : 'none';
+  } else if (src) {
+    // PDF 模式（降级，无 OCR 文本时使用）
+    article.style.display = 'none';
+    frame.style.display = 'none';
+    frame.src = src;
+    frame.addEventListener('load', () => {
+      frame.style.display = '';
+    }, { once: true });
+    if (loading) loading.style.display = '';
+    if (footer) footer.style.display = '';
+  } else {
+    article.style.display = '';
+    article.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px 0;">本日无书写指南，请根据提示自由书写</p>';
+    if (footer) footer.style.display = 'none';
+  }
 
   overlay.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
 
 function closePdfViewer() {
-  const overlay = document.getElementById('pdfOverlay');
+  const overlay = document.getElementById('guideOverlay');
   if (!overlay) return;
   overlay.style.display = 'none';
   document.body.style.overflow = '';
-  document.getElementById('pdfFrame').src = '';
+  const frame = document.getElementById('guideFrame');
+  if (frame) frame.src = '';
 }
