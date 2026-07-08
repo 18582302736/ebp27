@@ -1,6 +1,6 @@
 // sw.js - Service Worker（离线缓存）
 
-const CACHE_STATIC = 'ebp-static-v22';
+const CACHE_STATIC = 'ebp-static-v23';
 const CACHE_AUDIO = 'ebp-audio-v1';
 const CACHE_PDF = 'ebp-pdf-v1';
 
@@ -54,7 +54,14 @@ self.addEventListener('activate', (event) => {
 
 // 请求拦截
 self.addEventListener('fetch', (event) => {
-  const { pathname } = new URL(event.request.url);
+  const requestUrl = new URL(event.request.url);
+
+  // 绕过所有 GitHub API 请求，绝对不拦截缓存，直接走网络
+  if (requestUrl.hostname === 'api.github.com') {
+    return;
+  }
+
+  const { pathname } = requestUrl;
 
   // 音频文件：Stale-While-Revalidate
   if (pathname.match(/\.(mp3|MP3)$/)) {

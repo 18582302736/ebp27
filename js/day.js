@@ -208,6 +208,40 @@ async function initApp() {
       nextBtn.classList.add('visible');
     }
 
+    // === 手动同步功能 ===
+    const detailSyncSection = document.getElementById('detailSyncSection');
+    const detailSyncBtn = document.getElementById('detailSyncBtn');
+    const detailSyncIcon = document.getElementById('detailSyncIcon');
+
+    if (detailSyncSection && detailSyncBtn && typeof hasGithubToken === 'function' && hasGithubToken()) {
+      detailSyncSection.style.display = 'block';
+      if (detailSyncIcon) detailSyncIcon.innerHTML = iconRefresh(16);
+
+      detailSyncBtn.addEventListener('click', async () => {
+        detailSyncBtn.disabled = true;
+        const originalText = detailSyncBtn.innerHTML;
+        detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;animation:spin 1s linear infinite;">${iconRefresh(16)}</span>正在同步到云端...`;
+        
+        try {
+          if (typeof syncNow === 'function') {
+            await syncNow();
+            showToast('数据已成功同步至 GitHub', 'success');
+            detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;color:var(--success);">${iconCheck(16)}</span>同步成功！`;
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+        } catch (e) {
+          showToast('同步失败: ' + e.message, 'error');
+          detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;color:#c62828;">✕</span>同步失败，请重试`;
+          detailSyncBtn.disabled = false;
+          setTimeout(() => {
+            detailSyncBtn.innerHTML = originalText;
+          }, 3000);
+        }
+      });
+    }
+
     // 后台同步：先用本地数据渲染，同步完成后刷新页面
     if (typeof initSync === 'function') {
       initSync().then(() => {
