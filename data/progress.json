@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-08T10:45:28.844Z",
+  "updated_at": "2026-07-08T10:45:32.466Z",
   "records": [
     {
       "day": 1,
@@ -20,11 +20,19 @@
     },
     {
       "day": 3,
-      "status": "in_progress",
+      "status": "completed",
       "task1_completed": "2026-07-08T10:45:25.825Z",
+      "task2_completed": "2026-07-08T10:45:29.456Z",
+      "task3_completed": "2026-07-08T10:45:28.920Z",
+      "updated_at": "2026-07-08T10:45:29.458Z"
+    },
+    {
+      "day": 4,
+      "status": "available",
+      "task1_completed": null,
       "task2_completed": null,
       "task3_completed": null,
-      "updated_at": "2026-07-08T10:45:25.825Z"
+      "updated_at": "2026-07-08T10:45:29.459Z"
     }
   ]
 }
