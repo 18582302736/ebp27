@@ -1142,14 +1142,7 @@ body {
 
 /* ===== Sync Indicator ===== */
 .sync-time-bar {
-  text-align: center;
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  opacity: 0.75;
-  padding: 2px 0 6px 0;
-  min-height: 18px;
-  line-height: 1.5;
-  word-break: break-all;
+  display: none;
 }
 .sync-dot {
   width: 6px;
