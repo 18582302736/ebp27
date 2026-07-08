@@ -65,32 +65,44 @@ async function githubApi(path, method, body) {
     headers['Content-Type'] = 'application/json';
   }
 
-  const res = await fetch(`${API_BASE}/${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
 
-  if (res.status === 401 || res.status === 403) {
-    const data = await res.json().catch(() => ({}));
-    if (data.message && data.message.includes('rate limit')) {
-      throw new Error('API 请求频率超限，请稍后再试');
+  try {
+    const res = await fetch(`${API_BASE}/${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal
+    });
+    clearTimeout(timer);
+
+    if (res.status === 401 || res.status === 403) {
+      const data = await res.json().catch(() => ({}));
+      if (data.message && data.message.includes('rate limit')) {
+        throw new Error('API 请求频率超限，请稍后再试');
+      }
+      localStorage.removeItem(TOKEN_KEY);
+      setSyncState({ lastError: 'Token 无效或已过期，请重新配置' });
+      throw new Error('Token 无效或已过期');
     }
-    // Token 无效
-    localStorage.removeItem(TOKEN_KEY);
-    setSyncState({ lastError: 'Token 无效或已过期，请重新配置' });
-    throw new Error('Token 无效或已过期');
-  }
 
-  if (res.status === 404) {
-    return null; // 文件不存在
-  }
+    if (res.status === 404) {
+      return null;
+    }
 
-  if (!res.ok) {
-    throw new Error(`GitHub API 错误: ${res.status}`);
-  }
+    if (!res.ok) {
+      throw new Error(`GitHub API 错误: ${res.status}`);
+    }
 
-  return res.json();
+    return res.json();
+  } catch (e) {
+    clearTimeout(timer);
+    if (e.name === 'AbortError') {
+      throw new Error('网络连接超时，请检查网络后重试');
+    }
+    throw e;
+  }
 }
 
 // ── 拉取：从 GitHub 下载数据 ──
@@ -281,7 +293,7 @@ function updateSyncIndicator() {
 
   if (!hasToken) {
     if (timeEl) timeEl.textContent = '';
-    dots.forEach(function(d) { d.className = 'sync-dot'; d.title = '未配置同步'; });
+    dots.forEach(function(d) { d.className = 'sync-dot'; d.title = ''; });
     return;
   }
 
@@ -290,45 +302,32 @@ function updateSyncIndicator() {
     dots.forEach(function(d) { d.className = 'sync-dot syncing'; d.title = '同步中'; });
   } else if (status.lastError) {
     if (timeEl) timeEl.textContent = '✕ 同步失败';
-    dots.forEach(function(d) { d.className = 'sync-dot error'; d.title = '同步失败: ' + status.lastError; });
+    dots.forEach(function(d) { d.className = 'sync-dot error'; d.title = status.lastError; });
   } else if (status.lastSync) {
-    const dirLabel = status.direction === 'pull' ? '下载' : status.direction === 'push' ? '上传' : '同步';
-    let text = '✓ ' + dirLabel + '完成 ' + formatSyncTime(status.lastSync);
-    // 追加数据明细
-    const detail = formatSyncDetail(status.files);
-    if (detail) text += ' | ' + detail;
-    if (timeEl) timeEl.textContent = text;
-    dots.forEach(function(d) {
-      d.className = 'sync-dot success';
-      d.title = '上次' + dirLabel + ': ' + formatSyncTime(status.lastSync) + '\n' + (detail || '');
-    });
+    const shortTime = formatShortTime(status.lastSync);
+    if (timeEl) timeEl.textContent = '✓ 已同步 ' + shortTime;
+    const tooltip = '上次同步: ' + formatFullTime(status.lastSync);
+    dots.forEach(function(d) { d.className = 'sync-dot success'; d.title = tooltip; });
   } else {
-    if (timeEl) timeEl.textContent = '等待同步';
-    dots.forEach(function(d) { d.className = 'sync-dot'; d.title = '等待同步'; });
+    if (timeEl) timeEl.textContent = '';
+    dots.forEach(function(d) { d.className = 'sync-dot'; d.title = ''; });
   }
 }
 
-function formatSyncTime(isoStr) {
+function formatFullTime(isoStr) {
   const d = new Date(isoStr);
   const pad = (n) => String(n).padStart(2, '0');
   return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
     + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
 }
 
-function formatSyncDetail(files) {
-  if (!files) return '';
-  const parts = [];
-  const names = { 'progress.json': '进度', 'journal.json': '日记', 'settings.json': '设置' };
-  for (const [name, info] of Object.entries(files)) {
-    let label = names[name] || name;
-    if (info.record_count !== undefined) label += '(' + info.record_count + '条)';
-    if (info.entry_count !== undefined) label += '(' + info.entry_count + '条)';
-    if (info.data_time) {
-      label += ' ' + formatSyncTime(info.data_time);
-    }
-    parts.push(label);
-  }
-  return parts.join(' · ');
+// 保留旧函数名兼容 settings.js
+function formatSyncTime(isoStr) { return formatFullTime(isoStr); }
+
+function formatShortTime(isoStr) {
+  const d = new Date(isoStr);
+  const pad = (n) => String(n).padStart(2, '0');
+  return pad(d.getHours()) + ':' + pad(d.getMinutes());
 }
 
 // ── 工具函数 ──

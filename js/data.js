@@ -17,6 +17,7 @@ const COURSES = [
     taskLabels: ['音频引导', '书写练习', '正念练习'],
     taskIcons: ['headphones', 'pen', 'meditation'],
     color: '#6db88d',
+    icon: 'iconEBP',
     unlockCondition: null
   },
   {
@@ -36,6 +37,7 @@ const COURSES = [
     taskLabels: ['学习任务', '书写练习'],
     taskIcons: ['book', 'pen'],
     color: '#8b9dc3',
+    icon: 'iconCBT',
     unlockCondition: { courseId: 'ebp', completedDays: 25 }
   },
   {
@@ -54,6 +56,7 @@ const COURSES = [
     taskLabels: ['阅读指南', '书写练习'],
     taskIcons: ['book', 'pen'],
     color: '#b8916a',
+    icon: 'iconACT',
     unlockCondition: { courseId: 'cbt', completedDays: 21 }
   }
 ];

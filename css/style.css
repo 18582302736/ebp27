@@ -388,6 +388,9 @@ body {
   height: 42px;
   border-radius: 12px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .course-card-header {

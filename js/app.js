@@ -52,10 +52,9 @@ async function initApp() {
     });
   }
 
-  // 后台同步
-  let syncReady = Promise.resolve();
+  // 后台同步（不阻塞页面渲染）
   if (typeof initSync === 'function') {
-    syncReady = initSync().then(() => {
+    initSync().then(() => {
       if (typeof updateSyncIndicator === 'function') updateSyncIndicator();
     }).catch(e => console.warn('Sync init failed:', e));
   }
@@ -65,7 +64,6 @@ async function initApp() {
 
   if (hasStarted) {
     showSharedHeader();
-    await syncReady;
     // 检查是否从任务详情页返回，直接跳转到对应日历
     const params = new URLSearchParams(window.location.search);
     const courseParam = params.get('course');
@@ -158,7 +156,7 @@ async function renderCourseCards() {
     card.innerHTML = `
       <div class="course-card-inner" data-course="${config.id}">
         <div class="course-card-top">
-          <div class="course-card-icon" style="background:${config.color};"></div>
+          <div class="course-card-icon" style="background:${config.color}18; color:${config.color};"><span class="svg-icon" style="display:inline-flex;">${config.icon && window[config.icon] ? window[config.icon](22) : iconStar(22)}</span></div>
           <div class="course-card-header">
             <h3 class="course-card-name">${config.name}</h3>
             <span class="course-card-subtitle">${config.subtitle}</span>
