@@ -43,7 +43,7 @@
       font-family: inherit;
     }
     .lock-btn:active { opacity: 0.8; }
-    .lock-reset { font-size: 0.7rem; color: var(--text-muted); margin-top: 24px; cursor: pointer; background: none; border: none; }
+    .lock-reset { font-size: 0.75rem; color: var(--text-muted); margin-top: 24px; cursor: pointer; background: none; border: none; }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -86,7 +86,7 @@
     </div>
   </main>
   <footer class="app-footer">
-    <p class="app-version"><span class="sync-dot" id="syncDot"></span> v1.2.0</p>
+    <p class="app-version"><span class="sync-dot" id="syncDot"></span> v1.2.1</p>
   </footer>
   </div><!-- end appContent -->
 
@@ -99,6 +99,23 @@
       <div class="result-actions">
         <button class="btn btn-secondary" id="resultDetailBtn">查看详情</button>
         <a class="btn btn-primary" href="index.html">返回首页</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF 查看器弹窗 -->
+  <div class="pdf-overlay" id="pdfOverlay" style="display:none;">
+    <div class="pdf-modal">
+      <div class="pdf-header">
+        <h3 class="pdf-title" id="pdfTitle">书写指南</h3>
+        <button class="pdf-close" id="pdfClose">&times;</button>
+      </div>
+      <div class="pdf-body">
+        <div class="pdf-loading" id="pdfLoading">加载中...</div>
+        <iframe id="pdfFrame" src="" style="display:none;" allowfullscreen></iframe>
+      </div>
+      <div class="pdf-footer">
+        <a id="pdfExternalLink" href="#" target="_blank" rel="noopener">在新窗口打开</a>
       </div>
     </div>
   </div>

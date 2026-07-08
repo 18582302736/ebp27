@@ -61,6 +61,9 @@ async function initApp() {
     const backIcon = document.getElementById('backIcon');
     if (backIcon) backIcon.innerHTML = iconArrowLeft(18);
 
+    // PDF 查看器弹窗
+    setupPdfViewer();
+
     // 获取天数
     const day = parseInt(getQueryParam('day')) || 1;
     if (day < 1 || day > 25) {
@@ -327,4 +330,53 @@ function updateTaskCardStatus(card, done, completedDate) {
       dateEl.textContent = `完成于 ${formatDateWithWeekday(completedDate)}`;
     }
   }
+}
+
+// PDF 查看器：应用内弹窗展示 PDF
+let _pdfOverlayReady = false;
+
+function setupPdfViewer() {
+  if (_pdfOverlayReady) return;
+  const overlay = document.getElementById('pdfOverlay');
+  if (!overlay) return;
+
+  document.getElementById('pdfClose').addEventListener('click', closePdfViewer);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closePdfViewer();
+  });
+
+  // iframe 加载完成
+  const frame = document.getElementById('pdfFrame');
+  const loading = document.getElementById('pdfLoading');
+  frame.addEventListener('load', () => {
+    if (loading) loading.style.display = 'none';
+    frame.style.display = '';
+  });
+
+  _pdfOverlayReady = true;
+}
+
+function openPdfViewer(src, title) {
+  const overlay = document.getElementById('pdfOverlay');
+  if (!overlay) { window.open(src, '_blank', 'noopener'); return; }
+
+  document.getElementById('pdfTitle').textContent = title || '书写指南';
+  document.getElementById('pdfExternalLink').href = src;
+
+  const frame = document.getElementById('pdfFrame');
+  const loading = document.getElementById('pdfLoading');
+  if (loading) loading.style.display = '';
+  frame.style.display = 'none';
+  frame.src = src;
+
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closePdfViewer() {
+  const overlay = document.getElementById('pdfOverlay');
+  if (!overlay) return;
+  overlay.style.display = 'none';
+  document.body.style.overflow = '';
+  document.getElementById('pdfFrame').src = '';
 }

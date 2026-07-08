@@ -11,7 +11,7 @@ function createJournal(container, day, worksheetData, onSaveComplete) {
       <textarea class="journal-textarea" placeholder="${prompt}"></textarea>
       <div class="journal-actions">
         <button class="btn btn-secondary btn-small upload-image-btn"><span class="svg-icon">${iconImage(16)}</span> 添加图片</button>
-        ${hasPDF ? `<a class="pdf-link" href="${worksheetData.src}" target="_blank" rel="noopener"><span class="svg-icon">${iconFile(16)}</span> 查看书写指南</a>` : `<span class="pdf-link" style="color: var(--text-muted);"><span class="svg-icon">${iconFile(16)}</span> 本日无书写指南，请根据提示自由书写</span>`}
+        ${hasPDF ? `<button class="btn btn-small btn-secondary pdf-view-btn"><span class="svg-icon">${iconFile(16)}</span> 查看书写指南</button>` : `<span class="pdf-link" style="color: var(--text-muted);"><span class="svg-icon">${iconFile(16)}</span> 本日无书写指南，请根据提示自由书写</span>`}
       </div>
       <input type="file" class="hidden-input image-input" accept="image/*" multiple>
       <div class="image-preview"></div>
@@ -26,6 +26,18 @@ function createJournal(container, day, worksheetData, onSaveComplete) {
   const imagePreview = container.querySelector('.image-preview');
   const curiosityEl = container.querySelector('.curiosity-guide');
   const saveCompleteBtn = container.querySelector('.save-complete-btn');
+  const pdfViewBtn = container.querySelector('.pdf-view-btn');
+
+  // PDF 查看按钮：应用内弹窗
+  if (pdfViewBtn && hasPDF) {
+    pdfViewBtn.addEventListener('click', () => {
+      if (typeof openPdfViewer === 'function') {
+        openPdfViewer(worksheetData.src, worksheetData.title || '书写指南');
+      } else {
+        window.open(worksheetData.src, '_blank', 'noopener');
+      }
+    });
+  }
 
   let savedImageBase64s = [];
   let hasCompleted = false;
