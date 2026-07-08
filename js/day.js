@@ -338,7 +338,8 @@ function renderCBTTaskBody(courseId, data, taskKey, container, onComplete) {
       title: '第' + day + '天书写模板',
       prompt: '根据今日学习内容，完成书写练习',
       prompts: data.worksheetPrompts || null,
-      worksheetHtml: worksheetHtml
+      worksheetHtml: worksheetHtml,
+      writingGuideAudio: data.writingGuideAudio || null
     };
     createJournal(container, courseId, day, wsData, onComplete);
   }

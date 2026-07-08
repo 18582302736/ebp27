@@ -13,6 +13,7 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
   const curiosityGuide = worksheetData ? worksheetData.curiosityGuide : null;
   const prompts = worksheetData && worksheetData.prompts ? worksheetData.prompts : null;
   const worksheetHtml = worksheetData && worksheetData.worksheetHtml ? worksheetData.worksheetHtml : null;
+  const writingGuideAudio = worksheetData && worksheetData.writingGuideAudio ? worksheetData.writingGuideAudio : null;
 
   // 是否使用内联模板书写模式（模板内含多个 textarea）
   const isInlineMode = !!worksheetHtml;
@@ -33,16 +34,35 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     </div>
   ` : '';
 
+  const writingGuideHtml = writingGuideAudio ? `
+    <div class="writing-guide-audio">
+      <div class="writing-guide-header">
+        <span class="svg-icon">${iconHeadphones(16)}</span> ${writingGuideAudio.title || '书写语音引导'}
+        <span class="writing-guide-duration">${writingGuideAudio.duration || ''}</span>
+      </div>
+      <div class="writing-guide-player"></div>
+    </div>
+  ` : '';
+
   const html = `
     <div class="journal-section">
       ${curiosityGuide ? `<div class="curiosity-guide"><span class="svg-icon">${iconBulb(16)}</span> ${curiosityGuide}</div>` : ''}
       ${templateHtml}
+      ${writingGuideHtml}
       ${promptsHtml}
       ${isInlineMode ? '' : `<textarea class="journal-textarea" placeholder="${prompt}"></textarea>`}
       <button class="btn btn-primary save-complete-btn"><span class="svg-icon">${iconSave(16)}</span> 保存并完成书写</button>
     </div>
   `;
   container.innerHTML = html;
+
+  // 初始化书写引导音频播放器
+  if (writingGuideAudio) {
+    const playerContainer = container.querySelector('.writing-guide-player');
+    if (playerContainer && typeof createAudioPlayer === 'function') {
+      createAudioPlayer(playerContainer, writingGuideAudio.src, () => {});
+    }
+  }
 
   const textarea = container.querySelector('.journal-textarea');
   const wsTextareas = container.querySelectorAll('.ws-textarea');

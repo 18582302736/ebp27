@@ -30,6 +30,7 @@ const CBT_COURSE_DATA = [
   {
     day: 3, theme: "情绪温度计：量化情绪强度", module: "情绪降温", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-03.mp3", title: "制造你的情绪温度计", duration: "约10分钟", hasAudio: true },
+    writingGuideAudio: { src: "assets/cbt/audio/day-03-writing-guide.m4a", title: "书写语音引导：情绪温度计", duration: "约8分钟" },
     guideImage: "assets/cbt/guide/day-03.jpg",
     extendedResources: [],
     worksheetPrompts: [
@@ -142,6 +143,7 @@ const CBT_COURSE_DATA = [
   {
     day: 12, theme: "灰色刻度尺：评价维度化", module: "认知调整", speaker: null,
     audio: { src: "assets/cbt/audio/day-12.mp3", title: "评价维度化", duration: "约10分钟", hasAudio: true },
+    writingGuideAudio: { src: "assets/cbt/audio/day-12-writing-guide.m4a", title: "书写语音引导：灰色刻度尺", duration: "约7分钟" },
     guideImage: "assets/cbt/guide/day-12.jpg",
     extendedResources: [],
     worksheetPrompts: [
@@ -154,6 +156,7 @@ const CBT_COURSE_DATA = [
   {
     day: 13, theme: "责任比例图", module: "认知调整", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-13.m4a", title: "责任比例图", duration: "约4分钟", hasAudio: true },
+    writingGuideAudio: { src: "assets/cbt/audio/day-13-writing-guide.m4a", title: "书写语音引导：责任比例图", duration: "约7分钟" },
     guideImage: "assets/cbt/guide/day-13.jpg",
     extendedResources: [],
     worksheetPrompts: [
@@ -166,6 +169,7 @@ const CBT_COURSE_DATA = [
   {
     day: 14, theme: "苏格拉底提问", module: "认知调整", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-14.mp3", title: "苏格拉底提问", duration: "约10分钟", hasAudio: true },
+    writingGuideAudio: { src: "assets/cbt/audio/day-14-writing-guide.m4a", title: "书写语音引导：苏格拉底提问", duration: "约9分钟" },
     guideImage: "assets/cbt/guide/day-14.jpg",
     extendedResources: [],
     worksheetPrompts: [
@@ -179,6 +183,7 @@ const CBT_COURSE_DATA = [
   {
     day: 15, theme: "探索内心旧磁带", module: "认知调整", speaker: "孙轶群",
     audio: { src: "assets/cbt/audio/day-15.mp3", title: "探索影响更深的底层想法", duration: "约10分钟", hasAudio: true },
+    writingGuideAudio: { src: "assets/cbt/audio/day-15-writing-guide.m4a", title: "书写语音引导：探索内心旧磁带", duration: "约7分钟" },
     guideImage: "assets/cbt/guide/day-15.jpg",
     extendedResources: [],
     worksheetPrompts: [

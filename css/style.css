@@ -1947,6 +1947,32 @@ body {
   margin-bottom: 10px;
 }
 
+/* 书写引导音频 */
+.writing-guide-audio {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+}
+
+.writing-guide-header {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.writing-guide-duration {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
 /* 指南文字内容 */
 .learning-text {
   margin: 16px 0;
