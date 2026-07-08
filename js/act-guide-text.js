@@ -975,8 +975,8 @@ ACT_WORKSHEET_PARTS[1] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">7.</span> <span class="ws-q-text">我来到焦虑应对的目标是？</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
-<h4><strong>我的焦虑故事：</strong></h4>
+  exampleHtml: `<h3>书写示例</h3>
+<h4>我的焦虑故事：</h4>
 <p class="ws-ex-q"><strong>1. 我的焦虑困扰持续多久了？我认为我为什么会有焦虑困扰？</strong></p>
 <ul>
 <li>有印象的时候可以追溯到六岁，我弄坏了小伙伴的玩具，担心自己没有足够的钱赔偿，晚上睡不着觉。</li>
@@ -1046,8 +1046,8 @@ ACT_WORKSHEET_PARTS[2] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">6.</span> <span class="ws-q-text">我有哪些身体反应？我做出了什么样的行为反应？</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
-<h4><strong>我的焦虑日记：</strong></h4>
+  exampleHtml: `<h3>书写示例</h3>
+<h4>我的焦虑日记：</h4>
 <p class="ws-ex-q"><strong>1. 我今天或最近感受到的一次焦虑或恐惧，从 1 分（平静）到 10 分（我能想象的最强烈程度）评估，有多强烈？</strong></p>
 <ul>
 <li>4 分</li>
@@ -1064,7 +1064,7 @@ ACT_WORKSHEET_PARTS[2] = {
 <ul>
 <li>（无）</li>
 </ul>
-<h4><strong>选做书写：</strong></h4>
+<h4>选做书写：</h4>
 <p class="ws-ex-q"><strong>5. 为什么这个刺激源的出现会让我感到焦虑/恐惧？我是怎么解读这些刺激源的？我在担心什么？</strong></p>
 <ul>
 <li>如果要在假期后立即提交，假期就废了；</li>
@@ -1102,8 +1102,8 @@ ACT_WORKSHEET_PARTS[3] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">4.</span> <span class="ws-q-text">我有哪些身体反应？我做出了什么样的行为反应？</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
-<h4><strong>我的焦虑日记：</strong></h4>
+  exampleHtml: `<h3>书写示例</h3>
+<h4>我的焦虑日记：</h4>
 <p class="ws-ex-q"><strong>1. 我今天或最近感受到的一次焦虑或恐惧，从 1 分（平静）到 10 分（我能想象的最强烈程度）评估，有多强烈？</strong></p>
 <ul>
 <li>4 分</li>
@@ -1160,8 +1160,8 @@ ACT_WORKSHEET_PARTS[4] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">11.</span> <span class="ws-q-text">经过书写后，我现在对这件事的新想法是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
-<h4><strong>我的焦虑日记：</strong></h4>
+  exampleHtml: `<h3>书写示例</h3>
+<h4>我的焦虑日记：</h4>
 <p class="ws-ex-q"><strong>1. 我今天或最近感受到的一次焦虑或恐惧，评估有多强烈？</strong></p>
 <ul>
 <li>4 分。</li>
@@ -1236,7 +1236,7 @@ ACT_WORKSHEET_PARTS[5] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">5.</span> <span class="ws-q-text">综合来看，这些担忧对我的生活是利大于弊，还是弊大于利？</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p class="ws-ex-q"><strong>1. 回顾最近几天，在我脑海中反复出现的一个担忧想法是：</strong></p>
 <ul>
 <li>我会做不好这个任务。</li>
@@ -1285,7 +1285,7 @@ ACT_WORKSHEET_PARTS[6] = {
 <div class="ws-question"><span class="ws-q-num">4.</span> <span class="ws-q-text">现在我觉得，危险和机会各自占比多少？</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>
 <div class="ws-question"><span class="ws-q-num">5.</span> <span class="ws-q-text">未来 24 小时，我可以开始行动的第一步是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p>_主创示例：罗浩贤_</p>
 <p class="ws-ex-q"><strong>1. 最近让我困扰的现实问题是：</strong></p>
 <ul>
@@ -1361,7 +1361,7 @@ ACT_WORKSHEET_PARTS[7] = {
 <div class="ws-question"><span class="ws-q-num">4.</span> <span class="ws-q-text">我是如何应对的：</span></div>
 <div class="ws-hint">（如果负面结果发生了，我应对得怎么样？）</div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p>_主创示例：孙轶群 / 罗浩贤_</p>
 <p class="ws-ex-q"><strong>1. 我要做的行为实验是：</strong></p>
 <ul>
@@ -1396,7 +1396,7 @@ ACT_WORKSHEET_PARTS[8] = {
 <div class="ws-question"><span class="ws-q-num">2.</span> <span class="ws-q-text">在这个场景中，我会做哪些&quot;安全行为&quot;：</span></div>
 <div class="ws-hint">- 会采取哪些行为策略，来避免遇到这个焦虑场景呢？<br>- 在迫不得已进入到焦虑场景的时候，我会做什么，来让自己感到安全一些？</div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p>_主创示例：罗浩贤_</p>
 <p class="ws-ex-q"><strong>1. 让我感到焦虑的场景是：</strong></p>
 <ul>
@@ -1445,7 +1445,7 @@ ACT_WORKSHEET_PARTS[9] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">7.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p>_主创示例：孙轶群_</p>
 <p class="ws-ex-q"><strong>1. 我想减少的回避类安全行为是：</strong></p>
 <ul>
@@ -1500,7 +1500,7 @@ ACT_WORKSHEET_PARTS[10] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">7.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p>_主创示例：罗浩贤_</p>
 <p class="ws-ex-q"><strong>1. 我想减少的靠近类安全行为是：</strong></p>
 <ul>
@@ -1544,7 +1544,7 @@ ACT_WORKSHEET_PARTS[11] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">综合考虑，我是否愿意试试继续行动，看看会发生什么？</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p class="ws-ex-q"><strong>1. 通常我对什么感到焦虑？</strong></p>
 <ul>
 <li>事件：出现新任务，而我还没有让自己满意的思路。</li>
@@ -1605,7 +1605,7 @@ ACT_WORKSHEET_PARTS[12] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">6.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p class="ws-ex-q"><strong>1. 我准备直面的焦虑刺激源是：</strong></p>
 <ul>
 <li>新启动的一个新项目。</li>
@@ -1663,7 +1663,7 @@ ACT_WORKSHEET_PARTS[13] = {
 <div class="ws-question"><span class="ws-q-num">7.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p>_主创示例：孙轶群_</p>
 <p class="ws-ex-q"><strong>1. 我准备直面的焦虑刺激源是：</strong></p>
 <ul>
@@ -1737,7 +1737,7 @@ ACT_WORKSHEET_PARTS[14] = {
 <div class="ws-question"><span class="ws-q-num">12.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">13.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <blockquote><strong>提醒：书写暴露的示例内容可能会唤起你的强烈焦虑，如果你选择看下去，请做好心理准备。</strong></blockquote>
 <p>_主创示例：孙轶群_</p>
 <p class="ws-ex-q"><strong>1. 我的焦虑日记中，反复出现的一个&quot;对未来假设的担忧想法&quot;是：</strong></p>
@@ -1826,7 +1826,7 @@ ACT_WORKSHEET_PARTS[15] = {
 <div class="ws-question"><span class="ws-q-num">7.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个内部感受暴露练习行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p>_主创示例：罗浩贤_</p>
 <p class="ws-ex-q"><strong>1. 我容易对这样的身体感受感到焦虑：</strong></p>
 <ul>
@@ -1882,7 +1882,7 @@ ACT_WORKSHEET_PARTS[16] = {
 <div class="ws-question"><span class="ws-q-num">7.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p>_主创示例：孙轶群_</p>
 <p class="ws-ex-q"><strong>1. 我容易对这样的社交场景感到焦虑：</strong></p>
 <ul>
@@ -1942,7 +1942,7 @@ ACT_WORKSHEET_PARTS[17] = {
 <div class="ws-question"><span class="ws-q-num">7.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p>_主创示例：孙轶群_</p>
 <p class="ws-ex-q"><strong>1. 我准备直面的焦虑刺激源是：</strong></p>
 <ul>
@@ -2007,7 +2007,7 @@ ACT_WORKSHEET_PARTS[18] = {
 <div class="ws-question"><span class="ws-q-num">7.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p>_主创示例：孙轶群_</p>
 <p class="ws-ex-q"><strong>1. 我准备直面的焦虑刺激源是：</strong></p>
 <ul>
@@ -2064,7 +2064,7 @@ ACT_WORKSHEET_PARTS[19] = {
 <div class="ws-question"><span class="ws-q-num">7.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p class="ws-ex-q"><strong>1. 我准备直面的焦虑刺激源是：</strong></p>
 <ul>
 <li>想到工作里有一个没解决的事，我认为影响很大。</li>
@@ -2118,7 +2118,7 @@ ACT_WORKSHEET_PARTS[20] = {
 <div class="ws-question"><span class="ws-q-num">7.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
-  exampleHtml: `<h3>01 书写示例</h3>
+  exampleHtml: `<h3>书写示例</h3>
 <p>（请参考 Day 19 的书写示例，使用相同的格式记录你的进阶行为实验。）</p>`
 };
 

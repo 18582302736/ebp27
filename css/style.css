@@ -1440,12 +1440,10 @@ body {
   line-height: 1.4;
 }
 .ws-ex-q {
-  margin: 14px 0 4px !important;
+  margin: 16px 0 2px !important;
   font-size: 0.9rem;
   line-height: 1.65 !important;
   color: var(--text) !important;
-}
-.ws-ex-q strong {
   font-weight: 600;
 }
 .ws-example-body p {
@@ -1455,13 +1453,16 @@ body {
 }
 .ws-example-body ul,
 .ws-example-body ol {
-  margin: 6px 0;
-  padding-left: 18px;
+  margin: 4px 0 14px;
+  padding-left: 14px;
+  border-left: 3px solid var(--border);
+  border-radius: 0 6px 6px 0;
 }
 .ws-example-body li {
   line-height: 1.7;
   color: var(--text-secondary);
   margin: 3px 0;
+  font-size: 0.875rem;
 }
 .ws-example-body strong {
   font-weight: 600;
