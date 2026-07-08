@@ -2,19 +2,19 @@
   "name": "AnxietyHeal For TT",
   "short_name": "AnxietyHeal",
   "description": "焦虑症自助练习计划",
-  "start_url": "/",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#f7faf5",
   "theme_color": "#5b8c5a",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
