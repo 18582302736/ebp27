@@ -289,6 +289,8 @@ async function exportAllData() {
 async function importAllData(progressList, journalList) {
   if (progressList && progressList.length > 0) {
     for (const remote of progressList) {
+      // 拒绝旧格式（纯数字 day），统一使用 courseId_day 格式
+      if (typeof remote.day === 'number') continue;
       const local = await dbGet('progress', remote.day);
       if (!local || !local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
         await dbPut('progress', remote);
@@ -298,6 +300,8 @@ async function importAllData(progressList, journalList) {
 
   if (journalList && journalList.length > 0) {
     for (const remote of journalList) {
+      // 拒绝旧格式（纯数字 day），统一使用 courseId_day 格式
+      if (typeof remote.day === 'number') continue;
       const local = (await dbGetByIndex('journal_entries', 'day', remote.day))[0] || null;
       if (!local || !local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
         if (remote.image_blobs_base64 && remote.image_blobs_base64.length > 0) {
@@ -354,55 +358,42 @@ async function initStorage() {
   await initCourseDay1(COURSE_EBP);
 }
 
-// 迁移旧数据：数字 key（旧格式）→ ebp_N 格式
+// 迁移旧数据：数字 key（旧格式）→ courseId_day 格式
 async function migrateOldData() {
   try {
     const allProgress = await dbGetAll('progress');
-    const needsMigration = allProgress.some(p => typeof p.day === 'number');
-    if (!needsMigration) return;
-
-    for (const p of allProgress) {
-      if (typeof p.day === 'number') {
-        const newKey = makeKey(COURSE_EBP, p.day);
-        // 检查新 key 是否已存在，不存在则写入
-        const existing = await dbGet('progress', newKey);
-        if (!existing) {
-          p.day = newKey;
-          await dbPut('progress', p);
-        }
-        // 删除旧记录
-        await dbDelete('progress', typeof p.day === 'number' ? p.day : null);
-        // 注意：上面 p.day 已修改，需要用原始数字删除
-      }
-    }
-    // 重新处理上面的逻辑，分开读写
-    const toDelete = [];
-    const toUpsert = [];
-    for (const p of allProgress) {
-      if (typeof p.day === 'number') {
-        toDelete.push(p.day);
-        const newKey = makeKey(COURSE_EBP, p.day);
-        const existing = await dbGet('progress', newKey);
-        if (!existing) {
-          p.day = newKey;
-          toUpsert.push(p);
-        }
-      }
-    }
-    for (const p of toUpsert) {
-      await dbPut('progress', p);
-    }
-    for (const d of toDelete) {
-      await dbDelete('progress', d);
-    }
-
-    // 迁移 journal_entries 的 day 字段
+    const hasOldProgress = allProgress.some(p => typeof p.day === 'number');
     const allJournals = await dbGetAll('journal_entries');
-    for (const j of allJournals) {
-      if (typeof j.day === 'number') {
-        const newKey = makeKey(COURSE_EBP, j.day);
-        j.day = newKey;
-        await dbPut('journal_entries', j);
+    const hasOldJournals = allJournals.some(j => typeof j.day === 'number');
+
+    if (!hasOldProgress && !hasOldJournals) return;
+
+    // 迁移 progress：数字 day → ebp_N
+    if (hasOldProgress) {
+      const toUpsert = [];
+      const toDelete = [];
+      for (const p of allProgress) {
+        if (typeof p.day === 'number') {
+          toDelete.push(p.day);
+          const newKey = makeKey(COURSE_EBP, p.day);
+          const existing = await dbGet('progress', newKey);
+          if (!existing) {
+            p.day = newKey;
+            toUpsert.push(p);
+          }
+        }
+      }
+      for (const p of toUpsert) await dbPut('progress', p);
+      for (const d of toDelete) await dbDelete('progress', d);
+    }
+
+    // 迁移 journal：数字 day → ebp_N（id 不变，dbPut 原地更新）
+    if (hasOldJournals) {
+      for (const j of allJournals) {
+        if (typeof j.day === 'number') {
+          j.day = makeKey(COURSE_EBP, j.day);
+          await dbPut('journal_entries', j);
+        }
       }
     }
 
