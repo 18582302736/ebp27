@@ -62,6 +62,9 @@ async function initApp() {
         renderCalendar();
       }
       updateSyncIndicator();
+      if (typeof showToast === 'function') {
+        showToast('数据已同步', 'success');
+      }
     }).catch(e => console.warn('Sync init failed:', e));
   }
 
