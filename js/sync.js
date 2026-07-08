@@ -273,24 +273,24 @@ async function initSync() {
 
 function updateSyncIndicator() {
   const timeEl = document.getElementById('syncTime');
-  const dot = document.getElementById('syncDot');
-  if (!timeEl && !dot) return;
+  const dots = document.querySelectorAll('.sync-dot');
+  if (!timeEl && dots.length === 0) return;
 
   const status = getSyncStatus();
   const hasToken = hasGithubToken();
 
   if (!hasToken) {
     if (timeEl) timeEl.textContent = '';
-    if (dot) { dot.className = 'sync-dot'; dot.title = '未配置同步'; }
+    dots.forEach(function(d) { d.className = 'sync-dot'; d.title = '未配置同步'; });
     return;
   }
 
   if (status.syncing) {
     if (timeEl) timeEl.textContent = '⟳ 同步中...';
-    if (dot) { dot.className = 'sync-dot syncing'; dot.title = '同步中'; }
+    dots.forEach(function(d) { d.className = 'sync-dot syncing'; d.title = '同步中'; });
   } else if (status.lastError) {
     if (timeEl) timeEl.textContent = '✕ 同步失败';
-    if (dot) { dot.className = 'sync-dot error'; dot.title = '同步失败: ' + status.lastError; }
+    dots.forEach(function(d) { d.className = 'sync-dot error'; d.title = '同步失败: ' + status.lastError; });
   } else if (status.lastSync) {
     const dirLabel = status.direction === 'pull' ? '下载' : status.direction === 'push' ? '上传' : '同步';
     let text = '✓ ' + dirLabel + '完成 ' + formatSyncTime(status.lastSync);
@@ -298,13 +298,13 @@ function updateSyncIndicator() {
     const detail = formatSyncDetail(status.files);
     if (detail) text += ' | ' + detail;
     if (timeEl) timeEl.textContent = text;
-    if (dot) {
-      dot.className = 'sync-dot success';
-      dot.title = '上次' + dirLabel + ': ' + formatSyncTime(status.lastSync) + '\n' + (detail || '');
-    }
+    dots.forEach(function(d) {
+      d.className = 'sync-dot success';
+      d.title = '上次' + dirLabel + ': ' + formatSyncTime(status.lastSync) + '\n' + (detail || '');
+    });
   } else {
     if (timeEl) timeEl.textContent = '等待同步';
-    if (dot) { dot.className = 'sync-dot'; dot.title = '等待同步'; }
+    dots.forEach(function(d) { d.className = 'sync-dot'; d.title = '等待同步'; });
   }
 }
 

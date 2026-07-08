@@ -60,6 +60,17 @@
 
   <!-- 应用内容 -->
   <div id="appContent" class="hidden">
+  <!-- 共享头部 -->
+  <header class="app-header" id="appHeader" style="display:none;">
+    <h1 class="app-title">AnxietyHeal For TT</h1>
+    <div class="header-actions">
+      <button class="theme-toggle" id="settingsBtn" aria-label="设置"></button>
+      <button class="theme-toggle" id="themeToggle" aria-label="切换夜间模式"></button>
+      <button class="theme-toggle" id="refreshBtn" aria-label="刷新缓存"></button>
+    </div>
+  </header>
+  <div class="sync-time-bar" id="syncBar" style="display:none;"><span id="syncTime"></span></div>
+
   <!-- 进入页 -->
   <div class="entry-page" id="entryPage" style="display:none;">
     <div class="entry-content">
@@ -70,18 +81,22 @@
     </div>
   </div>
 
+  <!-- 课程选择页 -->
+  <div class="course-page" id="coursePage" style="display:none;">
+    <main>
+      <h2 class="course-page-title">选择练习课程</h2>
+      <p class="course-page-sub">依次完成每个阶段，循序渐进</p>
+      <div class="course-list" id="courseList"></div>
+      <footer class="app-footer">
+        <p>每天一小步，慢慢来</p>
+        <p>你已经在路上了</p>
+        <p class="app-version"><span class="sync-dot" id="syncDot"></span> v1.5.1</p>
+      </footer>
+    </main>
+  </div>
+
   <!-- 日历首页 -->
   <div class="calendar-page" id="calendarPage" style="display:none;">
-    <header class="app-header">
-      <h1 class="app-title">AnxietyHeal For TT</h1>
-      <div class="header-actions">
-        <button class="theme-toggle" id="settingsBtn" aria-label="设置"></button>
-        <button class="theme-toggle" id="themeToggle" aria-label="切换夜间模式"></button>
-        <button class="theme-toggle" id="refreshBtn" aria-label="刷新缓存"></button>
-      </div>
-    </header>
-    <div class="sync-time-bar"><span id="syncTime"></span></div>
-
     <main>
       <div class="progress-bar-wrapper">
         <div class="progress-bar-header">
@@ -122,7 +137,7 @@
       <footer class="app-footer">
         <p>每天一小步，慢慢来</p>
         <p>你已经在路上了</p>
-        <p class="app-version"><span class="sync-dot" id="syncDot"></span> v1.3.0</p>
+        <p class="app-version"><span class="sync-dot" id="syncDot2"></span> v1.5.1</p>
       </footer>
     </main>
   </div>
@@ -181,6 +196,8 @@
   <script src="js/storage.js"></script>
   <script src="js/sync.js"></script>
   <script src="js/settings.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cbt-data.js"></script>
   <script src="js/calendar.js"></script>
   <script src="js/lock.js"></script>
   <script src="js/app.js"></script>

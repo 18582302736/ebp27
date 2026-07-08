@@ -69,7 +69,7 @@ function createAudioPlayer(container, audioSrc, onComplete) {
       AudioManager.register(audio);
       audio.play().catch((e) => {
         console.error('Audio play error:', e);
-        statusEl.textContent = '播放失败，请检查文件';
+        statusEl.textContent = '播放失败，音频文件尚未部署';
       });
     }
   });
@@ -125,7 +125,7 @@ function createAudioPlayer(container, audioSrc, onComplete) {
 
   audio.addEventListener('error', (e) => {
     console.error('Audio error:', e);
-    statusEl.textContent = '加载失败，请检查文件';
+    statusEl.textContent = '加载失败，音频文件尚未部署';
     playBtn.innerHTML = iconPlay(16);
     playBtn.style.opacity = '0.5';
   });

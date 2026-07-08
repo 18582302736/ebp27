@@ -1,5 +1,63 @@
-// data.js - 25天课程数据配置
+// data.js - 课程配置与数据
 
+// 课程元数据
+const COURSES = [
+  {
+    id: 'ebp',
+    name: '情绪EBP',
+    subtitle: '打好情绪基础',
+    description: '觉察→接纳→行动，用25天学会与情绪温柔相处',
+    totalDays: 25,
+    phases: [
+      { name: '觉察 · 投入当下', range: 'Day 1-7', start: 1, end: 7, cssClass: 'phase-1', gridId: 'phase1Grid' },
+      { name: '接纳 · 认识情绪', range: 'Day 8-12', start: 8, end: 12, cssClass: 'phase-2', gridId: 'phase2Grid' },
+      { name: '行动 · 向价值方向', range: 'Day 13-25', start: 13, end: 25, cssClass: 'phase-3', gridId: 'phase3Grid' }
+    ],
+    taskKeys: ['task1', 'task2', 'task3'],
+    taskLabels: ['音频引导', '书写练习', '正念练习'],
+    taskIcons: ['headphones', 'pen', 'meditation'],
+    color: '#6db88d',
+    unlockCondition: null
+  },
+  {
+    id: 'cbt',
+    name: 'CBT综合',
+    subtitle: '灵活理性应对情绪',
+    description: '情绪决策树→事实检验→认知调整，21天掌握CBT核心技能',
+    totalDays: 21,
+    phases: [
+      { name: '情绪降温', range: 'Day 1-8', start: 1, end: 8, cssClass: 'phase-1', gridId: 'phase1Grid' },
+      { name: '事实检验', range: 'Day 9-11', start: 9, end: 11, cssClass: 'phase-2', gridId: 'phase2Grid' },
+      { name: '认知调整', range: 'Day 12-15', start: 12, end: 15, cssClass: 'phase-3', gridId: 'phase3Grid' },
+      { name: '调整与想法', range: 'Day 16-18', start: 16, end: 18, cssClass: 'phase-4', gridId: 'phase4Grid' },
+      { name: '问题解决+总结', range: 'Day 19-21', start: 19, end: 21, cssClass: 'phase-5', gridId: 'phase5Grid' }
+    ],
+    taskKeys: ['task1', 'task2'],
+    taskLabels: ['学习任务', '书写练习'],
+    taskIcons: ['book', 'pen'],
+    color: '#8b9dc3',
+    unlockCondition: { courseId: 'ebp', completedDays: 25 }
+  },
+  {
+    id: 'act',
+    name: '焦虑应对行动计划',
+    subtitle: '逐个击破焦虑症状',
+    description: '针对具体症状类型设计行为实验，彻底解决焦虑症',
+    totalDays: 21,
+    phases: [],
+    taskKeys: [],
+    taskLabels: [],
+    taskIcons: [],
+    color: '#b8916a',
+    unlockCondition: { courseId: 'cbt', completedDays: 21 }
+  }
+];
+
+function getCourseConfig(courseId) {
+  return COURSES.find(c => c.id === courseId) || COURSES[0];
+}
+
+// 情绪EBP 25天课程数据
 const COURSE_DATA = [
   {
     day: 1,
@@ -443,10 +501,24 @@ const WORKSHEET_PROMPTS = {
   25: ['回顾25天旅程，你最想带走的一个情绪锦囊是什么？', '这个锦囊未来如何帮到你？']
 };
 
-function getCourseData(day) {
-  const data = COURSE_DATA.find(d => d.day === day) || null;
-  if (data && data.worksheet) {
-    data.worksheet.prompts = WORKSHEET_PROMPTS[day] || null;
+function getCourseData(courseId, day) {
+  // 兼容旧调用：单参数 getCourseData(day)
+  if (arguments.length === 1 && typeof courseId === 'number') {
+    day = courseId;
+    courseId = 'ebp';
+  }
+
+  let data = null;
+  if (courseId === 'cbt' && typeof CBT_COURSE_DATA !== 'undefined') {
+    data = CBT_COURSE_DATA.find(d => d.day === day) || null;
+  } else if (courseId === 'act' && typeof ACT_COURSE_DATA !== 'undefined') {
+    data = ACT_COURSE_DATA.find(d => d.day === day) || null;
+  } else {
+    // 默认：EBP
+    data = COURSE_DATA.find(d => d.day === day) || null;
+    if (data && data.worksheet) {
+      data.worksheet.prompts = WORKSHEET_PROMPTS[day] || null;
+    }
   }
   return data;
 }

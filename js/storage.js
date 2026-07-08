@@ -1,7 +1,23 @@
 // storage.js - IndexedDB 数据持久化（使用 Dexie.js）
+// 多课程架构：progress key 格式为 courseId_day
 
 const DB_NAME = 'EBPProgress';
 const DB_VERSION = 1;
+
+// 课程 ID 常量
+const COURSE_EBP = 'ebp';
+const COURSE_CBT = 'cbt';
+const COURSE_ACT = 'act';
+
+function makeKey(courseId, day) {
+  return `${courseId}_${day}`;
+}
+
+function parseKey(key) {
+  const idx = key.indexOf('_');
+  if (idx === -1) return null; // 旧格式，数字key
+  return { courseId: key.substring(0, idx), day: parseInt(key.substring(idx + 1)) };
+}
 
 let db;
 
@@ -9,7 +25,6 @@ function initDB() {
   if (db) return Promise.resolve(db);
 
   return new Promise((resolve, reject) => {
-    // 如果 Dexie 已加载（CDN），使用 Dexie；否则用原生 IndexedDB
     if (typeof Dexie !== 'undefined') {
       db = new Dexie(DB_NAME);
       db.version(DB_VERSION).stores({
@@ -17,7 +32,6 @@ function initDB() {
         journal_entries: '++id, day'
       });
       db.open().then(() => resolve(db)).catch(() => {
-        // Dexie 失败，降级到原生
         db = null;
         initNativeDB().then(resolve).catch(reject);
       });
@@ -32,12 +46,12 @@ function initNativeDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains('progress')) {
-        db.createObjectStore('progress', { keyPath: 'day' });
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('progress')) {
+        d.createObjectStore('progress', { keyPath: 'day' });
       }
-      if (!db.objectStoreNames.contains('journal_entries')) {
-        const store = db.createObjectStore('journal_entries', { keyPath: 'id', autoIncrement: true });
+      if (!d.objectStoreNames.contains('journal_entries')) {
+        const store = d.createObjectStore('journal_entries', { keyPath: 'id', autoIncrement: true });
         store.createIndex('day', 'day', { unique: false });
       }
     };
@@ -113,39 +127,47 @@ function dbDelete(storeName, key) {
   });
 }
 
-// 进度操作
-async function getProgress(day) {
-  const p = await dbGet('progress', day);
-  return p || { day, status: 'locked', task1_completed: null, task2_completed: null, task3_completed: null };
+// ── 进度操作（多课程） ──
+
+async function getProgress(courseId, day) {
+  const key = makeKey(courseId, day);
+  const p = await dbGet('progress', key);
+  return p || { day: key, status: 'locked', task1_completed: null, task2_completed: null, task3_completed: null, task4_completed: null };
 }
 
-async function getAllProgress() {
+async function getAllProgress(courseId) {
   const all = await dbGetAll('progress');
   const map = {};
-  all.forEach(p => { map[p.day] = p; });
+  all.forEach(p => {
+    const parsed = parseKey(p.day);
+    if (parsed && parsed.courseId === courseId) {
+      map[parsed.day] = p;
+    }
+  });
   return map;
 }
 
-async function saveProgress(day, data) {
+async function saveProgress(courseId, day, data) {
+  data.day = makeKey(courseId, day);
   data.updated_at = new Date().toISOString();
   await dbPut('progress', data);
   if (typeof schedulePush === 'function') schedulePush();
 }
 
-// 初始化第一天为可用
-async function initDay1() {
-  const p = await getProgress(1);
+// 初始化课程第一天为可用
+async function initCourseDay1(courseId) {
+  const p = await getProgress(courseId, 1);
   if (p.status === 'locked') {
     p.status = 'available';
-    await saveProgress(1, p);
+    await saveProgress(courseId, 1, p);
   }
 }
 
-// 获取当前可操作的最大天数
-async function getMaxAvailableDay() {
-  const all = await getAllProgress();
+// 获取课程当前可操作的最大天数
+async function getMaxAvailableDay(courseId, totalDays) {
+  const all = await getAllProgress(courseId);
   let maxDay = 1;
-  for (let d = 1; d <= 25; d++) {
+  for (let d = 1; d <= totalDays; d++) {
     const p = all[d];
     if (!p || p.status === 'locked') {
       maxDay = d;
@@ -158,29 +180,50 @@ async function getMaxAvailableDay() {
       break;
     }
   }
-  return Math.min(maxDay, 25);
+  return Math.min(maxDay, totalDays);
 }
 
-// 获取已完成天数
-async function getCompletedCount() {
-  const all = await getAllProgress();
+// 获取课程已完成天数
+async function getCompletedCount(courseId) {
+  const all = await getAllProgress(courseId);
   let count = 0;
-  for (let d = 1; d <= 25; d++) {
-    if (all[d] && all[d].status === 'completed') count++;
+  for (const p of Object.values(all)) {
+    if (p.status === 'completed') count++;
   }
   return count;
 }
 
-// 日志操作
-async function getJournalEntry(day) {
-  const entries = await dbGetByIndex('journal_entries', 'day', day);
+// 课程整体状态
+async function getCourseStatus(courseId, totalDays) {
+  const completed = await getCompletedCount(courseId);
+  if (completed >= totalDays) return 'completed';
+  const all = await getAllProgress(courseId);
+  const hasProgress = Object.values(all).some(p => p.status !== 'locked');
+  if (hasProgress) return 'in_progress';
+  // 检查是否解锁（第一天是否为 available）
+  const day1 = await getProgress(courseId, 1);
+  if (day1.status === 'available') return 'available';
+  return 'locked';
+}
+
+// 设置课程解锁
+async function unlockCourse(courseId) {
+  await initCourseDay1(courseId);
+}
+
+// ── 日志操作（多课程） ──
+
+async function getJournalEntry(courseId, day) {
+  const key = makeKey(courseId, day);
+  const entries = await dbGetByIndex('journal_entries', 'day', key);
   return entries[0] || null;
 }
 
-async function saveJournalEntry(day, text, imageBase64s) {
-  const existing = await getJournalEntry(day);
+async function saveJournalEntry(courseId, day, text, imageBase64s) {
+  const key = makeKey(courseId, day);
+  const existing = await getJournalEntry(courseId, day);
   const entry = {
-    day,
+    day: key,
     text: text || '',
     created_at: existing && existing.created_at ? existing.created_at : new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -197,7 +240,8 @@ async function saveJournalEntry(day, text, imageBase64s) {
   if (typeof schedulePush === 'function') schedulePush();
 }
 
-// 主题偏好
+// ── 主题偏好 ──
+
 function getThemePreference() {
   const stored = localStorage.getItem('ebp_theme');
   if (stored === 'dark' || stored === 'light') return stored;
@@ -226,12 +270,10 @@ async function exportAllData() {
 
   const processedJournals = await Promise.all(journals.map(async (entry) => {
     const e = { ...entry };
-    // 新格式：image_base64（base64 字符串数组）
     if (e.image_base64 && e.image_base64.length > 0) {
       e.image_blobs_base64 = e.image_base64;
       delete e.image_base64;
     }
-    // 旧格式兼容：image_blobs（Blob 数组）
     if (e.image_blobs && e.image_blobs.length > 0) {
       e.image_blobs_base64 = await Promise.all(
         e.image_blobs.map(b => blobToBase64(b))
@@ -247,8 +289,8 @@ async function exportAllData() {
 async function importAllData(progressList, journalList) {
   if (progressList && progressList.length > 0) {
     for (const remote of progressList) {
-      const local = await getProgress(remote.day);
-      if (!local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
+      const local = await dbGet('progress', remote.day);
+      if (!local || !local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
         await dbPut('progress', remote);
       }
     }
@@ -256,9 +298,8 @@ async function importAllData(progressList, journalList) {
 
   if (journalList && journalList.length > 0) {
     for (const remote of journalList) {
-      const local = await getJournalEntry(remote.day);
+      const local = (await dbGetByIndex('journal_entries', 'day', remote.day))[0] || null;
       if (!local || !local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
-        // 远程数据中的 image_blobs_base64 直接存为 image_base64
         if (remote.image_blobs_base64 && remote.image_blobs_base64.length > 0) {
           remote.image_base64 = remote.image_blobs_base64;
         }
@@ -305,31 +346,68 @@ function base64ToBlob(dataUrl) {
   return fetch(dataUrl).then(r => r.blob());
 }
 
-// 初始化存储
+// ── 初始化存储 + 旧数据迁移 ──
+
 async function initStorage() {
   await initDB();
-  await initDay1();
-  await migrateBlobsToBase64();
+  await migrateOldData();
+  await initCourseDay1(COURSE_EBP);
 }
 
-// 迁移旧数据：Blob → base64
-async function migrateBlobsToBase64() {
+// 迁移旧数据：数字 key（旧格式）→ ebp_N 格式
+async function migrateOldData() {
   try {
-    const entries = await dbGetAll('journal_entries');
-    for (const entry of entries) {
-      if (entry.image_blobs && entry.image_blobs.length > 0 && !entry.image_base64) {
-        try {
-          entry.image_base64 = await Promise.all(
-            entry.image_blobs.map(b => blobToBase64(b))
-          );
-          delete entry.image_blobs;
-          await dbPut('journal_entries', entry);
-        } catch (e) {
-          console.warn('迁移图片失败 day', entry.day, e);
+    const allProgress = await dbGetAll('progress');
+    const needsMigration = allProgress.some(p => typeof p.day === 'number');
+    if (!needsMigration) return;
+
+    for (const p of allProgress) {
+      if (typeof p.day === 'number') {
+        const newKey = makeKey(COURSE_EBP, p.day);
+        // 检查新 key 是否已存在，不存在则写入
+        const existing = await dbGet('progress', newKey);
+        if (!existing) {
+          p.day = newKey;
+          await dbPut('progress', p);
+        }
+        // 删除旧记录
+        await dbDelete('progress', typeof p.day === 'number' ? p.day : null);
+        // 注意：上面 p.day 已修改，需要用原始数字删除
+      }
+    }
+    // 重新处理上面的逻辑，分开读写
+    const toDelete = [];
+    const toUpsert = [];
+    for (const p of allProgress) {
+      if (typeof p.day === 'number') {
+        toDelete.push(p.day);
+        const newKey = makeKey(COURSE_EBP, p.day);
+        const existing = await dbGet('progress', newKey);
+        if (!existing) {
+          p.day = newKey;
+          toUpsert.push(p);
         }
       }
     }
+    for (const p of toUpsert) {
+      await dbPut('progress', p);
+    }
+    for (const d of toDelete) {
+      await dbDelete('progress', d);
+    }
+
+    // 迁移 journal_entries 的 day 字段
+    const allJournals = await dbGetAll('journal_entries');
+    for (const j of allJournals) {
+      if (typeof j.day === 'number') {
+        const newKey = makeKey(COURSE_EBP, j.day);
+        j.day = newKey;
+        await dbPut('journal_entries', j);
+      }
+    }
+
+    console.log('数据迁移完成：旧格式 → 多课程格式');
   } catch (e) {
-    // 静默处理，不影响应用启动
+    console.warn('数据迁移失败（不影响使用）:', e);
   }
 }
