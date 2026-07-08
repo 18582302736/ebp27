@@ -110,6 +110,7 @@ async function githubApi(path, method, body) {
 async function pullFromGithub() {
   if (!hasGithubToken()) return;
 
+  syncProgressStart();
   isSyncing = true;
   const fileInfo = {};
   try {
@@ -149,8 +150,10 @@ async function pullFromGithub() {
       };
     }
 
+    syncProgressDone();
     setSyncState({ lastSync: new Date().toISOString(), lastError: null, direction: 'pull', files: fileInfo });
   } catch (e) {
+    syncProgressFail();
     setSyncState({ lastError: e.message });
     throw e;
   } finally {
@@ -163,6 +166,7 @@ async function pullFromGithub() {
 async function pushToGithub() {
   if (!hasGithubToken()) return;
 
+  syncProgressStart();
   isSyncing = true;
   try {
     const allData = await exportAllData();
@@ -201,6 +205,7 @@ async function pushToGithub() {
     await uploadFile('journal.json', journalPayload);
     await uploadFile('settings.json', settingsPayload);
 
+    syncProgressDone();
     setSyncState({
       lastSync: now,
       lastError: null,
@@ -212,6 +217,7 @@ async function pushToGithub() {
       }
     });
   } catch (e) {
+    syncProgressFail();
     setSyncState({ lastError: e.message });
     throw e;
   } finally {
@@ -281,53 +287,59 @@ async function initSync() {
   }
 }
 
-// ── 同步指示器更新 ──
+// ── 同步进度条 ──
+
+function syncProgressStart() {
+  const bar = document.getElementById('syncProgress');
+  if (!bar) return;
+  bar.className = 'sync-progress running';
+}
+
+function syncProgressDone() {
+  const bar = document.getElementById('syncProgress');
+  if (!bar) return;
+  bar.className = 'sync-progress done';
+  setTimeout(function() { bar.className = 'sync-progress'; }, 800);
+}
+
+function syncProgressFail() {
+  const bar = document.getElementById('syncProgress');
+  if (!bar) return;
+  bar.className = 'sync-progress fail';
+  setTimeout(function() { bar.className = 'sync-progress'; }, 1500);
+}
+
+// ── 同步指示器（仅控制版本号旁小圆点） ──
 
 function updateSyncIndicator() {
-  const timeEl = document.getElementById('syncTime');
   const dots = document.querySelectorAll('.sync-dot');
-  if (!timeEl && dots.length === 0) return;
+  if (dots.length === 0) return;
 
   const status = getSyncStatus();
   const hasToken = hasGithubToken();
 
   if (!hasToken) {
-    if (timeEl) timeEl.textContent = '';
     dots.forEach(function(d) { d.className = 'sync-dot'; d.title = ''; });
     return;
   }
 
   if (status.syncing) {
-    if (timeEl) timeEl.textContent = '⟳ 同步中...';
-    dots.forEach(function(d) { d.className = 'sync-dot syncing'; d.title = '同步中'; });
+    dots.forEach(function(d) { d.className = 'sync-dot syncing'; d.title = ''; });
   } else if (status.lastError) {
-    if (timeEl) timeEl.textContent = '✕ 同步失败';
     dots.forEach(function(d) { d.className = 'sync-dot error'; d.title = status.lastError; });
   } else if (status.lastSync) {
-    const shortTime = formatShortTime(status.lastSync);
-    if (timeEl) timeEl.textContent = '✓ 已同步 ' + shortTime;
-    const tooltip = '上次同步: ' + formatFullTime(status.lastSync);
+    var tooltip = '已同步 ' + formatSyncTime(status.lastSync);
     dots.forEach(function(d) { d.className = 'sync-dot success'; d.title = tooltip; });
   } else {
-    if (timeEl) timeEl.textContent = '';
-    dots.forEach(function(d) { d.className = 'sync-dot'; d.title = ''; });
+    dots.forEach(function(d) { d.className = 'sync-dot active'; d.title = ''; });
   }
 }
 
-function formatFullTime(isoStr) {
-  const d = new Date(isoStr);
-  const pad = (n) => String(n).padStart(2, '0');
+function formatSyncTime(isoStr) {
+  var d = new Date(isoStr);
+  var pad = function(n) { return String(n).padStart(2, '0'); };
   return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
-    + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
-}
-
-// 保留旧函数名兼容 settings.js
-function formatSyncTime(isoStr) { return formatFullTime(isoStr); }
-
-function formatShortTime(isoStr) {
-  const d = new Date(isoStr);
-  const pad = (n) => String(n).padStart(2, '0');
-  return pad(d.getHours()) + ':' + pad(d.getMinutes());
+    + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
 }
 
 // ── 工具函数 ──

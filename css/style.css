@@ -1972,9 +1972,32 @@ body {
 }
 
 /* ===== Sync Indicator ===== */
-.sync-time-bar {
-  display: none;
+/* 同步进度条（顶部细线） */
+.sync-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  z-index: 10000;
+  pointer-events: none;
 }
+.sync-progress.running {
+  width: 70%;
+  background: var(--primary);
+  transition: width 8s cubic-bezier(0.1, 0.75, 0.2, 1);
+}
+.sync-progress.done {
+  width: 100%;
+  background: var(--success);
+  transition: width 0.3s ease, background 0.3s ease;
+}
+.sync-progress.fail {
+  width: 100%;
+  background: #c62828;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
 .sync-dot {
   width: 6px;
   height: 6px;
@@ -1985,6 +2008,7 @@ body {
   vertical-align: middle;
   margin-right: 4px;
 }
+.sync-dot.active { background: var(--text-muted); }
 .sync-dot.syncing {
   background: var(--primary);
   animation: syncPulse 1s ease-in-out infinite;

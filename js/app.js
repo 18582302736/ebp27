@@ -94,7 +94,6 @@ function showEntryPage() {
 
 function showSharedHeader() {
   document.getElementById('appHeader').style.display = 'flex';
-  document.getElementById('syncBar').style.display = 'block';
 }
 
 // ── 课程选择页 ──
