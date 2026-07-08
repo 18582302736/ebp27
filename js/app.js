@@ -50,6 +50,14 @@ async function initApp() {
   // 检查是否已经看过进入页
   const hasStarted = localStorage.getItem('ebp_has_started');
 
+  // 后台同步：始终先拉取远程数据，后续渲染时等待同步完成
+  let syncReady = Promise.resolve();
+  if (typeof initSync === 'function') {
+    syncReady = initSync().then(() => {
+      updateSyncIndicator();
+    }).catch(e => console.warn('Sync init failed:', e));
+  }
+
   if (hasStarted) {
     showCalendar();
   } else {
@@ -63,21 +71,12 @@ async function initApp() {
     });
   }
 
-  // 后台同步：先用本地数据渲染，同步完成后静默刷新
-  if (typeof initSync === 'function') {
-    initSync().then(() => {
-      if (hasStarted) {
-        renderCalendar();
-      }
-      updateSyncIndicator();
-    }).catch(e => console.warn('Sync init failed:', e));
-  }
-
   async function showCalendar() {
     const calendarPage = document.getElementById('calendarPage');
     const entryPage = document.getElementById('entryPage');
     entryPage.style.display = 'none';
     calendarPage.style.display = 'block';
+    await syncReady;  // 等待同步完成，确保 IndexedDB 已有最新数据
     await renderCalendar();
   }
 }

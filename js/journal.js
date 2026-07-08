@@ -15,7 +15,7 @@ function createJournal(container, day, worksheetData, onSaveComplete) {
       </div>
       <input type="file" class="hidden-input image-input" accept="image/*" multiple>
       <div class="image-preview"></div>
-      <button class="btn btn-primary save-complete-btn" style="margin-top:12px;width:100%;justify-content:center;"><span class="svg-icon">${iconSave(16)}</span> 更新保存</button>
+      <button class="btn btn-primary save-complete-btn" style="margin-top:12px;width:100%;justify-content:center;"><span class="svg-icon">${iconSave(16)}</span> 保存并完成书写</button>
     </div>
   `;
   container.innerHTML = html;
@@ -65,6 +65,15 @@ function createJournal(container, day, worksheetData, onSaveComplete) {
       }
     } catch (e) {
       showToast('保存失败', 'error');
+    }
+  });
+
+  // 失焦自动保存（不触发完成回调）
+  textarea.addEventListener('blur', async () => {
+    try {
+      await doSave();
+    } catch (e) {
+      // 静默保存失败
     }
   });
 

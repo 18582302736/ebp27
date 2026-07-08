@@ -112,7 +112,6 @@ async function initApp() {
             await saveProgress(day + 1, nextProgress);
           }
         }
-        showCompletion();
       }
     }
 
@@ -200,20 +199,24 @@ async function initApp() {
     }
     taskList.appendChild(task3Card);
 
-    // 如果已经全部完成，显示完成状态
+    // 如果已经全部完成，隐藏完成横幅和下一日按钮
     if (allDone) {
-      showCompletion();
+      document.getElementById('completionBanner').classList.remove('visible');
+      document.getElementById('nextDayBtn').classList.remove('visible');
     }
 
-    function showCompletion() {
-      document.getElementById('completionBanner').classList.add('visible');
-      const bannerIcon = document.getElementById('bannerIcon');
-      if (bannerIcon) bannerIcon.innerHTML = iconStar(32);
-      // 完成后返回首页
-      const nextBtn = document.getElementById('nextDayBtn');
-      nextBtn.href = 'index.html';
-      nextBtn.textContent = '返回首页';
-      nextBtn.classList.add('visible');
+    function showResultOverlay() {
+      const overlay = document.getElementById('resultOverlay');
+      if (!overlay || overlay.style.display === 'flex') return;
+      document.getElementById('resultTitle').textContent = `第${day}天完成：${data.theme}`;
+      document.getElementById('resultSubtitle').textContent = `完成于 ${formatDateWithWeekday(new Date().toISOString())}`;
+      const resultIcon = document.getElementById('resultIcon');
+      if (resultIcon) resultIcon.innerHTML = iconStar(48);
+      overlay.style.display = 'flex';
+      // 关闭遮罩，留在当前页
+      document.getElementById('resultDetailBtn').addEventListener('click', () => {
+        overlay.style.display = 'none';
+      });
     }
 
     // === 手动同步功能 ===
@@ -242,11 +245,15 @@ async function initApp() {
         try {
           if (typeof syncNow === 'function') {
             await syncNow();
-            showToast('保存成功，即将返回日历页', 'success');
-            detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;color:var(--success);">${iconCheck(16)}</span>保存成功！`;
-            setTimeout(() => {
-              window.location.href = 'index.html';
-            }, 800);
+            const allDoneNow = task1Done && task2Done && task3Done;
+            if (allDoneNow) {
+              detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;color:var(--success);">${iconCheck(16)}</span>提交成功！`;
+              showResultOverlay();
+            } else {
+              showToast('进度已保存', 'success');
+              detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;color:var(--success);">${iconCheck(16)}</span>保存成功`;
+            }
+            detailSyncBtn.disabled = false;
           }
         } catch (e) {
           showToast('同步失败: ' + e.message, 'error');
