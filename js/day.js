@@ -213,11 +213,20 @@ async function initApp() {
     const detailSyncBtn = document.getElementById('detailSyncBtn');
     const detailSyncIcon = document.getElementById('detailSyncIcon');
 
-    if (detailSyncSection && detailSyncBtn && typeof hasGithubToken === 'function' && hasGithubToken()) {
-      detailSyncSection.style.display = 'block';
+    if (detailSyncSection && detailSyncBtn) {
+      detailSyncSection.style.display = 'block'; // 总是显示按钮，提高功能发现性
       if (detailSyncIcon) detailSyncIcon.innerHTML = iconRefresh(16);
 
       detailSyncBtn.addEventListener('click', async () => {
+        // 如果未配置 Token，提示并自动打开设置面板
+        if (typeof hasGithubToken === 'function' && !hasGithubToken()) {
+          showToast('请先配置 GitHub Token', 'warning');
+          if (typeof openSettings === 'function') {
+            openSettings();
+          }
+          return;
+        }
+
         detailSyncBtn.disabled = true;
         const originalText = detailSyncBtn.innerHTML;
         detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;animation:spin 1s linear infinite;">${iconRefresh(16)}</span>正在同步到云端...`;
