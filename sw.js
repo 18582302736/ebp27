@@ -1,6 +1,6 @@
 // sw.js - Service Worker（离线缓存）
 
-const CACHE_STATIC = 'ebp-static-v23';
+const CACHE_STATIC = 'ebp-static-v24';
 const CACHE_AUDIO = 'ebp-audio-v1';
 const CACHE_PDF = 'ebp-pdf-v1';
 
@@ -50,6 +50,15 @@ self.addEventListener('activate', (event) => {
     })
   );
   self.clients.claim();
+});
+
+// 消息监听：允许页面主动清缓存
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'CLEAR_CACHES') {
+    event.waitUntil(
+      caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+    );
+  }
 });
 
 // 请求拦截

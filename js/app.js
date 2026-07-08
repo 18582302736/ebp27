@@ -38,12 +38,22 @@ async function initApp() {
     refreshBtn.addEventListener('click', async () => {
       if (!confirm('确定要刷新缓存并重新加载页面吗？')) return;
       try {
+        // 1. 通知当前 SW 清缓存
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg && reg.active) {
+          reg.active.postMessage({ type: 'CLEAR_CACHES' });
+        }
+        // 2. 页面侧清缓存
         const keys = await caches.keys();
         await Promise.all(keys.map(k => caches.delete(k)));
+        // 3. 卸载所有 SW，等待完成
         const registrations = await navigator.serviceWorker.getRegistrations();
         await Promise.all(registrations.map(r => r.unregister()));
+        // 4. 等待 SW 彻底停止
+        await new Promise(r => setTimeout(r, 300));
       } catch (e) {}
-      window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
+      // 5. 硬跳转，绕过 HTTP 缓存
+      window.location.replace(window.location.origin + window.location.pathname + '?v=' + Date.now());
     });
   }
 
