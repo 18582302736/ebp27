@@ -977,36 +977,36 @@ ACT_WORKSHEET_PARTS[1] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <h4><strong>我的焦虑故事：</strong></h4>
+<p class="ws-ex-q"><strong>1. 我的焦虑困扰持续多久了？我认为我为什么会有焦虑困扰？</strong></p>
 <ul>
-<li>我的焦虑困扰持续多久了？我认为我为什么会有焦虑困扰？</li>
 <li>有印象的时候可以追溯到六岁，我弄坏了小伙伴的玩具，担心自己没有足够的钱赔偿，晚上睡不着觉。</li>
 <li>成长在较为严格的家庭里，常常会被批评。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 通常我对什么感到焦虑？</strong></p>
 <ul>
-<li>通常我对什么感到焦虑？</li>
 <li>担心自己做不好事情。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 焦虑的时候，我会有哪些表现？</strong></p>
 <ul>
-<li>焦虑的时候，我会有哪些表现？</li>
 <li>身体：心跳加快，喉咙发紧，四肢无力，肚子不舒服。</li>
 <li>想法：我完蛋了 / 要是……可怎么办啊。</li>
 <li>行为：一直思考让我焦虑的那件事，想要有一个解决方案；赶紧采取行动，有时甚至不分时间就想要去行动；和他人聊天，想得到安慰。</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 焦虑是如何影响我的生活的？我为之付出了哪些代价？</strong></p>
 <ul>
-<li>焦虑是如何影响我的生活的？我为之付出了哪些代价？</li>
 <li>整体而言比较紧绷、努力，不允许自己彻底放松，也会对共事的人比较严格。</li>
 <li>皮肤容易长痘，有功能性的消化不良。</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 试想一下，如果焦虑不再阻碍自己，我的生活会变成什么样子？</strong></p>
 <ul>
-<li>试想一下，如果焦虑不再阻碍自己，我的生活会变成什么样子？</li>
 <li>生活松弛很多，也会轻松很多，可以不被那种一定要完成什么、做到什么的声音催促，皮肤变好一些！</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 为什么我现在选择要做出改变？具体发生了什么？</strong></p>
 <ul>
-<li>为什么我现在选择要做出改变？具体发生了什么？</li>
 <li>我可以带着焦虑行动，但我还是想探索一下，是否有可能我焦虑的频率和强度可以进一步减少，尤其是在我前几天看到自己为接到新的工作任务不安时，我想可以更轻松地应对工作。</li>
 </ul>
+<p class="ws-ex-q"><strong>7. 我来到焦虑应对的目标是？</strong></p>
 <ul>
-<li>我来到焦虑应对的目标是？</li>
 <li>进行焦虑日志监测，可以看到我的频率比之前明显下降，强度也基本都下降到 2 以下。</li>
 </ul>`
 };
@@ -1048,31 +1048,31 @@ ACT_WORKSHEET_PARTS[2] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <h4><strong>我的焦虑日记：</strong></h4>
+<p class="ws-ex-q"><strong>1. 我今天或最近感受到的一次焦虑或恐惧，从 1 分（平静）到 10 分（我能想象的最强烈程度）评估，有多强烈？</strong></p>
 <ul>
-<li>我今天或最近感受到的一次焦虑或恐惧，从 1 分（平静）到 10 分（我能想象的最强烈程度）评估，有多强烈？</li>
 <li>4 分</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 在此之前，有什么来自外界的刺激源发生？</strong></p>
 <ul>
-<li>在此之前，有什么来自外界的刺激源发生？</li>
 <li>看到通知，上司要求召开紧急电话会议布置工作，我和我的整个团队都要参加。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 有什么来自身体的刺激源发生？</strong></p>
 <ul>
-<li>有什么来自身体的刺激源发生？</li>
 <li>手腕疼痛加剧了。</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 有什么来自想法的刺激源发生？</strong></p>
 <ul>
-<li>有什么来自想法的刺激源发生？</li>
 <li>（无）</li>
 </ul>
 <h4><strong>选做书写：</strong></h4>
+<p class="ws-ex-q"><strong>5. 为什么这个刺激源的出现会让我感到焦虑/恐惧？我是怎么解读这些刺激源的？我在担心什么？</strong></p>
 <ul>
-<li>为什么这个刺激源的出现会让我感到焦虑/恐惧？我是怎么解读这些刺激源的？我在担心什么？</li>
 <li>如果要在假期后立即提交，假期就废了；</li>
 <li>我有可能对这个任务没思路做得不好；</li>
 <li>手腕一直痛会影响工作和生活。</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 我有哪些身体反应？我做出了什么样的行为反应？</strong></p>
 <ul>
-<li>我有哪些身体反应？我做出了什么样的行为反应？</li>
 <li>身体反应：心跳加快，喉咙发干。</li>
 <li>行为反应：等不到开会希望提前弄清任务要求，去跟别人打听；为确保能很好地完成任务，开始考虑可能的工作方案；给手腕买药；提醒自己，我习惯担忧做不好工作，但其实最终都完成了，那些只是想法；做正念和渐进式肌肉放松练习。</li>
 </ul>`
@@ -1104,23 +1104,23 @@ ACT_WORKSHEET_PARTS[3] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <h4><strong>我的焦虑日记：</strong></h4>
+<p class="ws-ex-q"><strong>1. 我今天或最近感受到的一次焦虑或恐惧，从 1 分（平静）到 10 分（我能想象的最强烈程度）评估，有多强烈？</strong></p>
 <ul>
-<li>我今天或最近感受到的一次焦虑或恐惧，从 1 分（平静）到 10 分（我能想象的最强烈程度）评估，有多强烈？</li>
 <li>4 分</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 在此之前，有什么焦虑刺激源发生？（事件 / 内部感受 / 想法）</strong></p>
 <ul>
-<li>在此之前，有什么焦虑刺激源发生？（事件 / 内部感受 / 想法）</li>
 <li>事件：早上醒来时已经十点</li>
 <li>内部感受：头有点痛</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 为什么这个刺激源的出现会让我感到焦虑/恐惧？我是怎么解读这些刺激源的？我在担心什么？</strong></p>
 <ul>
-<li>为什么这个刺激源的出现会让我感到焦虑/恐惧？我是怎么解读这些刺激源的？我在担心什么？</li>
 <li>我的担忧 1：马上要上班了我会起不来，或者要起床时很难受</li>
 <li>我的担忧 2：这样作息不好我到上班时会精力不够</li>
 <li>我的担忧 3：我要好一阵才能调整过来</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 我有哪些身体反应？我做出了什么样的行为反应？</strong></p>
 <ul>
-<li>我有哪些身体反应？我做出了什么样的行为反应？</li>
 <li>身体反应：心跳微微加快</li>
 <li>行为反应：当时的行为，提醒自己，这是一个想法，我过去也总是假期晚睡晚起，后来上班也都调整过来了；之后的行为，让自己按照上班时间起床。</li>
 </ul>`
@@ -1162,49 +1162,49 @@ ACT_WORKSHEET_PARTS[4] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <h4><strong>我的焦虑日记：</strong></h4>
+<p class="ws-ex-q"><strong>1. 我今天或最近感受到的一次焦虑或恐惧，评估有多强烈？</strong></p>
 <ul>
-<li>我今天或最近感受到的一次焦虑或恐惧，评估有多强烈？</li>
 <li>4 分。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 在此之前，有什么焦虑刺激源发生？</strong></p>
 <ul>
-<li>在此之前，有什么焦虑刺激源发生？</li>
 <li>内部感受：手腕两周了还在疼痛。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 我的想法是：</strong></p>
 <ul>
-<li>我的想法是：</li>
 <li>它变成长期症状，我以后再也不能健身也不能弹尤克里里了。</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 支持这个想法的证据是什么？</strong></p>
 <ul>
-<li>支持这个想法的证据是什么？</li>
 <li>我有看到有人说自己的手腕类似情况几年一直没恢复的。</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 反对这个想法的证据是什么？</strong></p>
 <ul>
-<li>反对这个想法的证据是什么？</li>
 <li>我也看到有的人在受伤后仍然找到了锻炼的方法。</li>
 <li>这个方面有很专业的医院和医生。</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 结合前两个回答判断，我是否夸大了负面结果出现的可能性？</strong></p>
 <ul>
-<li>结合前两个回答判断，我是否夸大了负面结果出现的可能性？</li>
 <li>是的，两个星期还太短了，本来康复也需要更多时间，我还有很多方法没有尝试。</li>
 </ul>
+<p class="ws-ex-q"><strong>7. 如果最坏的情况发生了，会怎么样？</strong></p>
 <ul>
-<li>如果最坏的情况发生了，会怎么样？</li>
 <li>手腕就是一直疼痛。</li>
 </ul>
+<p class="ws-ex-q"><strong>8. 如果最坏的情况发生了，我能如何应对？</strong></p>
 <ul>
-<li>如果最坏的情况发生了，我能如何应对？</li>
 <li>咨询医生，也许可以手术。</li>
 </ul>
+<p class="ws-ex-q"><strong>9. 如果最好的情况发生了，会怎么样？</strong></p>
 <ul>
-<li>如果最好的情况发生了，会怎么样？</li>
 <li>手腕过两个月完全恢复了正常。</li>
 </ul>
+<p class="ws-ex-q"><strong>10. 现实中，最可能会发生的情况是什么？</strong></p>
 <ul>
-<li>现实中，最可能会发生的情况是什么？</li>
 <li>手腕康复了，但是很容易再次疼痛，需要多看护它。</li>
 </ul>
+<p class="ws-ex-q"><strong>11. 经过书写后，我现在对这件事的新想法是：</strong></p>
 <ul>
-<li>经过书写后，我现在对这件事的新想法是：</li>
 <li>总是会恢复的，只是恢复的时间和程度而已，即使它容易复发，我也可以通过康复训练来改善，还可以找到适合自己的锻炼强度和时间，适应手腕的情况。</li>
 </ul>`
 };
@@ -1237,26 +1237,26 @@ ACT_WORKSHEET_PARTS[5] = {
 <div class="ws-question"><span class="ws-q-num">5.</span> <span class="ws-q-text">综合来看，这些担忧对我的生活是利大于弊，还是弊大于利？</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
+<p class="ws-ex-q"><strong>1. 回顾最近几天，在我脑海中反复出现的一个担忧想法是：</strong></p>
 <ul>
-<li>回顾最近几天，在我脑海中反复出现的一个担忧想法是：</li>
 <li>我会做不好这个任务。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 如果我不去想这件事，会有什么后果？</strong></p>
 <ul>
-<li>如果我不去想这件事，会有什么后果？</li>
 <li>后果 1：我就是一个不负责任的人。</li>
 <li>后果 2：我就没有动力做好工作。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 我是否夸大了这个结果出现的可能性和严重程度？</strong></p>
 <ul>
-<li>我是否夸大了这个结果出现的可能性和严重程度？</li>
 <li>后果 1：夸大了可能性，如果我的朋友不担忧工作，我也不会认为 ta 不负责任。</li>
 <li>后果 2：夸大了可能性和严重程度，当我投入工作时，自然顺着事情的逻辑去做好它，并不靠担忧做动力。</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 我的担忧给我带来了哪些坏处？或者，如果少担忧一些，我的生活会产生什么样的积极变化？</strong></p>
 <ul>
-<li>我的担忧给我带来了哪些坏处？或者，如果少担忧一些，我的生活会产生什么样的积极变化？</li>
 <li>会用很多时间思考工作，没有真正的放松休息，如果少担忧一些，我会更随性自由，生活更轻松快乐。</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 综合来看，这些担忧对我的生活是利大于弊，还是弊大于利？</strong></p>
 <ul>
-<li>综合来看，这些担忧对我的生活是利大于弊，还是弊大于利？</li>
 <li>弊大于利。</li>
 </ul>`
 };
@@ -1287,28 +1287,28 @@ ACT_WORKSHEET_PARTS[6] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <p>_主创示例：罗浩贤_</p>
+<p class="ws-ex-q"><strong>1. 最近让我困扰的现实问题是：</strong></p>
 <ul>
-<li>最近让我困扰的现实问题是：</li>
 <li>身体有炎症，而且体重比较重，体脂率已经过 30 了。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 这个问题中，危险和机会各自占比多少？</strong></p>
 <ul>
-<li>这个问题中，危险和机会各自占比多少？</li>
 <li>危险：60%</li>
 <li>机会：40%</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 想一想，这个问题背后，隐藏着哪些机会：</strong></p>
 <ul>
-<li>想一想，这个问题背后，隐藏着哪些机会：</li>
 <li>平时生活的作息也不太好，有调整的意愿但不强烈。这次身体有炎症，也是一个让自己铁下心要去改变的契机吧。</li>
 <li>提前知道了很多关于疾病的知识。现在我才 33 岁，身体能恢复得很快。趁早调整，趁早预防，总比年纪大了，疾病到了中后期强。</li>
 <li>减肥也是一样。肯定减了对身体也有好处。也是趁这次机会，就去狠狠忌一下口，调整饮食的习惯，多让身体运动起来吧。</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 现在我觉得，危险和机会各自占比多少？</strong></p>
 <ul>
-<li>现在我觉得，危险和机会各自占比多少？</li>
 <li>危险：40%</li>
 <li>机会：60%</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 未来 24 小时，我可以开始行动的第一步是：</strong></p>
 <ul>
-<li>未来 24 小时，我可以开始行动的第一步是：</li>
 <li>有好多想做的事情。第一个想到的，就是在晚餐按照「纤维——脂肪/蛋白质——糖类」的顺序进食。吃完别坐着，散 20 分钟的步。继续实践最近学到的管理血糖的方法！</li>
 </ul>`
 };
@@ -1363,20 +1363,20 @@ ACT_WORKSHEET_PARTS[7] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <p>_主创示例：孙轶群 / 罗浩贤_</p>
+<p class="ws-ex-q"><strong>1. 我要做的行为实验是：</strong></p>
 <ul>
-<li>我要做的行为实验是：</li>
 <li>拒绝甲方要求当天晚上立即修改工作成果的要求。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 在开始行为实验之前，我预测会发生什么 / 我的担忧是：</strong></p>
 <ul>
-<li>在开始行为实验之前，我预测会发生什么 / 我的担忧是：</li>
 <li>甲方会很愤怒，会跟我的上司投诉，这个合作关系彻底搞砸。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 实际上发生了什么：</strong></p>
 <ul>
-<li>实际上发生了什么：</li>
 <li>甲方还是不断在微信群里提要求，但至少没有直接表示愤怒，第二天我们还是在沟通工作。</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 我是如何应对的：</strong></p>
 <ul>
-<li>我是如何应对的：</li>
 <li>没什么特别的应对，干得好，下次还要继续。</li>
 </ul>`
 };
@@ -1398,13 +1398,13 @@ ACT_WORKSHEET_PARTS[8] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <p>_主创示例：罗浩贤_</p>
+<p class="ws-ex-q"><strong>1. 让我感到焦虑的场景是：</strong></p>
 <ul>
-<li>让我感到焦虑的场景是：</li>
 <li>事件：听到 A 对我表达不满</li>
 <li>想法：其他人也会像 A 那样对我不满</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 在这个场景中，我会做哪些&quot;安全行为&quot;：</strong></p>
 <ul>
-<li>在这个场景中，我会做哪些&quot;安全行为&quot;：</li>
 <li>跟其他人确认，希望得到一个让我安心的保证，别人没有对我不满。</li>
 <li>在心里反复思考，A 对我的不满有哪些不合理之处，试图说服自己。</li>
 </ul>`
@@ -1447,21 +1447,21 @@ ACT_WORKSHEET_PARTS[9] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <p>_主创示例：孙轶群_</p>
+<p class="ws-ex-q"><strong>1. 我想减少的回避类安全行为是：</strong></p>
 <ul>
-<li>我想减少的回避类安全行为是：</li>
 <li>避开高处的栏杆和窗户，以及身处高处的时候往上看。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 这个安全行为，对我的生活有什么样的影响，带来了什么损失：</strong></p>
 <ul>
-<li>这个安全行为，对我的生活有什么样的影响，带来了什么损失：</li>
 <li>我很讨厌坐电梯，尤其是观光电梯。我也很讨厌大商场里那种边上没有遮挡的电梯。有时候我宁愿走楼梯。</li>
 <li>另外我还是很想去坐摩天轮，坐过山车，去滑雪的，我想知道大家玩得很爽是什么感觉，但是我很怕。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 针对这个安全行为，我设计的实验是：</strong></p>
 <ul>
-<li>针对这个安全行为，我设计的实验是：</li>
 <li>在商场的三楼，靠近天井的栏杆，往下看个十分钟。</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 我假设/担心这样的事情会发生：</strong></p>
 <ul>
-<li>我假设/担心这样的事情会发生：</li>
 <li>会有人把我推下去，或者栏杆会突然松动摔下去。以及我可能会心跳非常非常快，可能会非常想上厕所，估计坚持不到十分钟就会很痛苦。</li>
 </ul>`
 };
@@ -1502,20 +1502,20 @@ ACT_WORKSHEET_PARTS[10] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <p>_主创示例：罗浩贤_</p>
+<p class="ws-ex-q"><strong>1. 我想减少的靠近类安全行为是：</strong></p>
 <ul>
-<li>我想减少的靠近类安全行为是：</li>
 <li>停止在网上搜索关于自己身体疾病的信息。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 这个安全行为，对我的生活有什么样的影响，带来了什么损失：</strong></p>
 <ul>
-<li>这个安全行为，对我的生活有什么样的影响，带来了什么损失：</li>
 <li>浪费了很多时间，并且把我搞得越来越焦虑。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 针对这个安全行为，我设计的实验是：</strong></p>
 <ul>
-<li>针对这个安全行为，我设计的实验是：</li>
 <li>晚上玩电脑的时候，不搜和疾病有关的关键词，就是安安心心看视频和打游戏。</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 我假设/担心这样的事情会发生：</strong></p>
 <ul>
-<li>我假设/担心这样的事情会发生：</li>
 <li>（略）</li>
 </ul>`
 };
@@ -1545,36 +1545,36 @@ ACT_WORKSHEET_PARTS[11] = {
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">综合考虑，我是否愿意试试继续行动，看看会发生什么？</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
+<p class="ws-ex-q"><strong>1. 通常我对什么感到焦虑？</strong></p>
 <ul>
-<li>通常我对什么感到焦虑？</li>
 <li>事件：出现新任务，而我还没有让自己满意的思路。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 焦虑是如何阻碍我的生活的？</strong></p>
 <ul>
-<li>焦虑是如何阻碍我的生活的？</li>
 <li>我会持续思考，不在工作时间里也在思考，无法等待，想到的每一个方向都想立即去付诸实践。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 试想一下，如果焦虑不再阻碍自己，我的生活会变成什么样子？</strong></p>
 <ul>
-<li>试想一下，如果焦虑不再阻碍自己，我的生活会变成什么样子？</li>
 <li>轻松一些，在生活里更放松，更多娱乐时间。</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 对&quot;直面焦虑&quot;这件事，我的担心是？</strong></p>
 <ul>
-<li>对&quot;直面焦虑&quot;这件事，我的担心是？</li>
 <li>不采取那些安全行为，不那么努力，我最后确实没做好事情。</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 这些担心，跟&quot;对不确定性的心理过敏&quot;有关系吗？</strong></p>
 <ul>
-<li>这些担心，跟&quot;对不确定性的心理过敏&quot;有关系吗？</li>
 <li>有，我希望尽力减少工作结果的不确定性才会这样。</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 如果我担心的事情发生了，最坏的结果是什么？我可以如何应对这个结果？</strong></p>
 <ul>
-<li>如果我担心的事情发生了，最坏的结果是什么？我可以如何应对这个结果？</li>
 <li>客户对成果有意见，没关系，根据客户的意见重新修改。</li>
 </ul>
+<p class="ws-ex-q"><strong>7. 这个最坏的结果，事实上发生的可能性有多大？</strong></p>
 <ul>
-<li>这个最坏的结果，事实上发生的可能性有多大？</li>
 <li>80%</li>
 </ul>
+<p class="ws-ex-q"><strong>8. 综合考虑，我是否愿意试试继续行动，看看会发生什么？</strong></p>
 <ul>
-<li>综合考虑，我是否愿意试试继续行动，看看会发生什么？</li>
 <li>试试看吧。</li>
 </ul>`
 };
@@ -1606,28 +1606,28 @@ ACT_WORKSHEET_PARTS[12] = {
 <div class="ws-question"><span class="ws-q-num">6.</span> <span class="ws-q-text">在这个过程中，我得到的启发是：</span></div>
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>`,
   exampleHtml: `<h3>01 书写示例</h3>
+<p class="ws-ex-q"><strong>1. 我准备直面的焦虑刺激源是：</strong></p>
 <ul>
-<li>我准备直面的焦虑刺激源是：</li>
 <li>新启动的一个新项目。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 针对这个焦虑刺激源，我打算做的第一个行为实验是：</strong></p>
 <ul>
-<li>针对这个焦虑刺激源，我打算做的第一个行为实验是：</li>
 <li>不在制定方案前看完全部资料。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 在开始行为实验之前，我预测会发生什么 / 我的担忧是：</strong></p>
 <ul>
-<li>在开始行为实验之前，我预测会发生什么 / 我的担忧是：</li>
 <li>我没有看完资料，工作计划会一塌糊涂，拿出来讨论被全盘否定。</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 实际上发生了什么：</strong></p>
 <ul>
-<li>实际上发生了什么：</li>
 <li>讨论延期了，我就逐个征求了部分人的意见，也没收到什么严厉批评，大家都同意这个事情很复杂，需要收集更多信息。</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 我是如何应对的：</strong></p>
 <ul>
-<li>我是如何应对的：</li>
 <li>没有特别的应对，就是在等待讨论之后再看下一步怎么办吧。</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 在这个过程中，我得到的启发是：</strong></p>
 <ul>
-<li>在这个过程中，我得到的启发是：</li>
 <li>这个过程就像正念观呼吸时走神，有很多次我会好像无意识地就要去点开资料，总有一个声音在驱使我去看资料、去学习更多吧！同时每当我意识到自己被这个声音驱使了，我就再一次拉回自己，继续做我本来要做的事。</li>
 </ul>`
 };
@@ -1665,39 +1665,35 @@ ACT_WORKSHEET_PARTS[13] = {
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <p>_主创示例：孙轶群_</p>
+<p class="ws-ex-q"><strong>1. 我准备直面的焦虑刺激源是：</strong></p>
 <ul>
-<li>我准备直面的焦虑刺激源是：</li>
 <li>害怕被别人注意，别人看着我时我会不知所措，非常紧张，语无伦次。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 针对这个焦虑刺激源，我打算做的行为实验是：</strong></p>
 <ul>
-<li>针对这个焦虑刺激源，我打算做的行为实验是：</li>
 <li>让别人注意到我：在平时的衣服上佩戴一个亮色的小配饰，出门上班，争取一整天都不摘下来。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 对这个行为实验，我的焦虑情绪温度计评分为：50</strong></p>
+<p class="ws-ex-q"><strong>4. 在开始行为实验之前，我预测会发生什么 / 我的担忧是：</strong></p>
 <ul>
-<li>对这个行为实验，我的焦虑情绪温度计评分为：50</li>
-</ul>
-<ul>
-<li>在开始行为实验之前，我预测会发生什么 / 我的担忧是：</li>
 <li>别人会看我，会觉得我很奇怪。</li>
 <li>可能会遇到友好的同事来对我发表评论，可能会夸我，我就会非常紧张，我可能会做出奇怪的反应，会脸很红，会发抖，会大脑一片空白不知道说什么，或者说很奇怪的话，会让同事发现我的窘迫。</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 实际上发生了什么：</strong></p>
 <ul>
-<li>实际上发生了什么：</li>
 <li>确实好像落在我身上的目光比之前多了一些。在地铁上被打量了好几次。</li>
 <li>有三位同事来夸我的小配饰好看。其中两位夸完就走了，另一位跟我多聊了两句。</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 我是如何应对的：</strong></p>
 <ul>
-<li>我是如何应对的：</li>
 <li>有人看我的时候我还挺紧张的，我很想把它摘下来！或者赶紧藏起来。但是我忍住了。我还是挺不容易的。</li>
 <li>跟那位同事聊天虽然有些紧张，而且我确实脸红了，我能感觉到脸很热，但是我没跑，硬着头皮接着聊。好像也没有说不出话来诶！而且感觉这个同事还挺好的！以及终于跟这个同事说上话了我还挺高兴的！</li>
 </ul>
+<p class="ws-ex-q"><strong>7. 在这个过程中，我得到的启发是：</strong></p>
 <ul>
-<li>在这个过程中，我得到的启发是：</li>
 <li>还行！比我想象的好多了。</li>
 </ul>
-<ul>
-<li>完成实验后，我现在对这个行为实验的焦虑温度计评分为：30</li>
-</ul>`
+<p class="ws-ex-q"><strong>8. 完成实验后，我现在对这个行为实验的焦虑温度计评分为：30</strong></p>`
 };
 
 ACT_WORKSHEET_PARTS[14] = {
@@ -1744,59 +1740,55 @@ ACT_WORKSHEET_PARTS[14] = {
   exampleHtml: `<h3>01 书写示例</h3>
 <blockquote><strong>提醒：书写暴露的示例内容可能会唤起你的强烈焦虑，如果你选择看下去，请做好心理准备。</strong></blockquote>
 <p>_主创示例：孙轶群_</p>
+<p class="ws-ex-q"><strong>1. 我的焦虑日记中，反复出现的一个&quot;对未来假设的担忧想法&quot;是：</strong></p>
 <ul>
-<li>我的焦虑日记中，反复出现的一个&quot;对未来假设的担忧想法&quot;是：</li>
 <li>要做一个全麻手术，我可能会死在手术台上。以及，我做手术的时候我会身体动不了但是意识清醒。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 对这个想法进行书写暴露行为实验，我的焦虑情绪温度计评分为：70</strong></p>
+<p class="ws-ex-q"><strong>3. 在开始这个行为实验之前，我预测会发生什么 / 我的担忧是：</strong></p>
 <ul>
-<li>对这个想法进行书写暴露行为实验，我的焦虑情绪温度计评分为：70</li>
-</ul>
-<ul>
-<li>在开始这个行为实验之前，我预测会发生什么 / 我的担忧是：</li>
 <li>会不会让我更害怕了？</li>
 </ul>
+<p class="ws-ex-q"><strong>4. 如果这个&quot;对未来假设的担忧想法&quot;成真了，最坏、最可怕、最灾难的结果是什么：</strong></p>
 <ul>
-<li>如果这个&quot;对未来假设的担忧想法&quot;成真了，最坏、最可怕、最灾难的结果是什么：</li>
 <li>麻醉事故，手术的时候我意识清醒但是动不了，没人救我，在痛苦中死掉。</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 我看到了什么：</strong></p>
 <ul>
-<li>我看到了什么：</li>
 <li>我看到了手术台上的无影灯很亮很亮，有好几位戴着手术帽和蓝色口罩，穿着绿色手术服的医生围着我。还有护士。他们都戴着护目镜，完全看不清脸。每一个人都像假人。我躺着，看不见他们的动作。我的身边有很多仪器，上面的数字和曲线在动来动去。还有输液的挂杆，上面挂着一些液体。我什么都做不了。</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 我听到了什么：</strong></p>
 <ul>
-<li>我听到了什么：</li>
 <li>我听到医生和护士们都在忙碌，他们听着音乐，还闲聊几句。气氛很轻松。他们都不知道我都能感觉到。</li>
 <li>我听到我内心的声音在喊：啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊！</li>
 <li>我还能听到身边仪器的报警声。突然仪器开始尖叫起来，有人在喊，怎么办！快抢救！所有人都跑了起来，乱成一团。我听到主刀医生在喊，她不行了！</li>
 <li>然后我听到我妈妈在哭，她说，拿我的命换我女儿吧！我爸爸也在哭，他在求医生救我。好伤心。希望他们不要哭了。</li>
 </ul>
+<p class="ws-ex-q"><strong>7. 我触到了什么：</strong></p>
 <ul>
-<li>我触到了什么：</li>
 <li>很冷，很疼很疼很疼。有刀子在我身上划。</li>
 </ul>
+<p class="ws-ex-q"><strong>8. 我闻到了什么：</strong></p>
 <ul>
-<li>我闻到了什么：</li>
 <li>消毒水的味道。血腥味。酒精味。</li>
 </ul>
+<p class="ws-ex-q"><strong>9. 我嘴里尝到了什么：</strong></p>
 <ul>
-<li>我嘴里尝到了什么：</li>
 <li>嘴里也有血腥气。</li>
 </ul>
+<p class="ws-ex-q"><strong>10. 这个书写暴露行为实验中，实际上发生了什么：</strong></p>
 <ul>
-<li>这个书写暴露行为实验中，实际上发生了什么：</li>
 <li>一开始写得好难受，真的好焦虑，比之前还焦虑。不过写着写着好像没那么难受了，这些场景变得好像没那么真实可怕了。</li>
 </ul>
+<p class="ws-ex-q"><strong>11. 我是如何应对的：</strong></p>
 <ul>
-<li>我是如何应对的：</li>
 <li>好几次想停下来不做了，不过我挺住了。而且我还哭了一场。心跳得好快。</li>
 </ul>
+<p class="ws-ex-q"><strong>12. 在这个过程中，我得到的启发是：</strong></p>
 <ul>
-<li>在这个过程中，我得到的启发是：</li>
 <li>我很清楚这个担忧发生概率极小。而且我的手术并不复杂，我选的医生经验丰富，这个手术对她来说简直是小儿科。我曾经看过一个电影，讲的就是在换心脏手术的时候这个病人意识清醒，有些心理阴影。我想象出来的这些场景很多都是来自对这个电影的回忆。当意识到这一点之后，这些场景突然变得没那么真了。越看它们越觉得有点超现实，也没那么高的唤起度了。</li>
 </ul>
-<ul>
-<li>完成实验后，我现在对这个行为实验的焦虑温度计评分为：40</li>
-</ul>`
+<p class="ws-ex-q"><strong>13. 完成实验后，我现在对这个行为实验的焦虑温度计评分为：40</strong></p>`
 };
 
 ACT_WORKSHEET_PARTS[15] = {
@@ -1836,39 +1828,35 @@ ACT_WORKSHEET_PARTS[15] = {
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个内部感受暴露练习行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <p>_主创示例：罗浩贤_</p>
+<p class="ws-ex-q"><strong>1. 我容易对这样的身体感受感到焦虑：</strong></p>
 <ul>
-<li>我容易对这样的身体感受感到焦虑：</li>
 <li>心跳砰砰跳的感觉。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 针对这个焦虑刺激源，我打算做的内部感受暴露练习是：</strong></p>
 <ul>
-<li>针对这个焦虑刺激源，我打算做的内部感受暴露练习是：</li>
 <li>原地高抬腿一分钟。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 对这个内部感受暴露练习，我的焦虑情绪温度计评分为：30 分。</strong></p>
+<p class="ws-ex-q"><strong>4. 在开始内部感受暴露练习之前，我预测会发生什么 / 我的担忧是：</strong></p>
 <ul>
-<li>对这个内部感受暴露练习，我的焦虑情绪温度计评分为：30 分。</li>
-</ul>
-<ul>
-<li>在开始内部感受暴露练习之前，我预测会发生什么 / 我的担忧是：</li>
 <li>心跳明显的时候，会有&quot;我不行了&quot;的想法。</li>
 <li>感觉心脏跳着跳着就会停下来，太可怕了！</li>
 <li>我会不会要打 120？</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 实际上发生了什么：</strong></p>
 <ul>
-<li>实际上发生了什么：</li>
 <li>在高抬腿的过程中，确实心跳很明显，一刹那有种不行的感觉！</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 我是如何应对的：</strong></p>
 <ul>
-<li>我是如何应对的：</li>
 <li>我对自己说&quot;心跳明显是运动很正常的感受，之前踩动感单车也这样，我不会有事的&quot;。</li>
 <li>留意此刻的呼吸和心跳，也关注周围的世界。</li>
 </ul>
+<p class="ws-ex-q"><strong>7. 在这个过程中，我得到的启发是：</strong></p>
 <ul>
-<li>在这个过程中，我得到的启发是：</li>
 <li>虽然我的害怕情绪会突然飙升，也会出现&quot;心脏跳着跳着会停下来&quot;的想法，但我是安全的。过一会儿就会没事的。</li>
 </ul>
-<ul>
-<li>完成实验后，我现在对这个内部感受暴露练习行为实验的焦虑温度计评分为：15 分。</li>
-</ul>`
+<p class="ws-ex-q"><strong>8. 完成实验后，我现在对这个内部感受暴露练习行为实验的焦虑温度计评分为：15 分。</strong></p>`
 };
 
 ACT_WORKSHEET_PARTS[16] = {
@@ -1896,37 +1884,33 @@ ACT_WORKSHEET_PARTS[16] = {
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <p>_主创示例：孙轶群_</p>
+<p class="ws-ex-q"><strong>1. 我容易对这样的社交场景感到焦虑：</strong></p>
 <ul>
-<li>我容易对这样的社交场景感到焦虑：</li>
 <li>别人的注意力集中在我身上的时候，我会感到特别难熬，想找个洞藏起来。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 针对这个焦虑刺激源，我打算做的社交暴露练习是：</strong></p>
 <ul>
-<li>针对这个焦虑刺激源，我打算做的社交暴露练习是：</li>
 <li>在地铁上唱歌。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 对这个社交暴露练习，我的焦虑情绪温度计评分为：60</strong></p>
+<p class="ws-ex-q"><strong>4. 在开始这个练习之前，我预测会发生什么 / 我的担忧是：</strong></p>
 <ul>
-<li>对这个社交暴露练习，我的焦虑情绪温度计评分为：60</li>
-</ul>
-<ul>
-<li>在开始这个练习之前，我预测会发生什么 / 我的担忧是：</li>
 <li>会有很多人看我，别人会想，这怕是个傻子吧。</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 实际上发生了什么：</strong></p>
 <ul>
-<li>实际上发生了什么：</li>
 <li>有人看，但是大部分人都一脸漠然，可能是奇怪的人看多了吧。看的人也就像看一眼，然后就接着去刷自己的手机了。</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 我是如何应对的：</strong></p>
 <ul>
-<li>我是如何应对的：</li>
 <li>不太需要应对，就接着唱。</li>
 </ul>
+<p class="ws-ex-q"><strong>7. 在这个过程中，我得到的启发是：</strong></p>
 <ul>
-<li>在这个过程中，我得到的启发是：</li>
 <li>Nobody cares. 没有人像我一样这么关注我。</li>
 <li>在地铁上唱歌，一开始小声唱，后来大声唱，莫名有种翻身农奴把歌唱的自由感儿。</li>
 </ul>
-<ul>
-<li>完成实验后，我现在对这个行为实验的焦虑温度计评分为：20</li>
-</ul>`
+<p class="ws-ex-q"><strong>8. 完成实验后，我现在对这个行为实验的焦虑温度计评分为：20</strong></p>`
 };
 
 ACT_WORKSHEET_PARTS[17] = {
@@ -1960,36 +1944,32 @@ ACT_WORKSHEET_PARTS[17] = {
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <p>_主创示例：孙轶群_</p>
+<p class="ws-ex-q"><strong>1. 我准备直面的焦虑刺激源是：</strong></p>
 <ul>
-<li>我准备直面的焦虑刺激源是：</li>
 <li>别人的注意力集中在我身上的时候，我会感到特别难熬，想找个洞藏起来。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 针对这个焦虑刺激源，我打算做的进阶行为实验是：</strong></p>
 <ul>
-<li>针对这个焦虑刺激源，我打算做的进阶行为实验是：</li>
 <li>做视频直播答疑，并且不写逐字稿，随机发挥。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 对这个行为实验，我的焦虑情绪温度计评分为：70</strong></p>
+<p class="ws-ex-q"><strong>4. 在开始行为实验之前，我预测会发生什么 / 我的担忧是：</strong></p>
 <ul>
-<li>对这个行为实验，我的焦虑情绪温度计评分为：70</li>
-</ul>
-<ul>
-<li>在开始行为实验之前，我预测会发生什么 / 我的担忧是：</li>
 <li>我会卡壳，语无伦次，不知道说什么，然后我这个主创名声不就毁了吗。</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 实际上发生了什么：</strong></p>
 <ul>
-<li>实际上发生了什么：</li>
 <li>挺好的。完全没有卡壳。或者可能我完全没注意到自己有没有卡壳。我的注意力全在答疑上了。</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 我是如何应对的：</strong></p>
 <ul>
-<li>我是如何应对的：</li>
 <li>就是告诉自己，豁出去了，拥抱不确定性！</li>
 </ul>
+<p class="ws-ex-q"><strong>7. 在这个过程中，我得到的启发是：</strong></p>
 <ul>
-<li>在这个过程中，我得到的启发是：</li>
 <li>不确定性值得拥抱。新技能解锁。</li>
 </ul>
-<ul>
-<li>完成实验后，我现在对这个行为实验的焦虑温度计评分为：20</li>
-</ul>`
+<p class="ws-ex-q"><strong>8. 完成实验后，我现在对这个行为实验的焦虑温度计评分为：20</strong></p>`
 };
 
 ACT_WORKSHEET_PARTS[18] = {
@@ -2029,39 +2009,35 @@ ACT_WORKSHEET_PARTS[18] = {
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
   exampleHtml: `<h3>01 书写示例</h3>
 <p>_主创示例：孙轶群_</p>
+<p class="ws-ex-q"><strong>1. 我准备直面的焦虑刺激源是：</strong></p>
 <ul>
-<li>我准备直面的焦虑刺激源是：</li>
 <li>每次写文章的时候都非常焦虑，觉得自己写的都是垃圾，要做好多好多准备工作才开始动笔。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 针对这个焦虑刺激源，我打算做的行为实验是：</strong></p>
 <ul>
-<li>针对这个焦虑刺激源，我打算做的行为实验是：</li>
 <li>少准备一点，或者直接开写。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 对这个行为实验，我的焦虑情绪温度计评分为：50</strong></p>
+<p class="ws-ex-q"><strong>4. 在开始行为实验之前，我预测会发生什么 / 我的担忧是：</strong></p>
 <ul>
-<li>对这个行为实验，我的焦虑情绪温度计评分为：50</li>
-</ul>
-<ul>
-<li>在开始行为实验之前，我预测会发生什么 / 我的担忧是：</li>
 <li>大脑一片空白，什么也写不出来。</li>
 <li>写出来都是垃圾。</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 实际上发生了什么：</strong></p>
 <ul>
-<li>实际上发生了什么：</li>
 <li>事实证明，虽然一开始写得很艰难，也确实是垃圾，但是写着写着思路就出来了，之后就顺畅了。</li>
 <li>比以前快很多。</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 我是如何应对的：</strong></p>
 <ul>
-<li>我是如何应对的：</li>
 <li>允许自己写出垃圾。写了再说。</li>
 </ul>
+<p class="ws-ex-q"><strong>7. 在这个过程中，我得到的启发是：</strong></p>
 <ul>
-<li>在这个过程中，我得到的启发是：</li>
 <li>我想起之前看一个视频，金·卡戴珊作为创业导师在跟一位女嘉宾对话。女嘉宾说&quot;Do you think I&#x27;m ready enough for this?&quot; 卡戴珊说&quot;Nobody&#x27;s ready enough for anything. You just do it.&quot;</li>
 <li>然后这句不知道是卡戴珊说的还是我悟出来的：When it&#x27;s ready, it&#x27;s too late.</li>
 </ul>
-<ul>
-<li>完成实验后，我现在对这个行为实验的焦虑温度计评分为：20</li>
-</ul>`
+<p class="ws-ex-q"><strong>8. 完成实验后，我现在对这个行为实验的焦虑温度计评分为：20</strong></p>`
 };
 
 ACT_WORKSHEET_PARTS[19] = {
@@ -2089,37 +2065,33 @@ ACT_WORKSHEET_PARTS[19] = {
 <textarea class="ws-textarea" placeholder="请在此书写..."></textarea>
 <div class="ws-question"><span class="ws-q-num">8.</span> <span class="ws-q-text">完成实验后，我现在对这个行为实验的焦虑温度计评分为：</span><input type="text" class="ws-input-inline" placeholder="请填写"></div>`,
   exampleHtml: `<h3>01 书写示例</h3>
+<p class="ws-ex-q"><strong>1. 我准备直面的焦虑刺激源是：</strong></p>
 <ul>
-<li>我准备直面的焦虑刺激源是：</li>
 <li>想到工作里有一个没解决的事，我认为影响很大。</li>
 </ul>
+<p class="ws-ex-q"><strong>2. 针对这个焦虑刺激源，我打算做的进阶行为实验是：</strong></p>
 <ul>
-<li>针对这个焦虑刺激源，我打算做的进阶行为实验是：</li>
 <li>我要等待一周才去采取行动。</li>
 </ul>
+<p class="ws-ex-q"><strong>3. 对这个行为实验，我的焦虑情绪温度计评分为：50</strong></p>
+<p class="ws-ex-q"><strong>4. 在开始行为实验之前，我预测会发生什么 / 我的担忧是：</strong></p>
 <ul>
-<li>对这个行为实验，我的焦虑情绪温度计评分为：50</li>
-</ul>
-<ul>
-<li>在开始行为实验之前，我预测会发生什么 / 我的担忧是：</li>
 <li>我会每天都想到这件事，不安到无法做别的事。</li>
 <li>一周里会因为我的不行动影响了事情。</li>
 </ul>
+<p class="ws-ex-q"><strong>5. 实际上发生了什么：</strong></p>
 <ul>
-<li>实际上发生了什么：</li>
 <li>我确实会想起那件事并且感到烦躁，但也有很多时候我沉浸于做别的事，都忘了还有它。</li>
 </ul>
+<p class="ws-ex-q"><strong>6. 我是如何应对的：</strong></p>
 <ul>
-<li>我是如何应对的：</li>
 <li>每次感到不安的时候，都提醒自己：这是个实验，让我再看看。</li>
 </ul>
+<p class="ws-ex-q"><strong>7. 在这个过程中，我得到的启发是：</strong></p>
 <ul>
-<li>在这个过程中，我得到的启发是：</li>
 <li>我以前觉得自己是绝不能容忍问题留到第二天，一定要立刻马上当场解决，现在我知道可以等至少一周，也许更久。</li>
 </ul>
-<ul>
-<li>完成实验后，我现在对这个行为实验的焦虑温度计评分为：10</li>
-</ul>`
+<p class="ws-ex-q"><strong>8. 完成实验后，我现在对这个行为实验的焦虑温度计评分为：10</strong></p>`
 };
 
 ACT_WORKSHEET_PARTS[20] = {
