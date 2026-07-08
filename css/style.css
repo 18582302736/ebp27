@@ -1192,7 +1192,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 12px;
-  font-size: 16px;
+  font-size: 0.95rem;
   font-family: inherit;
   line-height: 1.7;
   resize: none;
