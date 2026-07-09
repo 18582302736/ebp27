@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-09T01:30:00.132Z",
+  "updated_at": "2026-07-09T12:59:53.279Z",
   "records": [
     {
       "day": "ebp_1",
@@ -29,11 +29,11 @@
     },
     {
       "day": "ebp_4",
-      "status": "available",
-      "task1_completed": null,
+      "status": "in_progress",
+      "task1_completed": "2026-07-09T12:59:50.262Z",
       "task2_completed": null,
       "task3_completed": null,
-      "updated_at": "2026-07-08T10:45:29.459Z"
+      "updated_at": "2026-07-09T12:59:50.263Z"
     }
   ]
 }
