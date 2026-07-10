@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-10T07:06:58.559Z",
+  "updated_at": "2026-07-10T07:16:58.769Z",
   "records": [
     {
       "day": "ebp_1",
@@ -37,12 +37,21 @@
     },
     {
       "day": "ebp_5",
-      "status": "in_progress",
+      "status": "completed",
       "task1_completed": "2026-07-10T07:05:25.772Z",
       "task2_completed": "2026-07-10T07:06:55.549Z",
+      "task3_completed": "2026-07-10T07:16:55.756Z",
+      "task4_completed": null,
+      "updated_at": "2026-07-10T07:16:55.759Z"
+    },
+    {
+      "day": "ebp_6",
+      "status": "available",
+      "task1_completed": null,
+      "task2_completed": null,
       "task3_completed": null,
       "task4_completed": null,
-      "updated_at": "2026-07-10T07:06:55.549Z"
+      "updated_at": "2026-07-10T07:16:55.762Z"
     }
   ]
 }
