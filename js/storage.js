@@ -219,7 +219,7 @@ async function getJournalEntry(courseId, day) {
   return entries[0] || null;
 }
 
-async function saveJournalEntry(courseId, day, text, imageBase64s) {
+async function saveJournalEntry(courseId, day, text, imageBase64s, formData) {
   const key = makeKey(courseId, day);
   const existing = await getJournalEntry(courseId, day);
   const entry = {
@@ -235,6 +235,13 @@ async function saveJournalEntry(courseId, day, text, imageBase64s) {
   }
   if (existing) {
     entry.id = existing.id;
+  }
+  if (formData !== undefined) {
+    entry.form_data = formData;
+    entry.form_version = 2;
+  } else if (existing && existing.form_data) {
+    entry.form_data = existing.form_data;
+    entry.form_version = existing.form_version || 2;
   }
   await dbPut('journal_entries', entry);
   if (typeof schedulePush === 'function') schedulePush();

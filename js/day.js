@@ -427,7 +427,11 @@ function renderEBPTaskBody(courseId, data, taskKey, container, onComplete) {
     const wsData = Object.assign({}, data.worksheet, {
       peerExample: getEBPPeerExample(day)
     });
-    createJournal(container, courseId, day, wsData, onComplete);
+    if (typeof createEBPJournal === 'function' && typeof getEBPJournalConfig === 'function') {
+      createEBPJournal(container, courseId, day, wsData, onComplete);
+    } else {
+      createJournal(container, courseId, day, wsData, onComplete);
+    }
   } else if (taskKey === 'task3') {
     const audios = data.mindfulnessAudios || [];
     let completedCount = 0;
