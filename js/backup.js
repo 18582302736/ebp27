@@ -26,7 +26,7 @@ function markBackupComplete() {
   if (typeof updateBackupUI === 'function') updateBackupUI();
 }
 
-function isBackupDirty() { return localStorage.getItem(BACKUP_DIRTY_KEY) !== '0'; }
+function isBackupDirty() { return localStorage.getItem(BACKUP_DIRTY_KEY) === '1'; }
 function getLastBackupAt() { return localStorage.getItem(LAST_BACKUP_KEY) || null; }
 
 function updateBackupIndicator() {
@@ -35,8 +35,6 @@ function updateBackupIndicator() {
     dot.className = 'sync-dot ' + (dirty ? 'error' : 'success');
     dot.title = dirty ? '有新内容待备份' : '本机内容已备份';
   });
-  const settingsBtn = document.getElementById('settingsBtn');
-  if (settingsBtn) settingsBtn.classList.toggle('has-backup-reminder', dirty);
 }
 
 async function getBackupSummary(data) {

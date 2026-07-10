@@ -35,16 +35,21 @@ async function updateBackupUI() {
   const statusText = document.querySelector('.backup-status-text');
   const lastBackup = document.getElementById('lastBackupTime');
   const summary = document.getElementById('backupDataSummary');
-  if (statusIcon && statusText) {
-    const dirty = isBackupDirty();
-    statusIcon.textContent = dirty ? '●' : '✓';
-    statusIcon.className = 'backup-status-icon ' + (dirty ? 'pending' : 'safe');
-    statusText.textContent = dirty ? '有新内容待备份' : '本机内容已备份';
-  }
   if (lastBackup) lastBackup.textContent = '上次备份：' + formatBackupTime(getLastBackupAt());
   if (summary) {
-    try { const s = await getBackupSummary(); summary.textContent = s.progressCount + ' 天进度 · ' + s.journalCount + ' 篇书写 · ' + s.photoCount + ' 张照片'; }
-    catch (e) { summary.textContent = '数据统计暂不可用'; }
+    try {
+      const s = await getBackupSummary();
+      summary.textContent = s.progressCount + ' 天进度 · ' + s.journalCount + ' 篇书写 · ' + s.photoCount + ' 张照片';
+      if (statusIcon && statusText) {
+        const hasData = s.progressCount > 0 || s.journalCount > 0;
+        const dirty = isBackupDirty() && hasData;
+        statusIcon.textContent = dirty ? '●' : '✓';
+        statusIcon.className = 'backup-status-icon ' + (dirty ? 'pending' : 'safe');
+        statusText.textContent = dirty ? '有新内容待备份' : '本机内容已备份';
+      }
+    } catch (e) {
+      summary.textContent = '数据统计暂不可用';
+    }
   }
 }
 

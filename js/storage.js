@@ -258,7 +258,6 @@ function getThemePreference() {
 function setThemePreference(theme) {
   localStorage.setItem('ebp_theme', theme);
   applyTheme(theme);
-  if (typeof markBackupDirty === 'function') markBackupDirty();
 }
 
 function applyTheme(theme) {
