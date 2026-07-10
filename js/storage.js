@@ -293,13 +293,15 @@ async function exportAllData() {
   return { progress, journals: processedJournals };
 }
 
-async function importAllData(progressList, journalList) {
+async function importAllData(progressList, journalList, opts = {}) {
+  const force = opts.force === true;
+
   if (progressList && progressList.length > 0) {
     for (const remote of progressList) {
       // 拒绝旧格式（纯数字 day），统一使用 courseId_day 格式
       if (typeof remote.day === 'number') continue;
       const local = await dbGet('progress', remote.day);
-      if (!local || !local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
+      if (force || !local || !local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
         await dbPut('progress', remote);
       }
     }
@@ -310,7 +312,7 @@ async function importAllData(progressList, journalList) {
       // 拒绝旧格式（纯数字 day），统一使用 courseId_day 格式
       if (typeof remote.day === 'number') continue;
       const local = (await dbGetByIndex('journal_entries', 'day', remote.day))[0] || null;
-      if (!local || !local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
+      if (force || !local || !local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
         if (remote.image_blobs_base64 && remote.image_blobs_base64.length > 0) {
           remote.image_base64 = remote.image_blobs_base64;
         }

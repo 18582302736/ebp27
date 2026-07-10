@@ -103,7 +103,7 @@ function validateBackupPayload(payload) {
 
 async function restoreBackupPayload(payload) {
   validateBackupPayload(payload);
-  await importAllData(payload.progress, payload.journals);
+  await importAllData(payload.progress, payload.journals, { force: true });
   if (payload.settings) {
     if (payload.settings.theme) localStorage.setItem('ebp_theme', payload.settings.theme);
     if (payload.settings.has_started) localStorage.setItem('ebp_has_started', payload.settings.has_started);
