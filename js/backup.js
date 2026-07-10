@@ -103,7 +103,22 @@ function validateBackupPayload(payload) {
 
 async function restoreBackupPayload(payload) {
   validateBackupPayload(payload);
+  const progCount = Array.isArray(payload.progress) ? payload.progress.length : 0;
+  const jrnlCount = Array.isArray(payload.journals) ? payload.journals.length : 0;
+  console.log('[Restore] 备份包含 ' + progCount + ' 条进度 + ' + jrnlCount + ' 条书写，开始写入...');
+
   await importAllData(payload.progress, payload.journals, { force: true });
+
+  // 验证写入：读回进度数据确认
+  let verifyCount = 0;
+  try {
+    const allAfter = await dbGetAll('progress');
+    verifyCount = Array.isArray(allAfter) ? allAfter.length : 0;
+    console.log('[Restore] 写入后验证：IndexedDB 中共有 ' + verifyCount + ' 条进度记录');
+  } catch (e) {
+    console.warn('[Restore] 验证读取失败:', e);
+  }
+
   if (payload.settings) {
     if (payload.settings.theme) localStorage.setItem('ebp_theme', payload.settings.theme);
     if (payload.settings.has_started) localStorage.setItem('ebp_has_started', payload.settings.has_started);
@@ -111,6 +126,8 @@ async function restoreBackupPayload(payload) {
   }
   localStorage.setItem(BACKUP_DIRTY_KEY, '0');
   localStorage.setItem(LAST_BACKUP_KEY, payload.createdAt || new Date().toISOString());
+
+  return { progCount, jrnlCount, verifyCount };
 }
 
 async function shareBackupFile(file) {

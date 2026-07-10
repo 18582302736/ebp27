@@ -100,7 +100,9 @@ async function previewRestoreBackup() {
 async function confirmRestoreBackup() {
   if (!pendingRestore || !pendingRestore.payload) return;
   const btn = document.getElementById('confirmRestoreBtn'); btn.disabled = true; btn.textContent = '正在恢复…';
-  try { await restoreBackupPayload(pendingRestore.payload); setBackupDialogContent('<div class="backup-ready-icon">✓</div><p class="backup-dialog-copy">数据恢复完成。页面将重新加载。</p>'); setTimeout(() => window.location.reload(), 900); }
+  try {
+    const result = await restoreBackupPayload(pendingRestore.payload);
+    setBackupDialogContent('<div class="backup-ready-icon">✓</div><p class="backup-dialog-copy">数据恢复完成。备份含 ' + result.progCount + ' 条进度、' + result.jrnlCount + ' 篇书写，写入后共 ' + result.verifyCount + ' 条进度记录。页面将重新加载。</p>'); setTimeout(() => window.location.reload(), 1500); }
   catch (e) { showBackupDialogError(e.message || '恢复失败'); btn.disabled = false; btn.textContent = '合并并恢复'; }
 }
 

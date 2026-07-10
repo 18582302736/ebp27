@@ -147,6 +147,23 @@ async function initApp() {
             await unlockCourse(nextCourse.id);
           }
         }
+        // 显示完成弹窗和横幅
+        const banner = document.getElementById('completionBanner');
+        const nextBtn = document.getElementById('nextDayBtn');
+        if (banner) banner.classList.add('visible');
+        if (nextBtn) {
+          if (day < config.totalDays) {
+            nextBtn.href = `day.html?course=${courseId}&day=${day + 1}`;
+            nextBtn.textContent = '进入下一天';
+            nextBtn.querySelector('.svg-icon').innerHTML = iconArrowRight(16);
+          } else {
+            nextBtn.href = 'index.html';
+            nextBtn.textContent = '返回首页';
+            nextBtn.querySelector('.svg-icon').innerHTML = '';
+          }
+          nextBtn.classList.add('visible');
+        }
+        showResultOverlay();
       }
     }
 
