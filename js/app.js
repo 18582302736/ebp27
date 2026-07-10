@@ -33,18 +33,16 @@ async function initApp() {
   const refreshBtn = document.getElementById('refreshBtn');
   if (refreshBtn) {
     refreshBtn.innerHTML = iconRefresh(20);
+    refreshBtn.title = '强制更新应用';
+    refreshBtn.setAttribute('aria-label', '强制更新应用');
     refreshBtn.addEventListener('click', async () => {
-      if (!confirm('确定要刷新缓存并重新加载页面吗？')) return;
+      if (!confirm('确定要强制更新应用吗？这只会清除应用代码缓存，不会删除你的书写和照片。')) return;
+      refreshBtn.disabled = true;
       try {
-        const reg = await navigator.serviceWorker.getRegistration();
-        if (reg && reg.active) { reg.active.postMessage({ type: 'CLEAR_CACHES' }); }
-        const keys = await caches.keys();
-        await Promise.all(keys.map(k => caches.delete(k)));
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(registrations.map(r => r.unregister()));
-        await new Promise(r => setTimeout(r, 300));
-      } catch (e) {}
-      window.location.replace(window.location.origin + window.location.pathname + '?v=' + Date.now());
+        await forceUpdateAppCache();
+      } catch (e) {
+        window.location.reload();
+      }
     });
   }
 

@@ -1,6 +1,6 @@
 // sw.js - Service Worker（离线缓存）
 
-const CACHE_STATIC = 'ebp-static-v57';
+const CACHE_STATIC = 'ebp-static-v58';
 const CACHE_AUDIO = 'ebp-audio-v1';
 const CACHE_PDF = 'ebp-pdf-v1';
 
@@ -66,6 +66,9 @@ self.addEventListener('message', (event) => {
     event.waitUntil(
       caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
     );
+  }
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
   }
 });
 

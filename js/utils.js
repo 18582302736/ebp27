@@ -42,3 +42,31 @@ function formatDateWithWeekday(isoString) {
   const d = new Date(isoString);
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${WEEKDAY_NAMES[d.getDay()]}`;
 }
+
+async function forceUpdateAppCache() {
+  const tasks = [];
+
+  if ('serviceWorker' in navigator) {
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      registrations.forEach(reg => {
+        if (reg.active) reg.active.postMessage({ type: 'CLEAR_CACHES' });
+        tasks.push(reg.update().catch(() => {}));
+        tasks.push(reg.unregister().catch(() => {}));
+      });
+    } catch (e) {}
+  }
+
+  if ('caches' in window) {
+    try {
+      const keys = await caches.keys();
+      keys.forEach(key => tasks.push(caches.delete(key).catch(() => {})));
+    } catch (e) {}
+  }
+
+  await Promise.all(tasks);
+
+  const url = new URL(window.location.href);
+  url.searchParams.set('force_update', String(Date.now()));
+  window.location.replace(url.toString());
+}

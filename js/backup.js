@@ -1,7 +1,7 @@
 // backup.js - iCloud Drive 文件备份与恢复
 const BACKUP_MAGIC = 'AnxietyHealBackup';
 const BACKUP_VERSION = 1;
-const BACKUP_APP_VERSION = '1.9.3';
+const BACKUP_APP_VERSION = '1.9.4';
 const BACKUP_DIRTY_KEY = 'ebp_backup_dirty';
 const LAST_BACKUP_KEY = 'ebp_last_backup_at';
 const LEGACY_TOKEN_KEY = 'ebp_github_token';
@@ -92,7 +92,7 @@ async function readBackupFile(file) {
     validateBackupPayload(payload);
     return payload;
   }
-  throw new Error('这是旧版加密备份。新版恢复不需要密码，请先用 v1.9.3 重新生成一个新的备份文件。');
+  throw new Error('这是旧版加密备份。新版恢复不需要密码，请先用 v1.9.4 重新生成一个新的备份文件。');
 }
 
 function validateBackupPayload(payload) {
