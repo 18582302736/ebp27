@@ -151,7 +151,7 @@ async function saveProgress(courseId, day, data) {
   data.day = makeKey(courseId, day);
   data.updated_at = new Date().toISOString();
   await dbPut('progress', data);
-  if (typeof schedulePush === 'function') schedulePush();
+  if (typeof markBackupDirty === 'function') markBackupDirty();
 }
 
 // 初始化课程第一天为可用
@@ -244,7 +244,7 @@ async function saveJournalEntry(courseId, day, text, imageBase64s, formData) {
     entry.form_version = existing.form_version || 2;
   }
   await dbPut('journal_entries', entry);
-  if (typeof schedulePush === 'function') schedulePush();
+  if (typeof markBackupDirty === 'function') markBackupDirty();
 }
 
 // ── 主题偏好 ──
@@ -258,7 +258,7 @@ function getThemePreference() {
 function setThemePreference(theme) {
   localStorage.setItem('ebp_theme', theme);
   applyTheme(theme);
-  if (typeof schedulePush === 'function') schedulePush();
+  if (typeof markBackupDirty === 'function') markBackupDirty();
 }
 
 function applyTheme(theme) {

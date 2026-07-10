@@ -5,11 +5,7 @@ let currentCourseId = null;
 async function initApp() {
   await initStorage();
 
-  // 同步指示器
-  if (typeof updateSyncIndicator === 'function') {
-    updateSyncIndicator();
-    setInterval(updateSyncIndicator, 2000);
-  }
+  if (typeof updateBackupIndicator === 'function') updateBackupIndicator();
 
   // 主题
   const theme = getThemePreference();
@@ -50,13 +46,6 @@ async function initApp() {
       } catch (e) {}
       window.location.replace(window.location.origin + window.location.pathname + '?v=' + Date.now());
     });
-  }
-
-  // 后台同步（不阻塞页面渲染）
-  if (typeof initSync === 'function') {
-    initSync().then(() => {
-      if (typeof updateSyncIndicator === 'function') updateSyncIndicator();
-    }).catch(e => console.warn('Sync init failed:', e));
   }
 
   // 检查是否首次使用

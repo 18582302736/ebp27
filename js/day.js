@@ -12,10 +12,7 @@ async function initApp() {
   try {
     await initStorage();
 
-    if (typeof updateSyncIndicator === 'function') {
-      updateSyncIndicator();
-      setInterval(updateSyncIndicator, 2000);
-    }
+    if (typeof updateBackupIndicator === 'function') updateBackupIndicator();
 
     const theme = getThemePreference();
     applyTheme(theme);
@@ -201,48 +198,6 @@ async function initApp() {
       overlay.style.display = 'flex';
       document.getElementById('resultDetailBtn').addEventListener('click', () => {
         overlay.style.display = 'none';
-      });
-    }
-
-    // 手动同步按钮
-    const detailSyncSection = document.getElementById('detailSyncSection');
-    const detailSyncBtn = document.getElementById('detailSyncBtn');
-    const detailSyncIcon = document.getElementById('detailSyncIcon');
-
-    if (detailSyncSection && detailSyncBtn) {
-      detailSyncSection.style.display = 'block';
-      if (detailSyncIcon) detailSyncIcon.innerHTML = iconRefresh(16);
-
-      detailSyncBtn.addEventListener('click', async () => {
-        if (typeof hasGithubToken === 'function' && !hasGithubToken()) {
-          showToast('请先配置 GitHub Token', 'warning');
-          if (typeof openSettings === 'function') openSettings();
-          return;
-        }
-        detailSyncBtn.disabled = true;
-        detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;animation:spin 1s linear infinite;">${iconRefresh(16)}</span>正在同步到云端...`;
-
-        try {
-          if (typeof syncNow === 'function') {
-            await syncNow();
-            const allDoneNow = config.taskKeys.every(k => taskDone[k]);
-            if (allDoneNow) {
-              detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;color:var(--success);">${iconCheck(16)}</span>提交成功！`;
-              showResultOverlay();
-            } else {
-              showToast('进度已保存', 'success');
-              detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;color:var(--success);">${iconCheck(16)}</span>保存成功`;
-            }
-            detailSyncBtn.disabled = false;
-          }
-        } catch (e) {
-          showToast('同步失败: ' + e.message, 'error');
-          detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;color:#c62828;">✕</span>同步失败，请重试`;
-          detailSyncBtn.disabled = false;
-          setTimeout(() => {
-            detailSyncBtn.innerHTML = `<span class="svg-icon" style="margin-right:6px;">${iconRefresh(16)}</span>保存提交`;
-          }, 3000);
-        }
       });
     }
 

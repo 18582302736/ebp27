@@ -90,7 +90,7 @@
       <footer class="app-footer">
         <p>每天一小步，慢慢来</p>
         <p>你已经在路上了</p>
-        <p class="app-version"><span class="sync-dot" id="syncDot"></span> v1.8.0</p>
+        <p class="app-version"><span class="sync-dot" id="syncDot"></span> v1.9.0</p>
       </footer>
     </main>
   </div>
@@ -137,7 +137,7 @@
       <footer class="app-footer">
         <p>每天一小步，慢慢来</p>
         <p>你已经在路上了</p>
-        <p class="app-version"><span class="sync-dot" id="syncDot2"></span> v1.8.0</p>
+        <p class="app-version"><span class="sync-dot" id="syncDot2"></span> v1.9.0</p>
       </footer>
     </main>
   </div>
@@ -151,40 +151,15 @@
         <button class="settings-close" id="settingsClose">&times;</button>
       </div>
       <div class="settings-body">
-        <div class="settings-section">
-          <label class="settings-label">GitHub Token</label>
-          <p class="settings-hint">用于自动备份数据到 GitHub</p>
-          <div class="token-input-wrapper">
-            <input type="password" class="settings-input" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-            <button class="btn btn-small btn-secondary" id="toggleTokenVisibility">显示</button>
-          </div>
-          <button class="btn btn-primary btn-small" id="saveTokenBtn">保存 Token</button>
-          <p class="settings-token-status" id="tokenStatus"></p>
-        </div>
-        <div class="settings-section">
-          <label class="settings-label">同步状态</label>
-          <div class="sync-status" id="syncStatus">
-            <span class="sync-status-icon">○</span>
-            <span class="sync-status-text">未配置</span>
-          </div>
-          <button class="btn btn-secondary btn-small" id="syncNowBtn">立即同步</button>
-          <p class="settings-hint" id="lastSyncTime"></p>
-        </div>
-        <div class="settings-section">
-          <details class="token-guide">
-            <summary>如何获取 GitHub Token？</summary>
-            <div class="token-guide-content">
-              <ol>
-                <li>打开 <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a>（需登录 GitHub）</li>
-                <li>点击 "Generate new token" → "Generate new token (classic)"</li>
-                <li>Note 填写 "ebp27-backup"，Expiration 选择 "No expiration"</li>
-                <li>勾选 "repo" 权限</li>
-                <li>点击底部 "Generate token"</li>
-                <li>复制生成的 token（以 ghp_ 开头）</li>
-                <li>粘贴到上方输入框，点击保存</li>
-              </ol>
-            </div>
-          </details>
+        <div class="settings-section backup-settings-section">
+          <label class="settings-label">iCloud 数据备份</label>
+          <div class="backup-status"><span class="backup-status-icon pending">●</span><span class="backup-status-text">有新内容待备份</span></div>
+          <p class="backup-data-summary" id="backupDataSummary">正在统计本机数据…</p>
+          <p class="settings-hint" id="lastBackupTime">上次备份：从未备份</p>
+          <button class="btn btn-primary backup-main-btn" id="createBackupBtn">备份到 iCloud</button>
+          <button class="btn btn-secondary backup-main-btn" id="restoreBackupBtn">从备份恢复</button>
+          <input type="file" class="hidden-input" id="backupFileInput" accept=".ahbackup,application/octet-stream">
+          <p class="settings-hint backup-help">备份时会打开 iPhone 分享菜单，请选择“存储到文件”，再保存到 iCloud Drive。</p>
         </div>
       </div>
     </div>
@@ -194,7 +169,7 @@
   <script src="js/icons.js"></script>
   <script src="js/toast.js"></script>
   <script src="js/storage.js"></script>
-  <script src="js/sync.js"></script>
+  <script src="js/backup.js"></script>
   <script src="js/settings.js"></script>
   <script src="js/data.js"></script>
   <script src="js/cbt-data.js"></script>
