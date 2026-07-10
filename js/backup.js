@@ -1,7 +1,7 @@
 // backup.js - iCloud Drive 文件备份与恢复
 const BACKUP_MAGIC = 'AnxietyHealBackup';
 const BACKUP_VERSION = 1;
-const BACKUP_APP_VERSION = '1.9.2';
+const BACKUP_APP_VERSION = '1.9.3';
 const BACKUP_DIRTY_KEY = 'ebp_backup_dirty';
 const LAST_BACKUP_KEY = 'ebp_last_backup_at';
 const LEGACY_TOKEN_KEY = 'ebp_github_token';
@@ -92,7 +92,7 @@ async function readBackupFile(file) {
     validateBackupPayload(payload);
     return payload;
   }
-  throw new Error('这是旧版加密备份。新版恢复不需要密码，请先用 v1.9.2 重新生成一个新的备份文件。');
+  throw new Error('这是旧版加密备份。新版恢复不需要密码，请先用 v1.9.3 重新生成一个新的备份文件。');
 }
 
 function validateBackupPayload(payload) {
@@ -116,7 +116,7 @@ async function restoreBackupPayload(payload) {
 async function shareBackupFile(file) {
   if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
     try {
-      await navigator.share({ title: 'AnxietyHeal 备份', text: '请选择“存储到文件”，保存到 iCloud Drive。', files: [file] });
+      await navigator.share({ files: [file] });
       markBackupComplete();
       return 'shared';
     } catch (e) {
