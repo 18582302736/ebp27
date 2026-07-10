@@ -1,7 +1,7 @@
-// backup.js - iCloud Drive 加密备份与恢复
+// backup.js - iCloud Drive 文件备份与恢复
 const BACKUP_MAGIC = 'AnxietyHealBackup';
 const BACKUP_VERSION = 1;
-const BACKUP_APP_VERSION = '1.9.0';
+const BACKUP_APP_VERSION = '1.9.1';
 const BACKUP_DIRTY_KEY = 'ebp_backup_dirty';
 const LAST_BACKUP_KEY = 'ebp_last_backup_at';
 const LEGACY_TOKEN_KEY = 'ebp_github_token';
@@ -59,8 +59,7 @@ async function getBackupSummary(data) {
 
 function countImages(value) { return Array.isArray(value) ? value.length : 0; }
 
-async function createEncryptedBackup(password) {
-  if (!password) throw new Error('请输入备份密码');
+async function createBackupFile() {
   const data = await exportAllData();
   const payload = {
     magic: BACKUP_MAGIC,
@@ -71,29 +70,29 @@ async function createEncryptedBackup(password) {
     journals: data.journals || [],
     settings: exportSettings()
   };
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const key = await deriveBackupKey(password, salt, ['encrypt']);
-  const plain = new TextEncoder().encode(JSON.stringify(payload));
-  const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plain);
   const envelope = {
     magic: BACKUP_MAGIC,
     version: BACKUP_VERSION,
-    encrypted: true,
-    kdf: { name: 'PBKDF2', hash: 'SHA-256', iterations: 250000, salt: bytesToBase64(salt) },
-    cipher: { name: 'AES-GCM', iv: bytesToBase64(iv) },
-    data: bytesToBase64(new Uint8Array(cipher))
+    encrypted: false,
+    payload
   };
   const stamp = formatBackupFilenameDate(new Date());
-  return new File([JSON.stringify(envelope)], 'AnxietyHeal-' + stamp + '.ahbackup', { type: 'application/octet-stream' });
+  return new File([JSON.stringify(envelope)], 'AnxietyHeal-' + stamp + '.ahbackup', { type: 'application/json' });
 }
 
-async function decryptBackupFile(file, password) {
+async function readBackupFile(file, password) {
   let envelope;
-  try { envelope = JSON.parse(await file.text()); }
-  catch (e) { throw new Error('这不是有效的 AnxietyHeal 备份文件'); }
-  if (!envelope || envelope.magic !== BACKUP_MAGIC || !envelope.encrypted) throw new Error('备份文件格式不正确');
+  const text = await file.text();
+  try { envelope = JSON.parse(text); }
+  catch (e) { throw new Error('这不是有效的 AnxietyHeal 备份文件。请在 iCloud Drive 里选择以 AnxietyHeal 开头、以 .ahbackup 结尾的文件。'); }
+  if (!envelope || envelope.magic !== BACKUP_MAGIC) throw new Error('备份文件格式不正确。请确认选择的是 AnxietyHeal 的 .ahbackup 文件。');
   if (envelope.version > BACKUP_VERSION) throw new Error('备份来自更新版本，请先更新小应用');
+  if (!envelope.encrypted) {
+    const payload = envelope.payload || envelope;
+    validateBackupPayload(payload);
+    return payload;
+  }
+  if (!password) throw new Error('这是旧版加密备份，需要输入创建备份时的密码');
   try {
     const salt = base64ToBytes(envelope.kdf.salt);
     const iv = base64ToBytes(envelope.cipher.iv);
@@ -129,7 +128,7 @@ async function restoreBackupPayload(payload) {
 async function shareBackupFile(file) {
   if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
     try {
-      await navigator.share({ title: 'AnxietyHeal 加密备份', text: '请选择“存储到文件”，保存到 iCloud Drive。', files: [file] });
+      await navigator.share({ title: 'AnxietyHeal 备份', text: '请选择“存储到文件”，保存到 iCloud Drive。', files: [file] });
       markBackupComplete();
       return 'shared';
     } catch (e) {

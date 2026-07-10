@@ -1848,7 +1848,7 @@ textarea.structured-input { min-height: 76px; overflow: hidden; }
   animation: slideUp 0.3s ease;
 }
 
-/* ===== iCloud 加密备份 ===== */
+/* ===== iCloud 文件备份 ===== */
 .backup-status { display: flex; align-items: center; gap: 8px; margin: 10px 0 6px; font-size: .9rem; color: var(--text); }
 .backup-status-icon { font-size: .75rem; }
 .backup-status-icon.pending { color: var(--warning); }

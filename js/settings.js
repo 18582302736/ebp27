@@ -52,23 +52,17 @@ async function openCreateBackupDialog() {
   let summary;
   try { summary = await getBackupSummary(); }
   catch (e) { showToast('读取本地数据失败', 'error'); return; }
-  openBackupDialog('创建加密备份', '<p class="backup-dialog-copy">将备份 ' + summary.progressCount + ' 天进度、' + summary.journalCount + ' 篇书写和 ' + summary.photoCount + ' 张照片。</p>'
-    + '<label class="backup-dialog-field">备份密码<input type="password" id="backupPassword" autocomplete="new-password" placeholder="恢复时需要输入"></label>'
-    + '<label class="backup-dialog-field">再次输入<input type="password" id="backupPasswordConfirm" autocomplete="new-password" placeholder="再次输入备份密码"></label>'
-    + '<p class="backup-dialog-warning">请记住这个密码。密码不会上传或保存，忘记后无法恢复备份。</p>'
+  openBackupDialog('创建备份', '<p class="backup-dialog-copy">将备份 ' + summary.progressCount + ' 天进度、' + summary.journalCount + ' 篇书写和 ' + summary.photoCount + ' 张照片。</p>'
+    + '<p class="backup-dialog-warning">照片会一起保存在同一个 .ahbackup 文件里。备份文件不再需要密码，请保存到你自己的 iCloud Drive。</p>'
     + '<div class="backup-dialog-actions"><button class="btn btn-secondary" data-close-backup>取消</button><button class="btn btn-primary" id="prepareBackupBtn">创建备份</button></div>');
   document.getElementById('prepareBackupBtn').addEventListener('click', prepareBackupFile);
 }
 
 async function prepareBackupFile() {
-  const password = document.getElementById('backupPassword').value;
-  const confirmPassword = document.getElementById('backupPasswordConfirm').value;
-  if (!password) { showBackupDialogError('请输入备份密码'); return; }
-  if (password !== confirmPassword) { showBackupDialogError('两次输入的密码不一致'); return; }
-  const btn = document.getElementById('prepareBackupBtn'); btn.disabled = true; btn.textContent = '正在加密…';
+  const btn = document.getElementById('prepareBackupBtn'); btn.disabled = true; btn.textContent = '正在整理…';
   try {
-    pendingBackupFile = await createEncryptedBackup(password);
-    setBackupDialogContent('<div class="backup-ready-icon">✓</div><p class="backup-dialog-copy">加密备份已准备好。点击下面按钮，在 iPhone 菜单中选择“存储到文件”，再保存到 iCloud Drive。</p>'
+    pendingBackupFile = await createBackupFile();
+    setBackupDialogContent('<div class="backup-ready-icon">✓</div><p class="backup-dialog-copy">备份文件已准备好。点击下面按钮，在 iPhone 菜单中选择“存储到文件”，再保存到 iCloud Drive。</p>'
       + '<div class="backup-dialog-actions stacked"><button class="btn btn-primary" id="shareBackupBtn">保存到 iCloud</button><button class="btn btn-secondary" data-close-backup>稍后再说</button></div>');
     document.getElementById('shareBackupBtn').addEventListener('click', savePreparedBackup);
     bindBackupCloseButtons();
@@ -86,24 +80,33 @@ function handleBackupFileSelected(event) {
   const file = event.target.files && event.target.files[0]; event.target.value = '';
   if (!file) return;
   pendingRestore = { file, payload: null };
-  openBackupDialog('打开加密备份', '<p class="backup-dialog-copy">已选择：' + escapeSettingsHtml(file.name) + '</p>'
-    + '<label class="backup-dialog-field">备份密码<input type="password" id="restorePassword" autocomplete="current-password" placeholder="创建备份时使用的密码"></label>'
-    + '<div class="backup-dialog-actions"><button class="btn btn-secondary" data-close-backup>取消</button><button class="btn btn-primary" id="decryptBackupBtn">查看备份</button></div>');
-  document.getElementById('decryptBackupBtn').addEventListener('click', previewRestoreBackup);
+  openBackupDialog('打开备份', '<p class="backup-dialog-copy">已选择：' + escapeSettingsHtml(file.name) + '</p>'
+    + '<p class="backup-dialog-warning" id="legacyPasswordHint" style="display:none;">这是旧版加密备份，需要输入当时设置的密码。</p>'
+    + '<label class="backup-dialog-field" id="legacyPasswordField" style="display:none;">旧版备份密码<input type="password" id="restorePassword" autocomplete="current-password" placeholder="创建旧备份时使用的密码"></label>'
+    + '<div class="backup-dialog-actions"><button class="btn btn-secondary" data-close-backup>取消</button><button class="btn btn-primary" id="readBackupBtn">查看备份</button></div>');
+  document.getElementById('readBackupBtn').addEventListener('click', previewRestoreBackup);
 }
 
 async function previewRestoreBackup() {
-  const password = document.getElementById('restorePassword').value;
-  if (!password) { showBackupDialogError('请输入备份密码'); return; }
-  const btn = document.getElementById('decryptBackupBtn'); btn.disabled = true; btn.textContent = '正在验证…';
+  const passwordInput = document.getElementById('restorePassword');
+  const password = passwordInput ? passwordInput.value : '';
+  const btn = document.getElementById('readBackupBtn'); btn.disabled = true; btn.textContent = '正在验证…';
   try {
-    const payload = await decryptBackupFile(pendingRestore.file, password); pendingRestore.payload = payload;
+    const payload = await readBackupFile(pendingRestore.file, password); pendingRestore.payload = payload;
     const summary = await getBackupSummary({ progress: payload.progress, journals: payload.journals });
     setBackupDialogContent('<div class="backup-preview"><div><span>备份时间</span><strong>' + formatBackupTime(payload.createdAt) + '</strong></div><div><span>应用版本</span><strong>v' + escapeSettingsHtml(payload.appVersion || '未知') + '</strong></div><div><span>备份内容</span><strong>' + summary.progressCount + ' 天进度 · ' + summary.journalCount + ' 篇书写 · ' + summary.photoCount + ' 张照片</strong></div></div>'
       + '<p class="backup-dialog-copy">恢复时会合并数据，同一天保留更新的内容，不会删除本机已有记录。</p>'
       + '<div class="backup-dialog-actions"><button class="btn btn-secondary" data-close-backup>取消</button><button class="btn btn-primary" id="confirmRestoreBtn">合并并恢复</button></div>');
     document.getElementById('confirmRestoreBtn').addEventListener('click', confirmRestoreBackup); bindBackupCloseButtons();
-  } catch (e) { showBackupDialogError(e.message); btn.disabled = false; btn.textContent = '查看备份'; }
+  } catch (e) {
+    if (e.message && e.message.includes('旧版加密备份')) {
+      const hint = document.getElementById('legacyPasswordHint');
+      const field = document.getElementById('legacyPasswordField');
+      if (hint) hint.style.display = '';
+      if (field) field.style.display = '';
+    }
+    showBackupDialogError(e.message); btn.disabled = false; btn.textContent = '查看备份';
+  }
 }
 
 async function confirmRestoreBackup() {
