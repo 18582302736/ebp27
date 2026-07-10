@@ -1195,7 +1195,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 12px;
-  font-size: 1rem;
+  font-size: 17px;
   font-family: inherit;
   line-height: 1.7;
   resize: none;
@@ -2136,7 +2136,14 @@ textarea.structured-input { min-height: 76px; overflow: hidden; }
 .result-subtitle {
   font-size: 0.875rem;
   color: var(--text-secondary);
-  margin: 0 0 28px;
+  margin: 0 0 12px;
+}
+.result-encouragement {
+  font-size: 1rem;
+  color: var(--primary);
+  margin: 0 0 24px;
+  line-height: 1.6;
+  font-weight: 500;
 }
 .result-actions {
   display: flex;

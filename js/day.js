@@ -183,7 +183,7 @@ async function initApp() {
         card.classList.add('locked');
         taskBody.innerHTML = '<div class="locked-hint">解锁后可操作</div>';
       } else {
-        renderTaskBody(courseId, data, taskKey, taskBody, async () => {
+        renderTaskBody(courseId, data, taskKey, taskBody, taskDone[taskKey], async () => {
           if (taskDone[taskKey]) return;
           taskDone[taskKey] = true;
           progress[completedKey] = new Date().toISOString();
@@ -210,6 +210,8 @@ async function initApp() {
       document.getElementById('resultSubtitle').textContent = `完成于 ${formatDateWithWeekday(new Date().toISOString())}`;
       const resultIcon = document.getElementById('resultIcon');
       if (resultIcon) resultIcon.innerHTML = iconStar(48);
+      const encouragement = document.getElementById('resultEncouragement');
+      if (encouragement) encouragement.textContent = getEncouragement();
       overlay.style.display = 'flex';
       document.getElementById('resultDetailBtn').addEventListener('click', () => {
         overlay.style.display = 'none';
@@ -265,13 +267,13 @@ function getTaskDescription(courseId, data, taskKey) {
 
 // ── 任务内容渲染 ──
 
-function renderTaskBody(courseId, data, taskKey, container, onComplete) {
+function renderTaskBody(courseId, data, taskKey, container, done, onComplete) {
   if (courseId === 'cbt') {
-    renderCBTTaskBody(courseId, data, taskKey, container, onComplete);
+    renderCBTTaskBody(courseId, data, taskKey, container, done, onComplete);
   } else if (courseId === 'act') {
-    renderACTTaskBody(courseId, data, taskKey, container, onComplete);
+    renderACTTaskBody(courseId, data, taskKey, container, done, onComplete);
   } else {
-    renderEBPTaskBody(courseId, data, taskKey, container, onComplete);
+    renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete);
   }
 }
 
@@ -329,7 +331,7 @@ function getEBPPeerExample(day) {
   return null;
 }
 
-function renderEBPTaskBody(courseId, data, taskKey, container, onComplete) {
+function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete) {
   const day = parseInt(getQueryParam('day')) || 1;
   if (taskKey === 'task1') {
     const wrapper = document.createElement('div');
@@ -360,9 +362,15 @@ function renderEBPTaskBody(courseId, data, taskKey, container, onComplete) {
     }
 
     // 完成按钮
-    html += '<button class="btn btn-primary learning-done-btn">'
-      + '<span class="svg-icon">' + iconCheck(16) + '</span> 完成学习，开始书写'
-      + '</button>';
+    if (done) {
+      html += '<button class="btn btn-primary learning-done-btn done" disabled>'
+        + '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成'
+        + '</button>';
+    } else {
+      html += '<button class="btn btn-primary learning-done-btn">'
+        + '<span class="svg-icon">' + iconCheck(16) + '</span> 完成学习，开始书写'
+        + '</button>';
+    }
 
     wrapper.innerHTML = html;
     container.appendChild(wrapper);
@@ -382,13 +390,15 @@ function renderEBPTaskBody(courseId, data, taskKey, container, onComplete) {
     }
 
     // 完成按钮事件
-    const doneBtn = wrapper.querySelector('.learning-done-btn');
-    doneBtn.addEventListener('click', () => {
-      doneBtn.disabled = true;
-      doneBtn.innerHTML = '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成';
-      doneBtn.classList.add('done');
-      onComplete();
-    });
+    if (!done) {
+      const doneBtn = wrapper.querySelector('.learning-done-btn');
+      doneBtn.addEventListener('click', () => {
+        doneBtn.disabled = true;
+        doneBtn.innerHTML = '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成';
+        doneBtn.classList.add('done');
+        onComplete();
+      });
+    }
 
     if (audios.length === 0 && !guideHtml) {
       container.innerHTML = '<div class="locked-hint">暂无音频内容</div>';
@@ -417,10 +427,10 @@ function renderEBPTaskBody(courseId, data, taskKey, container, onComplete) {
   }
 }
 
-function renderCBTTaskBody(courseId, data, taskKey, container, onComplete) {
+function renderCBTTaskBody(courseId, data, taskKey, container, done, onComplete) {
   const day = parseInt(getQueryParam('day')) || 1;
   if (taskKey === 'task1') {
-    renderLearningZone(container, data, onComplete);
+    renderLearningZone(container, data, done, onComplete);
   } else if (taskKey === 'task2') {
     const dayStr = String(day).padStart(2, '0');
     // 获取格式化后的书写模板/示例HTML
@@ -437,10 +447,10 @@ function renderCBTTaskBody(courseId, data, taskKey, container, onComplete) {
   }
 }
 
-function renderACTTaskBody(courseId, data, taskKey, container, onComplete) {
+function renderACTTaskBody(courseId, data, taskKey, container, done, onComplete) {
   const day = parseInt(getQueryParam('day')) || 1;
   if (taskKey === 'task1') {
-    renderACTGuideZone(container, data, onComplete);
+    renderACTGuideZone(container, data, done, onComplete);
   } else if (taskKey === 'task2') {
     const worksheetHtml = (typeof getACTWorksheetHtml === 'function') ? getACTWorksheetHtml(day) : null;
     const wsData = {
@@ -456,7 +466,7 @@ function renderACTTaskBody(courseId, data, taskKey, container, onComplete) {
 
 // ── ACT 阅读指南区 ──
 
-function renderACTGuideZone(container, data, onComplete) {
+function renderACTGuideZone(container, data, done, onComplete) {
   const wrapper = document.createElement('div');
   wrapper.className = 'learning-zone';
 
@@ -474,20 +484,28 @@ function renderACTGuideZone(container, data, onComplete) {
     }
   }
 
-  html += '<button class="btn btn-primary learning-done-btn">'
-    + '<span class="svg-icon">' + iconCheck(16) + '</span> 完成阅读，开始书写'
-    + '</button>';
+  if (done) {
+    html += '<button class="btn btn-primary learning-done-btn done" disabled>'
+      + '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成'
+      + '</button>';
+  } else {
+    html += '<button class="btn btn-primary learning-done-btn">'
+      + '<span class="svg-icon">' + iconCheck(16) + '</span> 完成阅读，开始书写'
+      + '</button>';
+  }
 
   wrapper.innerHTML = html;
   container.appendChild(wrapper);
 
-  const doneBtn = wrapper.querySelector('.learning-done-btn');
-  doneBtn.addEventListener('click', () => {
-    doneBtn.disabled = true;
-    doneBtn.innerHTML = '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成';
-    doneBtn.classList.add('done');
-    onComplete();
-  });
+  if (!done) {
+    const doneBtn = wrapper.querySelector('.learning-done-btn');
+    doneBtn.addEventListener('click', () => {
+      doneBtn.disabled = true;
+      doneBtn.innerHTML = '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成';
+      doneBtn.classList.add('done');
+      onComplete();
+    });
+  }
 }
 
 // ── 纯文本 → 格式化 HTML（用于 Days 4-21 的 OCR 文本自动排版）──
@@ -551,7 +569,7 @@ function formatPlainGuideText(rawText) {
 
 // ── 学习任务区：文字内容 + 结构图（一体化排版）──
 
-function renderLearningZone(container, data, onComplete) {
+function renderLearningZone(container, data, done, onComplete) {
   const wrapper = document.createElement('div');
   wrapper.className = 'learning-zone';
 
@@ -602,9 +620,15 @@ function renderLearningZone(container, data, onComplete) {
   }
 
   // 完成按钮
-  html += '<button class="btn btn-primary learning-done-btn">'
-    + '<span class="svg-icon">' + iconCheck(16) + '</span> 完成学习，开始书写'
-    + '</button>';
+  if (done) {
+    html += '<button class="btn btn-primary learning-done-btn done" disabled>'
+      + '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成'
+      + '</button>';
+  } else {
+    html += '<button class="btn btn-primary learning-done-btn">'
+      + '<span class="svg-icon">' + iconCheck(16) + '</span> 完成学习，开始书写'
+      + '</button>';
+  }
 
   wrapper.innerHTML = html;
   container.appendChild(wrapper);
@@ -623,13 +647,15 @@ function renderLearningZone(container, data, onComplete) {
   });
 
   // 完成按钮
-  const doneBtn = wrapper.querySelector('.learning-done-btn');
-  doneBtn.addEventListener('click', () => {
-    doneBtn.disabled = true;
-    doneBtn.innerHTML = '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成';
-    doneBtn.classList.add('done');
-    onComplete();
-  });
+  if (!done) {
+    const doneBtn = wrapper.querySelector('.learning-done-btn');
+    doneBtn.addEventListener('click', () => {
+      doneBtn.disabled = true;
+      doneBtn.innerHTML = '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成';
+      doneBtn.classList.add('done');
+      onComplete();
+    });
+  }
 }
 
 // ── 任务卡片 UI ──
@@ -747,4 +773,21 @@ function closePdfViewer() {
   document.body.style.overflow = '';
   const frame = document.getElementById('guideFrame');
   if (frame) frame.src = '';
+}
+
+const ENCOURAGEMENTS = [
+  '每一次练习，都是对自己的一次温柔关照。',
+  '你愿意面对自己，这本身就是一种勇气。',
+  '进步不在于一天改变多少，而在于每天都愿意迈出一小步。',
+  '不必完美，只需真诚地对待自己。',
+  '你已经比昨天更了解自己了——这就是成长。',
+  '给自己一点耐心，像对待好朋友一样对待自己。',
+  '情绪不是敌人，它们是你内心世界的信息。',
+  '今天你又一次选择了照顾自己，这很了不起。',
+  '慢慢来，每一步都算数。',
+  '你正在学习与情绪温柔相处，这需要时间。'
+];
+
+function getEncouragement() {
+  return ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
 }
