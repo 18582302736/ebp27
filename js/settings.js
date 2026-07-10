@@ -81,32 +81,20 @@ function handleBackupFileSelected(event) {
   if (!file) return;
   pendingRestore = { file, payload: null };
   openBackupDialog('打开备份', '<p class="backup-dialog-copy">已选择：' + escapeSettingsHtml(file.name) + '</p>'
-    + '<p class="backup-dialog-warning" id="legacyPasswordHint" style="display:none;">这是旧版加密备份，需要输入当时设置的密码。</p>'
-    + '<label class="backup-dialog-field" id="legacyPasswordField" style="display:none;">旧版备份密码<input type="password" id="restorePassword" autocomplete="current-password" placeholder="创建旧备份时使用的密码"></label>'
     + '<div class="backup-dialog-actions"><button class="btn btn-secondary" data-close-backup>取消</button><button class="btn btn-primary" id="readBackupBtn">查看备份</button></div>');
   document.getElementById('readBackupBtn').addEventListener('click', previewRestoreBackup);
 }
 
 async function previewRestoreBackup() {
-  const passwordInput = document.getElementById('restorePassword');
-  const password = passwordInput ? passwordInput.value : '';
   const btn = document.getElementById('readBackupBtn'); btn.disabled = true; btn.textContent = '正在验证…';
   try {
-    const payload = await readBackupFile(pendingRestore.file, password); pendingRestore.payload = payload;
+    const payload = await readBackupFile(pendingRestore.file); pendingRestore.payload = payload;
     const summary = await getBackupSummary({ progress: payload.progress, journals: payload.journals });
     setBackupDialogContent('<div class="backup-preview"><div><span>备份时间</span><strong>' + formatBackupTime(payload.createdAt) + '</strong></div><div><span>应用版本</span><strong>v' + escapeSettingsHtml(payload.appVersion || '未知') + '</strong></div><div><span>备份内容</span><strong>' + summary.progressCount + ' 天进度 · ' + summary.journalCount + ' 篇书写 · ' + summary.photoCount + ' 张照片</strong></div></div>'
       + '<p class="backup-dialog-copy">恢复时会合并数据，同一天保留更新的内容，不会删除本机已有记录。</p>'
       + '<div class="backup-dialog-actions"><button class="btn btn-secondary" data-close-backup>取消</button><button class="btn btn-primary" id="confirmRestoreBtn">合并并恢复</button></div>');
     document.getElementById('confirmRestoreBtn').addEventListener('click', confirmRestoreBackup); bindBackupCloseButtons();
-  } catch (e) {
-    if (e.message && e.message.includes('旧版加密备份')) {
-      const hint = document.getElementById('legacyPasswordHint');
-      const field = document.getElementById('legacyPasswordField');
-      if (hint) hint.style.display = '';
-      if (field) field.style.display = '';
-    }
-    showBackupDialogError(e.message); btn.disabled = false; btn.textContent = '查看备份';
-  }
+  } catch (e) { showBackupDialogError(e.message); btn.disabled = false; btn.textContent = '查看备份'; }
 }
 
 async function confirmRestoreBackup() {

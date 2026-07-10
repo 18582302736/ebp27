@@ -1,7 +1,7 @@
 // backup.js - iCloud Drive 文件备份与恢复
 const BACKUP_MAGIC = 'AnxietyHealBackup';
 const BACKUP_VERSION = 1;
-const BACKUP_APP_VERSION = '1.9.1';
+const BACKUP_APP_VERSION = '1.9.2';
 const BACKUP_DIRTY_KEY = 'ebp_backup_dirty';
 const LAST_BACKUP_KEY = 'ebp_last_backup_at';
 const LEGACY_TOKEN_KEY = 'ebp_github_token';
@@ -77,10 +77,10 @@ async function createBackupFile() {
     payload
   };
   const stamp = formatBackupFilenameDate(new Date());
-  return new File([JSON.stringify(envelope)], 'AnxietyHeal-' + stamp + '.ahbackup', { type: 'application/json' });
+  return new File([JSON.stringify(envelope)], 'AnxietyHeal-' + stamp + '.ahbackup', { type: 'application/octet-stream' });
 }
 
-async function readBackupFile(file, password) {
+async function readBackupFile(file) {
   let envelope;
   const text = await file.text();
   try { envelope = JSON.parse(text); }
@@ -92,19 +92,7 @@ async function readBackupFile(file, password) {
     validateBackupPayload(payload);
     return payload;
   }
-  if (!password) throw new Error('这是旧版加密备份，需要输入创建备份时的密码');
-  try {
-    const salt = base64ToBytes(envelope.kdf.salt);
-    const iv = base64ToBytes(envelope.cipher.iv);
-    const key = await deriveBackupKey(password, salt, ['decrypt']);
-    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, base64ToBytes(envelope.data));
-    const payload = JSON.parse(new TextDecoder().decode(plain));
-    validateBackupPayload(payload);
-    return payload;
-  } catch (e) {
-    if (e.message && (e.message.includes('更新') || e.message.includes('格式'))) throw e;
-    throw new Error('备份密码不正确，或文件已经损坏');
-  }
+  throw new Error('这是旧版加密备份。新版恢复不需要密码，请先用 v1.9.2 重新生成一个新的备份文件。');
 }
 
 function validateBackupPayload(payload) {
