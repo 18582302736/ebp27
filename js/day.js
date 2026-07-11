@@ -130,7 +130,12 @@ async function initApp() {
     function showCompletionNavigation() {
       const banner = document.getElementById('completionBanner');
       const nextBtn = document.getElementById('nextDayBtn');
+      const finishBtn = document.getElementById('finishDayBtn');
       if (banner) banner.classList.add('visible');
+      if (finishBtn) {
+        finishBtn.href = `index.html?course=${courseId}`;
+        finishBtn.classList.toggle('visible', day < config.totalDays);
+      }
       if (!nextBtn) return;
 
       if (day < config.totalDays) {
@@ -138,7 +143,7 @@ async function initApp() {
         nextBtn.innerHTML = '进入下一天 <span class="svg-icon" style="display:inline-flex;">' + iconArrowRight(16) + '</span>';
       } else {
         nextBtn.href = 'index.html';
-        nextBtn.textContent = '返回首页';
+        nextBtn.textContent = '完成本课程，返回首页';
       }
       nextBtn.classList.add('visible');
     }
@@ -213,10 +218,18 @@ async function initApp() {
       if (resultIcon) resultIcon.innerHTML = iconStar(48);
       const encouragement = document.getElementById('resultEncouragement');
       if (encouragement) encouragement.textContent = getEncouragement();
+      const resultNextBtn = document.getElementById('resultNextBtn');
+      const resultRestBtn = document.getElementById('resultRestBtn');
+      resultRestBtn.href = `index.html?course=${courseId}`;
+      if (day < config.totalDays) {
+        resultNextBtn.href = `day.html?course=${courseId}&day=${day + 1}`;
+        resultNextBtn.innerHTML = '继续第 ' + (day + 1) + ' 天 <span class="svg-icon" style="display:inline-flex;">' + iconArrowRight(16) + '</span>';
+      } else {
+        resultNextBtn.href = 'index.html';
+        resultNextBtn.textContent = '完成本课程，返回首页';
+        resultRestBtn.style.display = 'none';
+      }
       overlay.style.display = 'flex';
-      document.getElementById('resultDetailBtn').addEventListener('click', () => {
-        overlay.style.display = 'none';
-      });
     }
 
   } catch (e) {

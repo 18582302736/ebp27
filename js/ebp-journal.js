@@ -95,7 +95,7 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
   }
 
   function globalPhotosHtml() { return photosHtml(state.images || [], 'global', -1); }
-  function imageHtml(src, scope, itemIndex, imageIndex) { return '<div class="image-preview-wrapper"><img class="image-preview-item" src="' + src + '" alt="练习照片"><button type="button" class="image-remove-btn" data-action="remove-image" data-photo-scope="' + scope + '" data-item-index="' + itemIndex + '" data-image-index="' + imageIndex + '">×</button></div>'; }
+  function imageHtml(src, scope, itemIndex, imageIndex) { return '<div class="image-preview-wrapper"><img class="image-preview-item" src="' + src + '" alt="练习照片 ' + (imageIndex + 1) + '" role="button" tabindex="0" aria-label="查看练习照片 ' + (imageIndex + 1) + ' 大图"><button type="button" class="image-remove-btn" aria-label="删除练习照片 ' + (imageIndex + 1) + '" data-action="remove-image" data-photo-scope="' + scope + '" data-item-index="' + itemIndex + '" data-image-index="' + imageIndex + '">×</button></div>'; }
 
   function bindFormEvents() {
     form.querySelectorAll('.structured-input').forEach(el => {
@@ -104,6 +104,7 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
     });
     form.querySelectorAll('[data-action]').forEach(el => el.addEventListener('click', handleAction));
     form.querySelectorAll('.structured-image-input').forEach(el => el.addEventListener('change', handleImages));
+    form.querySelectorAll('.image-preview-item').forEach(bindImagePreview);
   }
 
   function updateFromInput(e) {
@@ -140,16 +141,35 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
       e.currentTarget.nextElementSibling.click(); return;
     }
     if (action === 'remove-image') {
-      imagesForScope(e.currentTarget.dataset.photoScope, Number(e.currentTarget.dataset.itemIndex)).splice(Number(e.currentTarget.dataset.imageIndex), 1);
+      const scope = e.currentTarget.dataset.photoScope;
+      const itemIndex = Number(e.currentTarget.dataset.itemIndex);
+      const imageIndex = Number(e.currentTarget.dataset.imageIndex);
+      const images = imagesForScope(scope, itemIndex);
+      const removed = images.splice(imageIndex, 1)[0];
+      render(); saveNow();
+      showUndoToast('图片已删除', async () => {
+        imagesForScope(scope, itemIndex).splice(Math.min(imageIndex, imagesForScope(scope, itemIndex).length), 0, removed);
+        render(); await saveNow(); showToast('已恢复图片', 'success');
+      });
+      return;
     }
     render(); scheduleSave();
   }
 
   async function handleImages(e) {
     const input = e.currentTarget; const target = imagesForScope(input.dataset.photoScope, Number(input.dataset.itemIndex));
-    for (const file of Array.from(input.files || [])) {
+    const files = Array.from(input.files || []);
+    if (!files.length) return;
+    const pickButton = input.previousElementSibling;
+    pickButton.disabled = true;
+    for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
+      const file = files[fileIndex];
+      pickButton.innerHTML = '<span class="upload-spinner" aria-hidden="true"></span> 正在处理 ' + (fileIndex + 1) + '/' + files.length;
+      status.textContent = '正在处理第 ' + (fileIndex + 1) + '/' + files.length + ' 张图片…';
       if (file.size > 10 * 1024 * 1024) { showToast('单张图片不能超过10MB', 'error'); continue; }
-      const compressed = await compressImage(file); target.push(await blobToBase64(compressed));
+      try {
+        const compressed = await compressImage(file); target.push(await blobToBase64(compressed));
+      } catch (err) { showToast('第 ' + (fileIndex + 1) + ' 张图片处理失败', 'error'); }
     }
     render(); await saveNow();
   }

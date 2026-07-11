@@ -79,4 +79,10 @@ async function renderCalendar(courseId) {
       window.location.href = `day.html?course=${courseId}&day=${day}`;
     });
   });
+
+  // 打开日历时把当前进度带入视野，减少在长课程中寻找当天的成本。
+  const currentCell = section.querySelector('.day-cell.in-progress, .day-cell.today');
+  if (currentCell) {
+    requestAnimationFrame(() => currentCell.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+  }
 }

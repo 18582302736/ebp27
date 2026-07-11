@@ -78,10 +78,13 @@
       <div class="banner-text">太棒了！今日练习全部完成</div>
       <div class="banner-sub">你已经比昨天更了解自己了</div>
     </div>
-    <a class="next-day-btn" id="nextDayBtn" href="#">进入下一天 <span class="svg-icon" style="display:inline-flex;"></span></a>
+    <div class="completion-actions" id="completionActions">
+      <a class="next-day-btn" id="nextDayBtn" href="#">进入下一天 <span class="svg-icon" style="display:inline-flex;"></span></a>
+      <a class="finish-day-btn" id="finishDayBtn" href="index.html">今天先到这里</a>
+    </div>
   </main>
   <footer class="app-footer">
-    <p class="app-version"><span class="sync-dot" id="syncDot"></span> v1.9.9</p>
+    <p class="app-version"><span class="sync-dot" id="syncDot"></span> v1.10.0</p>
   </footer>
   </div><!-- end appContent -->
 
@@ -93,8 +96,8 @@
       <p class="result-subtitle" id="resultSubtitle"></p>
       <p class="result-encouragement" id="resultEncouragement"></p>
       <div class="result-actions">
-        <button class="btn btn-secondary" id="resultDetailBtn">查看详情</button>
-        <a class="btn btn-primary" href="index.html">返回首页</a>
+        <a class="btn btn-primary" id="resultNextBtn" href="#">继续下一天</a>
+        <a class="btn btn-secondary" id="resultRestBtn" href="index.html">今天先到这里</a>
       </div>
     </div>
   </div>

@@ -99,6 +99,7 @@ async function showCourses() {
 async function renderCourseCards() {
   const list = document.getElementById('courseList');
   list.innerHTML = '';
+  let resumeTarget = null;
 
   for (const config of COURSES) {
     const card = document.createElement('div');
@@ -127,6 +128,12 @@ async function renderCourseCards() {
     if (status === 'unlocked') {
       completedCount = await getCompletedCount(config.id);
       courseStatus = await getCourseStatus(config.id, config.totalDays);
+      if (!resumeTarget && courseStatus !== 'completed') {
+        const day = await getMaxAvailableDay(config.id, config.totalDays);
+        const dayProgress = await getProgress(config.id, day);
+        const completedTasks = config.taskKeys.filter(key => dayProgress && dayProgress[key + '_completed']).length;
+        resumeTarget = { config, day, completedTasks };
+      }
     }
 
     // 卡片整体状态
@@ -181,6 +188,22 @@ async function renderCourseCards() {
 
     list.appendChild(card);
   }
+
+  renderResumeCard(resumeTarget);
+}
+
+function renderResumeCard(target) {
+  const card = document.getElementById('resumeCard');
+  if (!card) return;
+  if (!target) {
+    card.style.display = 'none';
+    return;
+  }
+  card.href = `day.html?course=${target.config.id}&day=${target.day}`;
+  document.getElementById('resumeCardTitle').textContent = `继续第 ${target.day} 天`;
+  document.getElementById('resumeCardMeta').textContent = target.config.name + (target.completedTasks ? ` · 已完成 ${target.completedTasks}/${target.config.taskKeys.length} 项` : ' · 今天从这里开始');
+  document.getElementById('resumeCardArrow').innerHTML = iconArrowRight(18);
+  card.style.display = 'flex';
 }
 
 function selectCourse(courseId) {

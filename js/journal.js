@@ -88,6 +88,7 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
 
   let savedImageBase64s = [];
   let hasCompleted = false;
+  let saveTimer = null;
 
   // 自动撑高所有 textarea
   function autoResize(ta) {
@@ -132,6 +133,7 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
 
   // 保存函数
   async function doSave() {
+    clearTimeout(saveTimer);
     try {
       await saveJournalEntry(courseId, day, getText(), savedImageBase64s);
       return true;
@@ -139,6 +141,11 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
       console.error('保存失败:', e);
       throw e;
     }
+  }
+
+  function scheduleSave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => doSave().catch(() => {}), 600);
   }
 
   // 加载已有内容
@@ -175,6 +182,7 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
       try { await doSave(); } catch (e) {}
     });
     ta.addEventListener('input', () => {
+      scheduleSave();
       if (curiosityEl) {
         curiosityEl.style.opacity = '0';
         curiosityEl.style.maxHeight = '0';
@@ -191,7 +199,11 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
       const files = Array.from(e.target.files);
       if (files.length === 0) return;
 
-      for (const file of files) {
+      uploadBtn.disabled = true;
+
+      for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
+        const file = files[fileIndex];
+        uploadBtn.innerHTML = '<span class="upload-spinner" aria-hidden="true"></span> 正在处理 ' + (fileIndex + 1) + '/' + files.length;
         if (file.size > 10 * 1024 * 1024) {
           showToast('单张图片不能超过10MB', 'error');
           continue;
@@ -202,6 +214,7 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
           savedImageBase64s.push(base64);
         } catch (err) {
           console.error('图片处理失败:', err);
+          showToast('第 ' + (fileIndex + 1) + ' 张图片处理失败', 'error');
         }
       }
 
@@ -211,6 +224,8 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
       } catch (err) {
         showToast('图片保存失败', 'error');
       }
+      uploadBtn.disabled = false;
+      uploadBtn.innerHTML = '<span class="svg-icon">' + iconImage(16) + '</span> 添加图片';
       imageInput.value = '';
     });
   }
@@ -222,13 +237,20 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
       const wrapper = document.createElement('div');
       wrapper.className = 'image-preview-wrapper';
       wrapper.innerHTML = `
-        <img class="image-preview-item" src="${dataUrl}" alt="练习图片 ${idx + 1}">
-        <button class="image-remove-btn" data-idx="${idx}">&times;</button>
+        <img class="image-preview-item" src="${dataUrl}" alt="练习图片 ${idx + 1}" role="button" tabindex="0" aria-label="查看练习图片 ${idx + 1} 大图">
+        <button class="image-remove-btn" data-idx="${idx}" aria-label="删除练习图片 ${idx + 1}">&times;</button>
       `;
+      bindImagePreview(wrapper.querySelector('.image-preview-item'));
       wrapper.querySelector('.image-remove-btn').addEventListener('click', async () => {
-        savedImageBase64s.splice(idx, 1);
+        const removed = savedImageBase64s.splice(idx, 1)[0];
         showImagePreviews(savedImageBase64s);
         await doSave();
+        showUndoToast('图片已删除', async () => {
+          savedImageBase64s.splice(Math.min(idx, savedImageBase64s.length), 0, removed);
+          showImagePreviews(savedImageBase64s);
+          await doSave();
+          showToast('已恢复图片', 'success');
+        });
       });
       imagePreview.appendChild(wrapper);
     });
@@ -239,6 +261,51 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     isSaved() { return hasContent(); },
     getText() { return getText(); }
   };
+}
+
+// 点击已上传的缩略图查看大图。普通书写与结构化书写共用。
+function openImageLightbox(src, alt) {
+  let overlay = document.querySelector('.image-lightbox');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'image-lightbox';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', '图片大图预览');
+    overlay.innerHTML = '<button type="button" class="image-lightbox-close" aria-label="关闭大图预览">&times;</button><img class="image-lightbox-content" alt="">';
+    document.body.appendChild(overlay);
+
+    const close = () => {
+      overlay.classList.remove('is-open');
+      document.body.classList.remove('lightbox-open');
+      if (overlay.returnFocus && document.contains(overlay.returnFocus)) overlay.returnFocus.focus();
+    };
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+    overlay.querySelector('.image-lightbox-close').addEventListener('click', close);
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && overlay.classList.contains('is-open')) close();
+    });
+  }
+
+  const image = overlay.querySelector('.image-lightbox-content');
+  overlay.returnFocus = document.activeElement;
+  image.src = src;
+  image.alt = alt || '练习图片大图';
+  overlay.classList.add('is-open');
+  document.body.classList.add('lightbox-open');
+  overlay.querySelector('.image-lightbox-close').focus();
+}
+
+function bindImagePreview(image) {
+  if (!image) return;
+  const open = () => openImageLightbox(image.src, image.alt);
+  image.addEventListener('click', open);
+  image.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      open();
+    }
+  });
 }
 
 // 从 prompts 数组生成 ws-question/ws-textarea 内联模板
@@ -256,7 +323,7 @@ function buildPromptsTemplate(prompts) {
 
 // 图片压缩
 async function compressImage(file) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = () => {
@@ -279,7 +346,11 @@ async function compressImage(file) {
       canvas.height = height;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, width, height);
-      canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.7);
+      canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('图片压缩失败')), 'image/jpeg', 0.7);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('无法读取图片'));
     };
     img.src = url;
   });
