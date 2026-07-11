@@ -223,7 +223,7 @@ const CBT_COURSE_DATA = [
   },
   {
     day: 18, theme: "对想法不反应", module: "调整与想法", speaker: "孙轶群",
-    audio: { src: "assets/cbt/audio/day-18.mp3", title: "对想法不反应，选择新的行动", duration: "约10分钟", hasAudio: true },
+    audio: { src: "assets/cbt/audio/day-18.mp3", title: "用价值和行动，培育新想法", duration: "约10分钟", hasAudio: true },
     extendedResources: [],
     worksheetPrompts: [
       "写下一个在生活中经常出现、给我带来情绪困扰的想法",

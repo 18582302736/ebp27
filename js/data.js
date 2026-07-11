@@ -132,7 +132,7 @@ const COURSE_DATA = [
       curiosityGuide: "试着用好奇心去闻，留意每一种气味带来的记忆和感受。不带好坏的评价，只是去感受。"
     },
     mindfulnessAudios: [
-      { src: "assets/mindfulness-audio/day-04.mp3", title: "感受呼吸", duration: "约16分钟" }
+      { src: "assets/mindfulness-audio/day-04.mp3", title: "感受呼吸的气味", duration: "约16分钟" }
     ]
   },
   {
