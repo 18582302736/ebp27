@@ -127,6 +127,22 @@ async function initApp() {
 
     const allDone = config.taskKeys.every(k => taskDone[k]);
 
+    function showCompletionNavigation() {
+      const banner = document.getElementById('completionBanner');
+      const nextBtn = document.getElementById('nextDayBtn');
+      if (banner) banner.classList.add('visible');
+      if (!nextBtn) return;
+
+      if (day < config.totalDays) {
+        nextBtn.href = `day.html?course=${courseId}&day=${day + 1}`;
+        nextBtn.innerHTML = '进入下一天 <span class="svg-icon" style="display:inline-flex;">' + iconArrowRight(16) + '</span>';
+      } else {
+        nextBtn.href = 'index.html';
+        nextBtn.textContent = '返回首页';
+      }
+      nextBtn.classList.add('visible');
+    }
+
     async function checkAllDone() {
       if (config.taskKeys.every(k => taskDone[k])) {
         progress.status = 'completed';
@@ -148,21 +164,7 @@ async function initApp() {
           }
         }
         // 显示完成弹窗和横幅
-        const banner = document.getElementById('completionBanner');
-        const nextBtn = document.getElementById('nextDayBtn');
-        if (banner) banner.classList.add('visible');
-        if (nextBtn) {
-          if (day < config.totalDays) {
-            nextBtn.href = `day.html?course=${courseId}&day=${day + 1}`;
-            nextBtn.textContent = '进入下一天';
-            nextBtn.querySelector('.svg-icon').innerHTML = iconArrowRight(16);
-          } else {
-            nextBtn.href = 'index.html';
-            nextBtn.textContent = '返回首页';
-            nextBtn.querySelector('.svg-icon').innerHTML = '';
-          }
-          nextBtn.classList.add('visible');
-        }
+        showCompletionNavigation();
         showResultOverlay();
       }
     }
@@ -197,10 +199,9 @@ async function initApp() {
       taskList.appendChild(card);
     });
 
-    // 全部完成时隐藏横幅
+    // 重新进入已完成的日期时，仍提供前往下一天的入口。
     if (allDone) {
-      document.getElementById('completionBanner').classList.remove('visible');
-      document.getElementById('nextDayBtn').classList.remove('visible');
+      showCompletionNavigation();
     }
 
     function showResultOverlay() {
