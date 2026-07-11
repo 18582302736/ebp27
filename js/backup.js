@@ -1,9 +1,10 @@
 // backup.js - iCloud Drive 文件备份与恢复
 const BACKUP_MAGIC = 'AnxietyHealBackup';
 const BACKUP_VERSION = 1;
-const BACKUP_APP_VERSION = '2.0.1';
+const BACKUP_APP_VERSION = '2.1.0';
 const BACKUP_DIRTY_KEY = 'ebp_backup_dirty';
 const LAST_BACKUP_KEY = 'ebp_last_backup_at';
+const LAST_BACKUP_MANIFEST_KEY = 'ebp_last_backup_manifest';
 const LEGACY_TOKEN_KEY = 'ebp_github_token';
 let pendingBackupFile = null;
 let pendingRestore = null;
@@ -19,15 +20,69 @@ function markBackupDirty() {
   if (typeof updateBackupUI === 'function') updateBackupUI();
 }
 
-function markBackupComplete() {
+function markBackupComplete(manifest, backedUpAt) {
   localStorage.setItem(BACKUP_DIRTY_KEY, '0');
-  localStorage.setItem(LAST_BACKUP_KEY, new Date().toISOString());
+  localStorage.setItem(LAST_BACKUP_KEY, backedUpAt || new Date().toISOString());
+  if (manifest) localStorage.setItem(LAST_BACKUP_MANIFEST_KEY, JSON.stringify(manifest));
   updateBackupIndicator();
   if (typeof updateBackupUI === 'function') updateBackupUI();
 }
 
 function isBackupDirty() { return localStorage.getItem(BACKUP_DIRTY_KEY) === '1'; }
 function getLastBackupAt() { return localStorage.getItem(LAST_BACKUP_KEY) || null; }
+
+function getLastBackupManifest() {
+  try { return JSON.parse(localStorage.getItem(LAST_BACKUP_MANIFEST_KEY) || 'null'); }
+  catch (e) { return null; }
+}
+
+function getRecordDayKey(record) {
+  return record && typeof record.day === 'string' && parseKey(record.day) ? record.day : null;
+}
+
+function hasJournalContent(entry) {
+  return !!(entry && (entry.text || entry.form_data || countImages(entry.image_base64) || countImages(entry.image_blobs_base64)));
+}
+
+function hasProgressContent(progress) {
+  if (!progress) return false;
+  return progress.status === 'completed' || ['task1_completed', 'task2_completed', 'task3_completed', 'task4_completed'].some(key => progress[key] === true);
+}
+
+function buildBackupManifest(data) {
+  const manifest = {};
+  (data.progress || []).forEach(record => {
+    const key = getRecordDayKey(record);
+    if (key && hasProgressContent(record)) manifest[key] = record.updated_at || record.created_at || '';
+  });
+  (data.journals || []).forEach(record => {
+    const key = getRecordDayKey(record);
+    if (!key || !hasJournalContent(record)) return;
+    const changedAt = record.updated_at || record.created_at || '';
+    if (!manifest[key] || changedAt > manifest[key]) manifest[key] = changedAt;
+  });
+  return manifest;
+}
+
+function getUnbackedDayKeys(data) {
+  const current = buildBackupManifest(data);
+  const backedUp = getLastBackupManifest();
+  if (!backedUp) return isBackupDirty() ? Object.keys(current).sort(compareDayKeys) : [];
+  return Object.keys(current).filter(key => !backedUp[key] || current[key] > backedUp[key]).sort(compareDayKeys);
+}
+
+function compareDayKeys(a, b) {
+  const pa = parseKey(a); const pb = parseKey(b);
+  if (!pa || !pb) return a.localeCompare(b);
+  return pa.courseId === pb.courseId ? pa.day - pb.day : pa.courseId.localeCompare(pb.courseId);
+}
+
+function formatBackupDay(key) {
+  const parsed = parseKey(key);
+  if (!parsed) return key;
+  const names = { ebp: '情绪EBP', cbt: 'CBT综合', act: 'ACT行动' };
+  return (names[parsed.courseId] || parsed.courseId.toUpperCase()) + ' Day ' + parsed.day;
+}
 
 function updateBackupIndicator() {
   const dirty = isBackupDirty();
@@ -51,7 +106,8 @@ async function getBackupSummary(data) {
   return {
     progressCount: progress.filter(p => p.status === 'completed').length,
     journalCount: journals.filter(j => j.text || j.form_data || (j.image_blobs_base64 && j.image_blobs_base64.length)).length,
-    photoCount
+    photoCount,
+    unbackedDays: getUnbackedDayKeys(source)
   };
 }
 
@@ -59,11 +115,14 @@ function countImages(value) { return Array.isArray(value) ? value.length : 0; }
 
 async function createBackupFile() {
   const data = await exportAllData();
+  const manifest = buildBackupManifest(data);
+  const createdAt = new Date().toISOString();
   const payload = {
     magic: BACKUP_MAGIC,
     version: BACKUP_VERSION,
     appVersion: BACKUP_APP_VERSION,
-    createdAt: new Date().toISOString(),
+    createdAt,
+    backupManifest: manifest,
     progress: data.progress || [],
     journals: data.journals || [],
     settings: exportSettings()
@@ -74,8 +133,10 @@ async function createBackupFile() {
     encrypted: false,
     payload
   };
-  const stamp = formatBackupFilenameDate(new Date());
-  return new File([JSON.stringify(envelope)], 'AnxietyHeal-' + stamp + '.ahbackup', { type: 'application/octet-stream' });
+  const file = new File([JSON.stringify(envelope)], 'AnxietyHeal.ahbackup', { type: 'application/octet-stream' });
+  file.backupManifest = manifest;
+  file.backupCreatedAt = createdAt;
+  return file;
 }
 
 async function readBackupFile(file) {
@@ -105,7 +166,7 @@ async function restoreBackupPayload(payload) {
   const jrnlCount = Array.isArray(payload.journals) ? payload.journals.length : 0;
   console.log('[Restore] 备份包含 ' + progCount + ' 条进度 + ' + jrnlCount + ' 条书写，开始写入...');
 
-  await importAllData(payload.progress, payload.journals, { force: true });
+  await importAllData(payload.progress, payload.journals, { force: false });
 
   // 验证写入：读回进度数据确认
   let verifyCount = 0;
@@ -122,8 +183,10 @@ async function restoreBackupPayload(payload) {
     if (payload.settings.has_started) localStorage.setItem('ebp_has_started', payload.settings.has_started);
     if (payload.settings.lock_password) localStorage.setItem('ebp_lock_password', payload.settings.lock_password);
   }
-  localStorage.setItem(BACKUP_DIRTY_KEY, '0');
   localStorage.setItem(LAST_BACKUP_KEY, payload.createdAt || new Date().toISOString());
+  localStorage.setItem(LAST_BACKUP_MANIFEST_KEY, JSON.stringify(payload.backupManifest || buildBackupManifest(payload)));
+  const currentData = await exportAllData();
+  localStorage.setItem(BACKUP_DIRTY_KEY, getUnbackedDayKeys(currentData).length ? '1' : '0');
 
   return { progCount, jrnlCount, verifyCount };
 }
@@ -132,7 +195,7 @@ async function shareBackupFile(file) {
   if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
     try {
       await navigator.share({ files: [file] });
-      markBackupComplete();
+      markBackupComplete(file.backupManifest, file.backupCreatedAt);
       return 'shared';
     } catch (e) {
       if (e.name === 'AbortError') throw e;
@@ -143,7 +206,7 @@ async function shareBackupFile(file) {
   const link = document.createElement('a');
   link.href = url; link.download = file.name; document.body.appendChild(link); link.click(); link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-  markBackupComplete();
+  markBackupComplete(file.backupManifest, file.backupCreatedAt);
   return 'downloaded';
 }
 

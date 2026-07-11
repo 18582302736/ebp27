@@ -1964,6 +1964,9 @@ body.lightbox-open { overflow: hidden; }
 .backup-dialog-field input { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg); color: var(--text); font-size: 16px; }
 .backup-dialog-field input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
 .backup-dialog-warning { padding: 10px 12px; border-radius: 9px; background: rgba(201,160,80,.12); color: var(--text-secondary); font-size: .8rem; line-height: 1.6; }
+.backup-days { margin: 0 0 15px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); }
+.backup-days strong { display: block; margin-bottom: 6px; color: var(--text); font-size: .84rem; }
+.backup-days p { margin: 0; color: var(--text-secondary); font-size: .84rem; line-height: 1.7; }
 .backup-dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
 .backup-dialog-actions.stacked { grid-template-columns: 1fr; }
 .backup-dialog-error { min-height: 22px; padding: 0 18px 14px; color: #c62828; font-size: .82rem; }

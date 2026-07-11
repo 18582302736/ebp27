@@ -39,13 +39,15 @@ async function updateBackupUI() {
   if (summary) {
     try {
       const s = await getBackupSummary();
-      summary.textContent = s.progressCount + ' 天进度 · ' + s.journalCount + ' 篇书写 · ' + s.photoCount + ' 张照片';
+      summary.textContent = s.unbackedDays.length
+        ? s.unbackedDays.length + ' 个 Day 尚未备份：' + s.unbackedDays.map(formatBackupDay).join('、')
+        : s.progressCount + ' 天进度 · ' + s.journalCount + ' 篇书写 · ' + s.photoCount + ' 张照片';
       if (statusIcon && statusText) {
-        const hasData = s.progressCount > 0 || s.journalCount > 0;
-        const dirty = isBackupDirty() && hasData;
+        const hasData = s.progressCount > 0 || s.journalCount > 0 || s.unbackedDays.length > 0;
+        const dirty = hasData && s.unbackedDays.length > 0;
         statusIcon.textContent = dirty ? '●' : '✓';
         statusIcon.className = 'backup-status-icon ' + (dirty ? 'pending' : 'safe');
-        statusText.textContent = dirty ? '有新内容待备份' : '本机内容已备份';
+        statusText.textContent = dirty ? s.unbackedDays.length + ' 个 Day 有新内容待备份' : '本机内容已备份';
       }
     } catch (e) {
       summary.textContent = '数据统计暂不可用';
@@ -58,7 +60,8 @@ async function openCreateBackupDialog() {
   try { summary = await getBackupSummary(); }
   catch (e) { showToast('读取本地数据失败', 'error'); return; }
   openBackupDialog('创建备份', '<p class="backup-dialog-copy">将备份 ' + summary.progressCount + ' 天进度、' + summary.journalCount + ' 篇书写和 ' + summary.photoCount + ' 张照片。</p>'
-    + '<p class="backup-dialog-warning">照片会一起保存在同一个 .ahbackup 文件里。备份文件不再需要密码，请保存到你自己的 iCloud Drive。</p>'
+    + (summary.unbackedDays.length ? '<div class="backup-days"><strong>这次需要备份</strong><p>' + summary.unbackedDays.map(formatBackupDay).map(escapeSettingsHtml).join('、') + '</p></div>' : '<p class="backup-dialog-copy">目前没有尚未备份的 Day，你仍可以重新生成完整备份。</p>')
+    + '<p class="backup-dialog-warning">所有内容都会保存在同一个 AnxietyHeal.ahbackup 文件里。请在 iCloud Drive 中选择原文件并确认替换。</p>'
     + '<div class="backup-dialog-actions"><button class="btn btn-secondary" data-close-backup>取消</button><button class="btn btn-primary" id="prepareBackupBtn">创建备份</button></div>');
   document.getElementById('prepareBackupBtn').addEventListener('click', prepareBackupFile);
 }
@@ -67,7 +70,7 @@ async function prepareBackupFile() {
   const btn = document.getElementById('prepareBackupBtn'); btn.disabled = true; btn.textContent = '正在整理…';
   try {
     pendingBackupFile = await createBackupFile();
-    setBackupDialogContent('<div class="backup-ready-icon">✓</div><p class="backup-dialog-copy">备份文件已准备好。点击下面按钮，在 iPhone 菜单中选择“存储到文件”，再保存到 iCloud Drive。</p>'
+    setBackupDialogContent('<div class="backup-ready-icon">✓</div><p class="backup-dialog-copy">AnxietyHeal.ahbackup 已准备好。请选择“存储到文件”，在 iCloud Drive 中替换原来的同名文件。</p>'
       + '<div class="backup-dialog-actions stacked"><button class="btn btn-primary" id="shareBackupBtn">保存到 iCloud</button><button class="btn btn-secondary" data-close-backup>稍后再说</button></div>');
     document.getElementById('shareBackupBtn').addEventListener('click', savePreparedBackup);
     bindBackupCloseButtons();
@@ -77,7 +80,7 @@ async function prepareBackupFile() {
 async function savePreparedBackup() {
   if (!pendingBackupFile) return;
   const btn = document.getElementById('shareBackupBtn'); btn.disabled = true;
-  try { await shareBackupFile(pendingBackupFile); closeBackupDialog(); showToast('备份文件已交给系统保存', 'success'); updateBackupUI(); }
+  try { await shareBackupFile(pendingBackupFile); closeBackupDialog(); showToast('备份已完成，请确认 iCloud 中已替换原文件', 'success'); updateBackupUI(); }
   catch (e) { if (e.name !== 'AbortError') showBackupDialogError('保存失败，请重试'); btn.disabled = false; }
 }
 
