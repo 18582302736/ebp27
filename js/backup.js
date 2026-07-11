@@ -1,7 +1,7 @@
 // backup.js - iCloud Drive 文件备份与恢复
 const BACKUP_MAGIC = 'AnxietyHealBackup';
 const BACKUP_VERSION = 1;
-const BACKUP_APP_VERSION = '2.1.4';
+const BACKUP_APP_VERSION = '2.2.0';
 const BACKUP_DIRTY_KEY = 'ebp_backup_dirty';
 const LAST_BACKUP_KEY = 'ebp_last_backup_at';
 const LAST_BACKUP_MANIFEST_KEY = 'ebp_last_backup_manifest';
@@ -46,7 +46,9 @@ function hasJournalContent(entry) {
 
 function hasProgressContent(progress) {
   if (!progress) return false;
-  return progress.status === 'completed' || ['task1_completed', 'task2_completed', 'task3_completed', 'task4_completed'].some(key => progress[key] === true);
+  return progress.status === 'completed'
+    || ['task1_completed', 'task2_completed', 'task3_completed', 'task4_completed'].some(key => !!progress[key])
+    || !!progress.recovery;
 }
 
 function buildBackupManifest(data) {

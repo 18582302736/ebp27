@@ -83,6 +83,14 @@ async function initApp() {
     const maxAvailable = courseLocked ? 0 : await getMaxAvailableDay(courseId, config.totalDays);
     const isLocked = courseLocked || day > maxAvailable;
     const progress = await getProgress(courseId, day);
+    const persistRecovery = async () => saveProgress(courseId, day, progress);
+
+    if (!isLocked && typeof renderRecoveryCheckIn === 'function') {
+      renderRecoveryCheckIn(document.getElementById('recoveryCheckIn'), progress, persistRecovery);
+    } else {
+      const recoveryCheckIn = document.getElementById('recoveryCheckIn');
+      if (recoveryCheckIn) recoveryCheckIn.hidden = true;
+    }
 
     // 更新返回链接
     const backBtn = document.querySelector('a.back-btn');
@@ -126,6 +134,7 @@ async function initApp() {
     });
 
     const allDone = config.taskKeys.every(k => taskDone[k]);
+    let dailyReviewPanel = null;
 
     function showCompletionNavigation() {
       const banner = document.getElementById('completionBanner');
@@ -170,7 +179,10 @@ async function initApp() {
         }
         // 显示完成弹窗和横幅
         showCompletionNavigation();
-        showResultOverlay();
+        if (dailyReviewPanel && dailyReviewPanel.setAvailable) {
+          dailyReviewPanel.setAvailable();
+          dailyReviewPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
       }
     }
 
@@ -190,6 +202,7 @@ async function initApp() {
         card.classList.add('locked');
         taskBody.innerHTML = '<div class="locked-hint">解锁后可操作</div>';
       } else {
+        let reflection = null;
         renderTaskBody(courseId, data, taskKey, taskBody, taskDone[taskKey], async () => {
           if (taskDone[taskKey]) return;
           taskDone[taskKey] = true;
@@ -197,12 +210,28 @@ async function initApp() {
           if (progress.status === 'available') progress.status = 'in_progress';
           await saveProgress(courseId, day, progress);
           updateTaskCardStatus(card, true, progress[completedKey]);
+          if (reflection && reflection.setAvailable) reflection.setAvailable();
           await checkAllDone();
         });
+        if (typeof createTaskReflection === 'function') {
+          reflection = createTaskReflection(progress, taskKey, taskLabel, taskDone[taskKey], persistRecovery);
+          card.appendChild(reflection);
+        }
       }
 
       taskList.appendChild(card);
     });
+
+    if (!isLocked && typeof renderDailyReview === 'function') {
+      dailyReviewPanel = renderDailyReview(
+        document.getElementById('dailyReview'),
+        progress,
+        config.taskLabels,
+        allDone,
+        persistRecovery,
+        showResultOverlay
+      );
+    }
 
     // 重新进入已完成的日期时，仍提供前往下一天的入口。
     if (allDone) {
@@ -375,10 +404,14 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
         + '</details>';
     }
 
-    // 完成按钮
+    // 有必听音频时，节点由所有音频的实际完成状态驱动；无音频时保留手动确认。
     if (done) {
       html += '<button class="btn btn-primary learning-done-btn done" disabled>'
         + '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成'
+        + '</button>';
+    } else if (audios.length > 0) {
+      html += '<button class="btn btn-primary learning-done-btn" disabled>'
+        + '<span class="svg-icon">' + iconHeadphones(16) + '</span> 请听完全部 ' + audios.length + ' 段音频'
         + '</button>';
     } else {
       html += '<button class="btn btn-primary learning-done-btn">'
@@ -392,19 +425,29 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
     // 绑定音频播放器
     const audioPHs = wrapper.querySelectorAll('.audio-placeholder');
     if (audioPHs.length > 0) {
-      let completedCount = 0;
+      const completedAudio = new Set();
       audioPHs.forEach((ph, i) => {
         if (i < audios.length) {
           createAudioPlayer(ph, audios[i].src, () => {
-            completedCount++;
-            if (completedCount >= audios.length) onComplete();
+            completedAudio.add(i);
+            const doneBtn = wrapper.querySelector('.learning-done-btn');
+            if (doneBtn && completedAudio.size < audios.length) {
+              doneBtn.innerHTML = '<span class="svg-icon">' + iconHeadphones(16) + '</span> 已听完 ' + completedAudio.size + '/' + audios.length + ' 段';
+            }
+            if (completedAudio.size >= audios.length) {
+              if (doneBtn) {
+                doneBtn.innerHTML = '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成';
+                doneBtn.classList.add('done');
+              }
+              onComplete();
+            }
           });
         }
       });
     }
 
     // 完成按钮事件
-    if (!done) {
+    if (!done && audios.length === 0) {
       const doneBtn = wrapper.querySelector('.learning-done-btn');
       doneBtn.addEventListener('click', () => {
         doneBtn.disabled = true;
@@ -428,11 +471,11 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
     }
   } else if (taskKey === 'task3') {
     const audios = data.mindfulnessAudios || [];
-    let completedCount = 0;
-    audios.forEach(audio => {
+    const completedAudio = new Set();
+    audios.forEach((audio, index) => {
       createAudioPlayer(container, audio.src, () => {
-        completedCount++;
-        if (completedCount >= audios.length) onComplete();
+        completedAudio.add(index);
+        if (completedAudio.size >= audios.length) onComplete();
       });
     });
     if (audios.length === 0) {
@@ -633,10 +676,14 @@ function renderLearningZone(container, data, done, onComplete) {
     html += '</div></details>';
   }
 
-  // 完成按钮
+  // 主音频属于必听内容；拓展资源仍保持可选。
   if (done) {
     html += '<button class="btn btn-primary learning-done-btn done" disabled>'
       + '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成'
+      + '</button>';
+  } else if (hasMainAudio) {
+    html += '<button class="btn btn-primary learning-done-btn" disabled>'
+      + '<span class="svg-icon">' + iconHeadphones(16) + '</span> 请先听完本节音频'
       + '</button>';
   } else {
     html += '<button class="btn btn-primary learning-done-btn">'
@@ -651,7 +698,14 @@ function renderLearningZone(container, data, done, onComplete) {
   if (hasMainAudio) {
     const mainPlaceholder = wrapper.querySelector('.learning-audio .audio-placeholder');
     if (mainPlaceholder) {
-      createAudioPlayer(mainPlaceholder, data.audio.src, () => {});
+      createAudioPlayer(mainPlaceholder, data.audio.src, () => {
+        const doneBtn = wrapper.querySelector('.learning-done-btn');
+        if (doneBtn) {
+          doneBtn.innerHTML = '<span class="svg-icon">' + iconCheck(16) + '</span> 已完成';
+          doneBtn.classList.add('done');
+        }
+        onComplete();
+      });
     }
   }
   const mp3Extended = data.extendedResources ? data.extendedResources.filter(r => r.src && r.src.endsWith('.mp3')) : [];
@@ -661,7 +715,7 @@ function renderLearningZone(container, data, done, onComplete) {
   });
 
   // 完成按钮
-  if (!done) {
+  if (!done && !hasMainAudio) {
     const doneBtn = wrapper.querySelector('.learning-done-btn');
     doneBtn.addEventListener('click', () => {
       doneBtn.disabled = true;

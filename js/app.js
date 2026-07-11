@@ -94,6 +94,9 @@ async function showCourses() {
   document.querySelector('.app-title').textContent = 'AnxietyHeal For TT';
 
   await renderCourseCards();
+  if (typeof renderRecoveryDashboard === 'function') {
+    await renderRecoveryDashboard(document.getElementById('recoveryDashboard'));
+  }
 }
 
 async function renderCourseCards() {

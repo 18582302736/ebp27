@@ -2836,6 +2836,187 @@ details.learning-text:not([open]) summary.learning-text-header {
   pointer-events: none;
 }
 
+/* ===== 练习验证与恢复趋势 ===== */
+.recovery-card,
+.recovery-dashboard {
+  margin: 18px 0;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--bg-card);
+  box-shadow: 0 6px 24px rgba(37, 73, 58, 0.06);
+}
+
+.recovery-checkin {
+  border-color: rgba(74, 139, 111, 0.28);
+  background: linear-gradient(145deg, rgba(74, 139, 111, 0.09), var(--bg-card) 58%);
+}
+
+.daily-review {
+  margin-top: 24px;
+  border-color: rgba(196, 145, 65, 0.3);
+  background: linear-gradient(145deg, rgba(225, 183, 109, 0.11), var(--bg-card) 58%);
+}
+
+.recovery-heading h2,
+.recovery-dashboard h2 {
+  margin: 3px 0 5px;
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+.recovery-heading p,
+.recovery-empty {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.recovery-kicker {
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.recovery-field { margin-top: 18px; }
+.recovery-field > label,
+.task-reflection-body > label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text);
+  font-size: 0.87rem;
+  font-weight: 600;
+}
+
+.recovery-field textarea,
+.recovery-field select,
+.task-reflection textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding: 11px 12px;
+  resize: vertical;
+}
+
+.recovery-field textarea:focus,
+.recovery-field select:focus,
+.task-reflection textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(74, 139, 111, 0.1);
+}
+
+.recovery-scale {
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  gap: 3px;
+}
+
+.recovery-scale-btn {
+  min-width: 0;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.recovery-scale-btn.selected {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.recovery-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+}
+
+.recovery-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.recovery-chip input { position: absolute; opacity: 0; pointer-events: none; }
+.recovery-chip span {
+  display: inline-block;
+  padding: 7px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.recovery-chip input:checked + span {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.recovery-save,
+.recovery-finish { width: 100%; margin-top: 18px; }
+.recovery-saved { margin: 8px 0 0; color: var(--success); font-size: 0.76rem; text-align: center; }
+
+.task-reflection {
+  margin: 0 16px 16px;
+  border-top: 1px dashed var(--border);
+}
+.task-reflection summary {
+  padding: 14px 0 2px;
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.task-reflection-body { padding-top: 10px; }
+.task-reflection-body label:not(:first-child) { margin-top: 12px; }
+.task-reflection-body .btn { width: 100%; margin-top: 12px; }
+
+.recovery-action-check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 14px;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+}
+.recovery-action-check input { width: 18px; height: 18px; accent-color: var(--primary); }
+
+.recovery-dashboard { margin: 18px 0 22px; }
+.recovery-dashboard-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.recovery-average { display: grid; grid-template-columns: auto auto auto; align-items: center; gap: 5px; color: var(--primary); font-weight: 700; }
+.recovery-average b { color: var(--text-muted); font-weight: 400; }
+.recovery-average small { grid-column: 1 / -1; color: var(--text-muted); font-size: 0.62rem; font-weight: 400; text-align: center; }
+.recovery-trend { margin-top: 16px; display: grid; gap: 10px; }
+.trend-row { display: grid; grid-template-columns: 62px 1fr 48px; gap: 8px; align-items: center; }
+.trend-day, .trend-value { color: var(--text-secondary); font-size: 0.68rem; white-space: nowrap; }
+.trend-value { text-align: right; }
+.trend-bars { position: relative; height: 9px; border-radius: 999px; background: var(--bg); overflow: hidden; }
+.trend-bars i { position: absolute; left: 0; height: 4px; border-radius: 999px; }
+.trend-before { top: 0; background: #d79b72; }
+.trend-after { bottom: 0; background: var(--primary); }
+.recovery-dashboard-foot { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.67rem; line-height: 1.4; }
+
+@media (max-width: 360px) {
+  .recovery-card, .recovery-dashboard { padding: 16px; }
+  .recovery-scale { gap: 2px; }
+  .recovery-scale-btn { height: 30px; font-size: 0.67rem; }
+  .recovery-dashboard-foot { flex-direction: column; }
+}
+
 /* ===== Responsive ===== */
 @media (min-width: 480px) {
   body {
