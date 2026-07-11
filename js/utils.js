@@ -44,27 +44,24 @@ function formatDateWithWeekday(isoString) {
 }
 
 async function forceUpdateAppCache() {
-  const tasks = [];
-
-  if ('serviceWorker' in navigator) {
-    try {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      registrations.forEach(reg => {
-        if (reg.active) reg.active.postMessage({ type: 'CLEAR_CACHES' });
-        tasks.push(reg.update().catch(() => {}));
-        tasks.push(reg.unregister().catch(() => {}));
-      });
-    } catch (e) {}
-  }
-
   if ('caches' in window) {
     try {
       const keys = await caches.keys();
-      keys.forEach(key => tasks.push(caches.delete(key).catch(() => {})));
+      await Promise.all(keys.map(key => caches.delete(key).catch(() => {})));
     } catch (e) {}
   }
 
-  await Promise.all(tasks);
+  if ('serviceWorker' in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (registration) {
+        await registration.update();
+        if (registration.waiting) {
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+      }
+    } catch (e) {}
+  }
 
   const url = new URL(window.location.href);
   url.searchParams.set('force_update', String(Date.now()));

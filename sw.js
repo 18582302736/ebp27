@@ -1,6 +1,6 @@
 // sw.js - Service Worker（离线缓存）
 
-const CACHE_STATIC = 'ebp-static-v63';
+const CACHE_STATIC = 'ebp-static-v64';
 const CACHE_AUDIO = 'ebp-audio-v1';
 const CACHE_PDF = 'ebp-pdf-v1';
 
@@ -42,7 +42,9 @@ const STATIC_FILES = [
 // 安装：预缓存静态资源
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_STATIC).then(cache => cache.addAll(STATIC_FILES))
+    caches.open(CACHE_STATIC).then(cache => cache.addAll(
+      STATIC_FILES.map(url => new Request(url, { cache: 'reload' }))
+    ))
   );
   self.skipWaiting();
 });
@@ -110,7 +112,7 @@ async function cacheFirst(request, cacheName) {
   const cached = await caches.match(request);
   if (cached) return cached;
   try {
-    const response = await fetch(request);
+    const response = await fetch(request, { cache: 'reload' });
     if (response.ok) {
       const cache = await caches.open(cacheName);
       cache.put(request, response.clone());
