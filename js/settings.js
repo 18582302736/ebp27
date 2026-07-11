@@ -99,7 +99,7 @@ async function previewRestoreBackup() {
     const payload = await readBackupFile(pendingRestore.file); pendingRestore.payload = payload;
     const summary = await getBackupSummary({ progress: payload.progress, journals: payload.journals });
     setBackupDialogContent('<div class="backup-preview"><div><span>备份时间</span><strong>' + formatBackupTime(payload.createdAt) + '</strong></div><div><span>应用版本</span><strong>v' + escapeSettingsHtml(payload.appVersion || '未知') + '</strong></div><div><span>备份内容</span><strong>' + summary.progressCount + ' 天进度 · ' + summary.journalCount + ' 篇书写 · ' + summary.photoCount + ' 张照片</strong></div></div>'
-      + '<p class="backup-dialog-copy">恢复时会合并数据，同一天保留更新的内容，不会删除本机已有记录。</p>'
+      + '<p class="backup-dialog-copy">恢复时以备份为准：同一个 Day 会恢复为备份时的内容；备份中没有的其他 Day 不受影响。</p>'
       + '<div class="backup-dialog-actions"><button class="btn btn-secondary" data-close-backup>取消</button><button class="btn btn-primary" id="confirmRestoreBtn">合并并恢复</button></div>');
     document.getElementById('confirmRestoreBtn').addEventListener('click', confirmRestoreBackup); bindBackupCloseButtons();
   } catch (e) { showBackupDialogError(e.message); btn.disabled = false; btn.textContent = '查看备份'; }
@@ -111,8 +111,7 @@ async function confirmRestoreBackup() {
   try {
     const result = await restoreBackupPayload(pendingRestore.payload);
     const importedTotal = result.progressImported + result.journalsImported;
-    const keptTotal = result.progressKept + result.journalsKept;
-    setBackupDialogContent('<div class="backup-ready-icon">✓</div><p class="backup-dialog-copy">恢复完成：实际写入 ' + importedTotal + ' 条记录' + (keptTotal ? '，另有 ' + keptTotal + ' 条本机内容较新，已保留' : '') + '。页面将重新加载。</p>'); setTimeout(() => window.location.reload(), 1800); }
+    setBackupDialogContent('<div class="backup-ready-icon">✓</div><p class="backup-dialog-copy">恢复完成：已按备份内容写入 ' + importedTotal + ' 条记录。页面将重新加载。</p>'); setTimeout(() => window.location.reload(), 1800); }
   catch (e) { showBackupDialogError(e.message || '恢复失败'); btn.disabled = false; btn.textContent = '合并并恢复'; }
 }
 
