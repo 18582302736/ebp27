@@ -110,7 +110,9 @@ async function confirmRestoreBackup() {
   const btn = document.getElementById('confirmRestoreBtn'); btn.disabled = true; btn.textContent = '正在恢复…';
   try {
     const result = await restoreBackupPayload(pendingRestore.payload);
-    setBackupDialogContent('<div class="backup-ready-icon">✓</div><p class="backup-dialog-copy">数据恢复完成。备份含 ' + result.progCount + ' 条进度、' + result.jrnlCount + ' 篇书写，写入后共 ' + result.verifyCount + ' 条进度记录。页面将重新加载。</p>'); setTimeout(() => window.location.reload(), 1500); }
+    const importedTotal = result.progressImported + result.journalsImported;
+    const keptTotal = result.progressKept + result.journalsKept;
+    setBackupDialogContent('<div class="backup-ready-icon">✓</div><p class="backup-dialog-copy">恢复完成：实际写入 ' + importedTotal + ' 条记录' + (keptTotal ? '，另有 ' + keptTotal + ' 条本机内容较新，已保留' : '') + '。页面将重新加载。</p>'); setTimeout(() => window.location.reload(), 1800); }
   catch (e) { showBackupDialogError(e.message || '恢复失败'); btn.disabled = false; btn.textContent = '合并并恢复'; }
 }
 

@@ -294,15 +294,25 @@ async function exportAllData() {
 
 async function importAllData(progressList, journalList, opts = {}) {
   const force = opts.force === true;
+  const result = { progressImported: 0, progressKept: 0, journalsImported: 0, journalsKept: 0 };
 
   if (progressList && progressList.length > 0) {
     for (const remote of progressList) {
       // 拒绝旧格式（纯数字 day），统一使用 courseId_day 格式
       if (typeof remote.day === 'number') continue;
       const local = await dbGet('progress', remote.day);
-      if (force || !local || !local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
+      // A fresh install creates an empty Day 1 "available" record with a new
+      // timestamp. It must not prevent an older, completed backup from restoring.
+      const localHasContent = typeof hasProgressContent === 'function'
+        ? hasProgressContent(local)
+        : !!(local && local.status === 'completed');
+      const remoteHasContent = typeof hasProgressContent === 'function'
+        ? hasProgressContent(remote)
+        : remote.status === 'completed';
+      if (force || !local || (remoteHasContent && !localHasContent) || !local.updated_at || (remote.updated_at && remote.updated_at > local.updated_at)) {
         await dbPut('progress', remote);
-      }
+        result.progressImported++;
+      } else result.progressKept++;
     }
   }
 
@@ -320,9 +330,12 @@ async function importAllData(progressList, journalList, opts = {}) {
         delete remote.id;
         if (local) remote.id = local.id;
         await dbPut('journal_entries', remote);
-      }
+        result.journalsImported++;
+      } else result.journalsKept++;
     }
   }
+
+  return result;
 }
 
 function exportSettings() {

@@ -1,7 +1,7 @@
 // backup.js - iCloud Drive 文件备份与恢复
 const BACKUP_MAGIC = 'AnxietyHealBackup';
 const BACKUP_VERSION = 1;
-const BACKUP_APP_VERSION = '2.1.2';
+const BACKUP_APP_VERSION = '2.1.3';
 const BACKUP_DIRTY_KEY = 'ebp_backup_dirty';
 const LAST_BACKUP_KEY = 'ebp_last_backup_at';
 const LAST_BACKUP_MANIFEST_KEY = 'ebp_last_backup_manifest';
@@ -166,7 +166,7 @@ async function restoreBackupPayload(payload) {
   const jrnlCount = Array.isArray(payload.journals) ? payload.journals.length : 0;
   console.log('[Restore] 备份包含 ' + progCount + ' 条进度 + ' + jrnlCount + ' 条书写，开始写入...');
 
-  await importAllData(payload.progress, payload.journals, { force: false });
+  const imported = await importAllData(payload.progress, payload.journals, { force: false });
 
   // 验证写入：读回进度数据确认
   let verifyCount = 0;
@@ -188,7 +188,7 @@ async function restoreBackupPayload(payload) {
   const currentData = await exportAllData();
   localStorage.setItem(BACKUP_DIRTY_KEY, getUnbackedDayKeys(currentData).length ? '1' : '0');
 
-  return { progCount, jrnlCount, verifyCount };
+  return { progCount, jrnlCount, verifyCount, ...imported };
 }
 
 async function shareBackupFile(file) {
