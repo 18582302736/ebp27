@@ -5,20 +5,16 @@ const CBT_COURSE_DATA = [
   {
     day: 1, theme: "情绪决策树介绍 + 应对资源列举", module: "情绪降温", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-01.mp3", title: "认识情绪决策树", duration: "约10分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-01.jpg",
     extendedResources: [
       { title: "可选：我的初心与承诺", src: "assets/cbt/extended/day-01.mp3", type: "audio" }
     ],
     worksheetPrompts: [
-      "回忆最近一个因为情绪产生的困扰，把它写下来",
-      "把你能想到的、应对情绪困扰的选择写下来",
-      "未来21天，我们将培育自己的情绪技能树，拥有更丰富、更灵活的选择"
+      "在遇到压力、情绪困扰的时候，我可以这样应对（例如：学习过的心理学技术、常用的应对方式等）"
     ]
   },
   {
     day: 2, theme: "辩证理解情绪：利弊权衡", module: "情绪降温", speaker: "孙轶群",
     audio: { src: "assets/cbt/audio/day-02.m4a", title: "辩证理解情绪", duration: "约4分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-02.jpg",
     extendedResources: [],
     worksheetPrompts: [
       "回忆一个生活中我体验过的情绪（例如焦虑、生气等）",
@@ -31,7 +27,6 @@ const CBT_COURSE_DATA = [
     day: 3, theme: "情绪温度计：量化情绪强度", module: "情绪降温", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-03.mp3", title: "制造你的情绪温度计", duration: "约10分钟", hasAudio: true },
     writingGuideAudio: { src: "assets/cbt/audio/day-03-writing-guide.m4a", title: "书写语音引导：情绪温度计", duration: "约8分钟" },
-    guideImage: "assets/cbt/guide/day-03.jpg",
     extendedResources: [],
     worksheetPrompts: [
       "我想评估的情绪是（例如焦虑、悲伤等）",
@@ -46,60 +41,57 @@ const CBT_COURSE_DATA = [
   {
     day: 4, theme: "情绪安抚：关怀触碰", module: "情绪降温", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-04.mp3", title: "用身体感受给情绪降温", duration: "约10分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-04.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "进行关怀触碰练习后的身体感受",
-      "触碰前后情绪强度的变化（1-9分）",
-      "这个练习中你最舒服的触碰方式是什么"
+      "跟随录音体验“关怀触碰”",
+      "我练习后的感受是",
+      "未来，我也许能在这些场景下使用它"
     ]
   },
   {
     day: 5, theme: "情绪安抚：五感安抚小行动", module: "情绪降温", speaker: "孙轶群",
     audio: { src: "assets/cbt/audio/day-05.mp3", title: "用感官创造愉悦", duration: "约10分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-05.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "你选择了哪几种感官来安抚自己",
-      "每种感官安抚的效果如何（1-9分）",
-      "哪两种感官安抚对你最有效？可以把它们加入你的紧急安抚清单"
+      "我可以做这些事，去创造愉快的视觉体验",
+      "我可以做这些事，去创造愉快的听觉体验",
+      "我可以做这些事，去创造愉快的嗅觉体验",
+      "我可以做这些事，去创造愉快的触觉体验",
+      "我可以做这些事，去创造愉快的味觉体验",
+      "从上面的资源库中，挑一件立刻能做的事情，试一试"
     ]
   },
   {
     day: 6, theme: "情绪安抚：渐进式肌肉放松", module: "情绪降温", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-06.m4a", title: "渐进式肌肉放松", duration: "约4分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-06-a.jpg",
     extendedResources: [
       { title: "补充：渐进式肌肉放松（正念版）", src: "assets/cbt/extended/day-06.mp3", type: "audio" }
     ],
     worksheetPrompts: [
-      "渐进式肌肉放松前的身体紧绷程度（1-9分）",
-      "放松后的身体感受",
-      "放松前后的情绪变化",
-      "哪几个身体部位的放松效果最明显"
+      "跟随任意一个录音体验“渐进式肌肉放松”",
+      "我练习后的感受是",
+      "未来，我也许能在这些场景下使用它"
     ]
   },
   {
     day: 7, theme: "情绪安抚：身体运动", module: "情绪降温", speaker: null,
     audio: { src: "assets/cbt/audio/day-07.m4a", title: "身体运动与情绪", duration: "约4分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-07.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "你尝试了哪种身体运动",
-      "运动前后的情绪对比",
-      "运动时的身体感受",
-      "你愿意继续哪种运动"
+      "打开“情绪降温运动清单”，挑选一个试试看",
+      "我练习后的感受是",
+      "未来，我也许能在这些场景下使用它"
     ]
   },
   {
     day: 8, theme: "情绪安抚：冷水降温 + 安抚小结", module: "情绪降温", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-08.m4a", title: "冷水降温法 + 情绪安抚小结", duration: "约5分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-08.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "回顾情绪降温模块，列出对你最有效的3种情绪降温方法",
-      "制作你的紧急安抚卡片：第1步做什么、第2步做什么、第3步做什么",
-      "在什么情况下你会优先使用哪个安抚方法"
+      "回顾最近几日的练习，我所学到的情绪调节方法有",
+      "在情绪温度计分数为100-75时，对我最有效的方法是",
+      "在情绪温度计分数为75-50时，对我最有效的方法是",
+      "在情绪温度计分数为50-25时，对我最有效的方法是"
     ]
   },
 
@@ -107,35 +99,39 @@ const CBT_COURSE_DATA = [
   {
     day: 9, theme: "ABC表：看见想法的影响", module: "事实检验", speaker: "孙轶群",
     audio: { src: "assets/cbt/audio/day-09.mp3", title: "探索想法和情绪的联系", duration: "约10分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-09.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "A（激活事件）：发生了什么",
-      "B（信念/想法）：你当时怎么想",
-      "C（后果）：情绪和行为结果是什么"
+      "诱发我情绪的事件是",
+      "对于这个事件，我产生了这些想法（如果想法很多，选择记录主要的想法）",
+      "我体验到的情绪是",
+      "我的身体反应是",
+      "我采取的行动是",
+      "如果现在被情绪困扰，可以尝试情绪安抚技术"
     ]
   },
   {
     day: 10, theme: "事件重述：区分事件和想法", module: "事实检验", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-10.mp3", title: "区分事实与评价", duration: "约10分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-10.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "客观描述事件（只用事实，不加评价）",
-      "你头脑里的想法/评价是什么",
-      "区分后你有什么新发现"
+      "最近诱发我情绪的事件是（尽可能包含全部关键信息）",
+      "我体验到的情绪是；它的强烈程度是（0-100）",
+      "重新回顾记录的事件，我发现这些想法、评价",
+      "重述这个经历，确保只包含客观事件",
+      "对于这个新的描述，我的情绪类型是；我的情绪强度是（0-100）"
     ]
   },
   {
     day: 11, theme: "事实检验：情绪是否符合事实", module: "事实检验", speaker: null,
     audio: { src: "assets/cbt/audio/day-11.mp3", title: "检验情绪是否符合事实", duration: "约10分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-11.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "情绪是什么？强度多高（1-9分）",
-      "支持这个情绪的事实有哪些",
-      "不支持这个情绪的事实有哪些",
-      "最终判断：情绪是否符合事实"
+      "最近诱发我消极情绪的事件是（如果书写新的事件，请剔除主观想法，重述事件）",
+      "我体验到的情绪是；它的强烈程度是（0-100）",
+      "通常来说，这些情绪会在怎样的情况下出现",
+      "回顾我的情绪温度计，这样的情绪强度对应以前的哪些经历",
+      "利用前两题的信息判断：我的情绪类型是否受到主观想法影响；情绪强度是否受到主观想法影响",
+      "综合以上信息，我情绪困扰的来源可能是（客观事件 / 主观想法）"
     ]
   },
 
@@ -144,53 +140,62 @@ const CBT_COURSE_DATA = [
     day: 12, theme: "灰色刻度尺：评价维度化", module: "认知调整", speaker: null,
     audio: { src: "assets/cbt/audio/day-12.mp3", title: "评价维度化", duration: "约10分钟", hasAudio: true },
     writingGuideAudio: { src: "assets/cbt/audio/day-12-writing-guide.m4a", title: "书写语音引导：灰色刻度尺", duration: "约7分钟" },
-    guideImage: "assets/cbt/guide/day-12.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "你对_____的评判是什么",
-      "用0-100%的灰色刻度尺重新评价",
-      "有哪些中间地带被你忽略了",
-      "这种新的评价方式给你什么启发"
+      "我对自己的评价是",
+      "这个评价存在的两极是",
+      "如果一个人完全符合积极评价，ta是怎样的？我知道的人里面，有谁是这样的",
+      "如果一个人完全符合消极评价，ta是怎样的？我知道的人里面，有谁是这样的",
+      "一个处于中间的普通人是怎样的？我知道的人里面，有谁是这样的",
+      "把自己和上述这些人或描述对比，我应该处于什么位置",
+      "经过书写后，我现在会这样描述自己"
     ]
   },
   {
     day: 13, theme: "责任比例图", module: "认知调整", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-13.m4a", title: "责任比例图", duration: "约4分钟", hasAudio: true },
     writingGuideAudio: { src: "assets/cbt/audio/day-13-writing-guide.m4a", title: "书写语音引导：责任比例图", duration: "约7分钟" },
-    guideImage: "assets/cbt/guide/day-13.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "事件中涉及哪些因素/人（包括环境、运气等）",
-      "画出责任比例图，分配每个因素的比例",
-      "你承担了不该承担的部分吗",
-      "重新分配后，你有什么感受"
+      "我遇到的事件是",
+      "对于这个事件，我产生的想法是；我对这些想法的信任程度是（0-100分）",
+      "我体验到的情绪是",
+      "导致这件事情发生的原因可能是（列举尽可能多的原因）",
+      "评估一下，这些可能原因各自占的责任比例",
+      "再次评估你对旧想法的信任程度（0-100分）",
+      "现在，我对这件事情的新想法是"
     ]
   },
   {
     day: 14, theme: "苏格拉底提问", module: "认知调整", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-14.mp3", title: "苏格拉底提问", duration: "约10分钟", hasAudio: true },
     writingGuideAudio: { src: "assets/cbt/audio/day-14-writing-guide.m4a", title: "书写语音引导：苏格拉底提问", duration: "约9分钟" },
-    guideImage: "assets/cbt/guide/day-14.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "你的自动负面想法是什么",
-      "有什么证据支持它",
-      "有什么证据反对它",
-      "有没有其他的解释方式",
-      "如果你的朋友有同样的想法，你会对ta说什么"
+      "我遇到的事情是",
+      "我当时内心的想法是（用0-100分评估相信程度）",
+      "想法带来的情绪是（用0-100分评估强烈程度）",
+      "支持这个想法的证据是什么",
+      "反对这个想法的证据是什么",
+      "结合前两个回答判断，我是否夸大了想法的可能性",
+      "如果最坏的情况发生了，会怎么样",
+      "如果最坏的情况发生了，我能如何应对",
+      "如果最好的情况发生了，会怎么样",
+      "现实中，最可能会发生的情况是什么",
+      "再次评估你对想法的信任程度",
+      "经过书写后，我现在对这件事的新想法是"
     ]
   },
   {
     day: 15, theme: "探索内心旧磁带", module: "认知调整", speaker: "孙轶群",
     audio: { src: "assets/cbt/audio/day-15.mp3", title: "探索影响更深的底层想法", duration: "约10分钟", hasAudio: true },
     writingGuideAudio: { src: "assets/cbt/audio/day-15-writing-guide.m4a", title: "书写语音引导：探索内心旧磁带", duration: "约7分钟" },
-    guideImage: "assets/cbt/guide/day-15.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "从自动想法往下挖：如果这是真的，那意味着什么",
-      "你最深的恐惧是什么",
-      "这个信念最初是什么时候形成的",
-      "回头看这个信念，它现在对你还适用吗"
+      "回顾前几天的书写练习，是否出现了一些相似的想法或相同的主题？请把它们写下来",
+      "这些想法背后，是否隐藏了不合理的内心旧磁带？试着把它们提炼成一个陈述句",
+      "这个内心旧磁带在我的生活中还有什么样的影响",
+      "我可以用这些技术松动对这个内心旧磁带的信任（灰色刻度尺、责任比例图、苏格拉底提问）"
     ]
   },
 
@@ -198,37 +203,33 @@ const CBT_COURSE_DATA = [
   {
     day: 16, theme: "成为想法的观众", module: "调整与想法", speaker: "孙轶群",
     audio: { src: "assets/cbt/audio/day-16.m4a", title: "成为想法的观众", duration: "约4分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-16.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "选一个反复出现的负面想法",
-      "以观众的身份描述它（“我注意到我有一个想法……”）",
-      "观察这个想法时，它有什么变化",
-      "作为观众，你与这个想法的关系有什么不同"
+      "回顾昨天的书写练习，我的内心旧磁带是（也可以从之前的ABC表中选择一个经常出现的想法）",
+      "用这个句式复述：我注意到我现在有一个想法，它的内容是……",
+      "我观察到，自己在这个过程中的体验是"
     ]
   },
   {
     day: 17, theme: "培育积极想法", module: "调整与想法", speaker: "孙轶群",
     audio: { src: "assets/cbt/audio/day-17.mp3", title: "建立新的想法", duration: "约10分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-17.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "旧想法是什么",
-      "新想法是什么（基于事实）",
-      "你做了什么来培育这个新想法",
-      "培育新想法的过程中，你遇到了什么困难"
+      "查看“积极想法清单”，我的体验和感受是",
+      "写下我喜欢的积极想法1",
+      "写下我喜欢的积极想法2",
+      "写下我喜欢的积极想法3"
     ]
   },
   {
-    day: 18, theme: "灵活行动", module: "调整与想法", speaker: "孙轶群",
-    audio: { src: "assets/cbt/audio/day-18.mp3", title: "用价值和行动培育新想法", duration: "约10分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-18.jpg",
+    day: 18, theme: "对想法不反应", module: "调整与想法", speaker: "孙轶群",
+    audio: { src: "assets/cbt/audio/day-18.mp3", title: "对想法不反应，选择新的行动", duration: "约10分钟", hasAudio: true },
     extendedResources: [],
     worksheetPrompts: [
-      "你的价值方向是什么",
-      "今天能做的最小行动是什么",
-      "遇到困难时的备用方案",
-      "完成这个行动后，你有什么感受"
+      "写下一个在生活中经常出现、给我带来情绪困扰的想法",
+      "这个想法有可能带来哪些行为",
+      "接下来，在这个想法出现的时候，我会尝试“不反应”。我可以这样做",
+      "我的体验是（如果暂时还没机会体验，可以跳过）"
     ]
   },
 
@@ -236,41 +237,43 @@ const CBT_COURSE_DATA = [
   {
     day: 19, theme: "问题解决：澄清问题", module: "问题解决+总结", speaker: "孙轶群",
     audio: { src: "assets/cbt/audio/day-19.mp3", title: "找出需要解决的问题", duration: "约10分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-19.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "你面临的具体问题是什么（客观描述）",
-      "哪些因素在你能控制的范围内",
-      "哪些不在你控制范围内",
-      "你真正想要的结果是什么"
+      "最近让我不愉快的经历是（尽可能包含全部关键信息）",
+      "重述这个经历，确保只包含客观事件",
+      "我希望这个事件的情况变成（尽可能详细地描述期待的场景）",
+      "在这份期待中，哪些部分有机会达成？哪些部分暂时难以实现",
+      "如果聚焦于一个可实现的目标，我希望是",
+      "综合以上信息，让我困扰的问题以及我希望的结果是"
     ]
   },
   {
     day: 20, theme: "问题解决：从一点点改变开始", module: "问题解决+总结", speaker: "孙轶群",
     audio: { src: "assets/cbt/audio/day-20.mp3", title: "制定解决问题的方案", duration: "约10分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-20.jpg",
     extendedResources: [],
     worksheetPrompts: [
-      "你的最小可行动方案是什么",
-      "什么时候开始",
-      "可能的阻碍和应对方法",
-      "完成后你如何奖励自己"
+      "最近让我困扰的问题，以及我希望的结果",
+      "如果10分代表问题已经被解决，0分是情况最糟糕，我觉得当前情况是几分",
+      "如果向前推进1分，可能是因为哪些一点点的改变",
+      "我可以从谁或哪里得到帮助",
+      "如果朋友遇到了类似困扰，我会如何建议",
+      "以前遇到类似困扰时，我曾怎样成功应对",
+      "综合以上思考，在当下，我可以为自己做哪些事来推进哪怕一点点的改变",
+      "我可以完成的第一步是"
     ]
   },
   {
     day: 21, theme: "总结：持续行动培育想法 + 工具库卡片", module: "问题解决+总结", speaker: "罗浩贤",
     audio: { src: "assets/cbt/audio/day-21.mp3", title: "照料你的情绪花园", duration: "约10分钟", hasAudio: true },
-    guideImage: "assets/cbt/guide/day-21.jpg",
     extendedResources: [
       { title: "工具库：情绪降温", src: "assets/cbt/extended/day-21-1.mp3", type: "audio" },
       { title: "工具库：情绪小锦囊", src: "assets/cbt/extended/day-21-2.mp3", type: "audio" },
       { title: "工具库：渐进式肌肉放松练习", src: "assets/cbt/extended/day-21-3.mp3", type: "audio" }
     ],
     worksheetPrompts: [
-      "回顾21天：你最核心的3个工具是什么",
-      "你最大的改变是什么",
-      "你对未来的自己说什么",
-      "制作你的情绪工具库卡片"
+      "回顾第一天的练习，我当时列举了这些应对情绪困扰的方法",
+      "经过这段时间的练习，我现在拥有这些应对情绪困扰的新选择",
+      "试着把这些工具和技术写在卡片上，制作自己的“工具库”"
     ]
   }
 ];

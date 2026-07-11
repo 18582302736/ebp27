@@ -44,7 +44,7 @@ const COURSES = [
     id: 'act',
     name: '焦虑应对行动计划',
     subtitle: '逐个击破焦虑症状',
-    description: '针对具体症状类型设计行为实验，彻底解决焦虑症',
+    description: '针对常见焦虑模式设计行为实验，逐步提升应对焦虑的能力',
     totalDays: 21,
     phases: [
       { name: '认识焦虑', range: 'Day 1-3', start: 1, end: 3, cssClass: 'phase-1', gridId: 'phase1Grid' },
@@ -432,15 +432,13 @@ const COURSE_DATA = [
   },
   {
     day: 23,
-    theme: "日常练习",
+    theme: "拓展阅读：探索自己",
     sensory: null,
-    readingAudios: [
-      { src: "assets/reading-audio/day-23.mp3", title: "日常练习：情绪共处", duration: "约15分钟" }
-    ],
+    readingAudios: [],
     worksheet: {
       src: "assets/worksheets/day-23.pdf",
       title: "第23天书写练习",
-      prompt: "回顾这些天的练习，记录你的成长和变化。"
+      prompt: "从心理学家的视角探索自我，记录你对自己的理解。"
     },
     mindfulnessAudios: [
       { src: "assets/mindfulness-audio/day-23.mp3", title: "日常练习：情绪共处", duration: "约13分钟" }
