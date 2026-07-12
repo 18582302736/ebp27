@@ -85,13 +85,6 @@ async function initApp() {
     const progress = await getProgress(courseId, day);
     const persistRecovery = async () => saveProgress(courseId, day, progress);
 
-    if (!isLocked && typeof renderRecoveryCheckIn === 'function') {
-      renderRecoveryCheckIn(document.getElementById('recoveryCheckIn'), progress, persistRecovery);
-    } else {
-      const recoveryCheckIn = document.getElementById('recoveryCheckIn');
-      if (recoveryCheckIn) recoveryCheckIn.hidden = true;
-    }
-
     // 更新返回链接
     const backBtn = document.querySelector('a.back-btn');
     if (backBtn) backBtn.href = `index.html?course=${courseId}`;
@@ -177,8 +170,7 @@ async function initApp() {
             await unlockCourse(nextCourse.id);
           }
         }
-        // 显示完成弹窗和横幅
-        showCompletionNavigation();
+        // 完成课程节点后先留下成果卡，再显示下一步入口。
         if (dailyReviewPanel && dailyReviewPanel.setAvailable) {
           dailyReviewPanel.setAvailable();
           dailyReviewPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -202,7 +194,6 @@ async function initApp() {
         card.classList.add('locked');
         taskBody.innerHTML = '<div class="locked-hint">解锁后可操作</div>';
       } else {
-        let reflection = null;
         renderTaskBody(courseId, data, taskKey, taskBody, taskDone[taskKey], async () => {
           if (taskDone[taskKey]) return;
           taskDone[taskKey] = true;
@@ -210,13 +201,8 @@ async function initApp() {
           if (progress.status === 'available') progress.status = 'in_progress';
           await saveProgress(courseId, day, progress);
           updateTaskCardStatus(card, true, progress[completedKey]);
-          if (reflection && reflection.setAvailable) reflection.setAvailable();
           await checkAllDone();
         });
-        if (typeof createTaskReflection === 'function') {
-          reflection = createTaskReflection(progress, taskKey, taskLabel, taskDone[taskKey], persistRecovery);
-          card.appendChild(reflection);
-        }
       }
 
       taskList.appendChild(card);
@@ -226,7 +212,7 @@ async function initApp() {
       dailyReviewPanel = renderDailyReview(
         document.getElementById('dailyReview'),
         progress,
-        config.taskLabels,
+        { courseId, day, theme: data.theme },
         allDone,
         persistRecovery,
         showResultOverlay
@@ -234,19 +220,19 @@ async function initApp() {
     }
 
     // 重新进入已完成的日期时，仍提供前往下一天的入口。
-    if (allDone) {
+    if (allDone && progress.recovery && progress.recovery.card && progress.recovery.card.unlocked_at) {
       showCompletionNavigation();
     }
 
-    function showResultOverlay() {
+    function showResultOverlay(card) {
       const overlay = document.getElementById('resultOverlay');
       if (!overlay || overlay.style.display === 'flex') return;
       document.getElementById('resultTitle').textContent = `第${day}天完成：${data.theme}`;
       document.getElementById('resultSubtitle').textContent = `完成于 ${formatDateWithWeekday(new Date().toISOString())}`;
       const resultIcon = document.getElementById('resultIcon');
-      if (resultIcon) resultIcon.innerHTML = iconStar(48);
+      if (resultIcon) resultIcon.textContent = (card && card.symbol) || getCardSymbol(courseId, day);
       const encouragement = document.getElementById('resultEncouragement');
-      if (encouragement) encouragement.textContent = getEncouragement();
+      if (encouragement) encouragement.textContent = '成果卡 ' + getCardCode(courseId, day) + ' 已加入「我的练习图鉴」';
       const resultNextBtn = document.getElementById('resultNextBtn');
       const resultRestBtn = document.getElementById('resultRestBtn');
       resultRestBtn.href = `index.html?course=${courseId}`;
@@ -258,6 +244,7 @@ async function initApp() {
         resultNextBtn.textContent = '完成本课程，返回首页';
         resultRestBtn.style.display = 'none';
       }
+      showCompletionNavigation();
       overlay.style.display = 'flex';
     }
 

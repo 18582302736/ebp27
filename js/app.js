@@ -29,6 +29,13 @@ async function initApp() {
     themeToggle.innerHTML = next === 'dark' ? iconSun(20) : iconMoon(20);
   });
 
+  const collectionBtn = document.getElementById('collectionBtn');
+  if (collectionBtn) {
+    collectionBtn.innerHTML = iconCollection(20);
+    collectionBtn.title = '我的练习图鉴';
+    collectionBtn.addEventListener('click', showCollection);
+  }
+
   // 刷新按钮
   const refreshBtn = document.getElementById('refreshBtn');
   if (refreshBtn) {
@@ -94,9 +101,28 @@ async function showCourses() {
   document.querySelector('.app-title').textContent = 'AnxietyHeal For TT';
 
   await renderCourseCards();
-  if (typeof renderRecoveryDashboard === 'function') {
-    await renderRecoveryDashboard(document.getElementById('recoveryDashboard'));
+}
+
+async function showCollection() {
+  hideAllPages();
+  document.getElementById('collectionPage').style.display = 'block';
+  document.querySelector('.app-title').textContent = '我的练习图鉴';
+  let backBtn = document.getElementById('backToCourses');
+  if (!backBtn) {
+    backBtn = document.createElement('button');
+    backBtn.id = 'backToCourses';
+    backBtn.className = 'back-btn-header';
+    backBtn.innerHTML = iconArrowLeft(18);
+    const left = document.createElement('div');
+    left.className = 'header-left';
+    const title = document.querySelector('.app-header .app-title');
+    title.parentNode.insertBefore(left, title);
+    left.appendChild(backBtn);
+    left.appendChild(title);
   }
+  backBtn.style.display = 'flex';
+  backBtn.onclick = () => { backBtn.style.display = 'none'; showCourses(); };
+  await renderCardCollection(document.getElementById('cardCollection'));
 }
 
 async function renderCourseCards() {
@@ -252,7 +278,7 @@ async function showCalendar(courseId) {
 }
 
 function hideAllPages() {
-  ['entryPage', 'coursePage', 'calendarPage'].forEach(id => {
+  ['entryPage', 'coursePage', 'calendarPage', 'collectionPage'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
