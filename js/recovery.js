@@ -7,6 +7,83 @@ const CARD_SYMBOLS = {
   act: ['⛵','🧘','🌾','🚶','🧗','🌬️','🪁','🚪','👣','🌄','⛰️','🛶','🧭','🌊','🔥','🌌','🪵','🌲','🕯️','🌅','🏔️']
 };
 
+// 67 只原创疗愈精灵：技能用于提示当天可练习的心理能力，不代表医疗效果。
+const CARD_COMPANIONS = {
+  ebp: [
+    ['好奇芽','初见微光','带着好奇看见当下，而不是急着评价。'],
+    ['慢尝团','一口此刻','把注意力带回味道与正在发生的体验。'],
+    ['触触绒','柔软落地','借助触感回到身体，减轻思绪拉扯。'],
+    ['闻香鹿','气息寻路','用熟悉气味找到片刻安稳与愉悦。'],
+    ['听身熊','身体来信','听见身体需要，并给自己温柔照顾。'],
+    ['拾喜雀','小喜收藏','更容易发现并保存生活里的开心小事。'],
+    ['微光芽','小步生长','看见已经做到的部分，减轻完美压力。'],
+    ['流云团','情绪流动','提醒你情绪会变化，不必马上消灭它。'],
+    ['名名狐','情绪点名','为感受准确命名，让内心变得更清楚。'],
+    ['容容鲸','给它空间','允许情绪暂时存在，减少与它的对抗。'],
+    ['寻需鹿','内心译员','从情绪背后听见自己真正的需要。'],
+    ['松手獭','停止较劲','接纳眼前现实，把力气留给下一步。'],
+    ['向心鸟','方向罗盘','情绪摇晃时，仍记得自己重视的方向。'],
+    ['行动芽','价值落地','把重要的事变成今天能做的小动作。'],
+    ['一步龟','现在就走','不等状态完美，也能开始一小步。'],
+    ['同行鹿','带着感受走','让困难情绪同行，但不替你做决定。'],
+    ['日常狸','练习入袋','把觉察、接纳和行动带进普通生活。'],
+    ['再来鸟','温柔重复','允许不完美，用重复练习积累能力。'],
+    ['心树灵','持续照料','提醒你像照料树一样照料情绪能力。'],
+    ['丰盛蜂','幸福拼图','看见愉快之外的投入、意义与成长。'],
+    ['信使鸽','情绪来信','理解情绪的信息，再选择怎样回应。'],
+    ['觉容莲','看见与容纳','先觉察体验，再给它可以待着的位置。'],
+    ['识己猫','认识自己','连接需要、优势和价值，稳定行动方向。'],
+    ['初心萤','动力微光','困难时重新想起自己为什么开始。'],
+    ['锦囊狸','随身工具箱','整理有效方法，需要时更快调用。']
+  ],
+  cbt: [
+    ['分流狐','三路选择','判断强度后选择安抚、检验或解决。'],
+    ['权衡獭','代价天平','同时看见情绪的保护作用和现实代价。'],
+    ['刻度熊','强度读数','用评分看清程度，选择合适的调节方式。'],
+    ['安心绒','安全轻触','用温和触碰向身体传递安全感。'],
+    ['五感狸','感官庇护','调用五种感官，为自己建立安抚空间。'],
+    ['松松熊','肌肉融雪','用绷紧与放松帮助身体释放紧张。'],
+    ['动能犬','压力出口','借适度运动让身体完成压力循环。'],
+    ['降温企鹅','先稳身体','高强度情绪时先降温，再分析问题。'],
+    ['想法镜','看见解释','发现事件之外，想法也在影响情绪。'],
+    ['事实鹿','事实分界','把可观察事实与脑中的解释分开。'],
+    ['核实猫','证据核验','检查情绪是否符合事实，再决定回应。'],
+    ['灰度狐','连续光谱','跳出非黑即白，看见更多可能程度。'],
+    ['分责蜂','责任拼图','按比例分配责任，不把结果全压给自己。'],
+    ['多面鸮','换角提问','用证据和不同视角形成平衡想法。'],
+    ['旧声鹦','旧念识别','认出自动播放的旧信念并不等于事实。'],
+    ['观念云','念头路过','把想法当心理事件，而非必须服从的命令。'],
+    ['寻光雀','积极证据','主动留意积极证据，修正负面偏向。'],
+    ['缓答龟','稍后回应','想法出现时不急回应，给变化留出时间。'],
+    ['拆题鼠','问题定形','把困扰说具体，找到真正可解决的部分。'],
+    ['一步獾','最小行动','把方案缩成足够小、可以马上做的一步。'],
+    ['工具象','灵活调用','建立个人工具库，按情境选择合适方法。']
+  ],
+  act: [
+    ['启程鹿','方向启航','看清焦虑代价与想要生活，找到改变方向。'],
+    ['四象猫','焦虑地图','从外界、身体、想法和行为看清焦虑链。'],
+    ['回避兔','循环识破','识别短暂轻松如何让回避被长期维持。'],
+    ['估险狐','双面估算','同时检验风险大小与自己的应对能力。'],
+    ['担忧鸦','有用检验','分辨担忧是在准备，还是只让自己打转。'],
+    ['解题獭','下一步行动','把能解决的担忧转成清晰的下一步。'],
+    ['未知蝶','不确定练习','用小实验逐渐提升对不确定性的承受力。'],
+    ['护栏狸','安全松绑','看见安全行为如何阻挡你获得新证据。'],
+    ['靠近鹿','减少回避','逐步靠近曾躲开的事，验证真实能力。'],
+    ['自信熊','少问一次','减少反复确认，练习相信自己的判断。'],
+    ['勇行犬','带着焦虑走','允许可承受的焦虑存在，同时靠近目标。'],
+    ['阶梯羊','由易到难','把挑战排成阶梯，让练习可以持续。'],
+    ['事实雀','行动复盘','行动后记录真实结果，而不只看感受。'],
+    ['实验狐','预测验证','用现实实验检验未来预测，停止空转想象。'],
+    ['心跳鲸','感觉重学','安全接触身体感觉，修正危险误解。'],
+    ['外向猫','注意外移','减少自我监控，把注意力放回真实互动。'],
+    ['升级龙','重复进阶','通过重复和升级，让新学习逐渐稳定。'],
+    ['够好熊','完成护盾','用足够好的行动挑战完美主义。'],
+    ['记录鸮','实验笔记','记录预测、结果和应对，让练习可复盘。'],
+    ['复盘狸','挫折成图','把挫折当数据，调整方法而非判定失败。'],
+    ['远行鹿','勇气续航','带上有效方法，让勇敢行动继续发生。']
+  ]
+};
+
 // 每日课程重点：属于课程内容，不随用户的成果卡记录变化。
 const CARD_KNOWLEDGE = {
   ebp: [
@@ -110,6 +187,11 @@ function getCardKnowledge(courseId, day) {
   return items[day - 1] || '完成练习后，记住今天对自己最有帮助的一点。';
 }
 
+function getCardCompanion(courseId, day) {
+  const item = (CARD_COMPANIONS[courseId] || [])[day - 1] || ['陪伴芽','今日陪伴','陪你记住今天最有帮助的一点。'];
+  return { name: item[0], skill: item[1], help: item[2] };
+}
+
 function getCardRank(day) {
   if (day % 7 === 0 || day === 21 || day === 25) return { label: '里程碑', mark: '✦' };
   if (day % 5 === 0) return { label: '闪光', mark: '◆' };
@@ -173,7 +255,7 @@ async function collectCardRecords() {
       const recovery = progress.recovery || {};
       const card = recovery.card || null;
       const data = getCourseData(course.id, day) || {};
-      records.push({ course, day, theme: data.theme || ('第' + day + '天'), knowledge: getCardKnowledge(course.id, day), card });
+      records.push({ course, day, theme: data.theme || ('第' + day + '天'), knowledge: getCardKnowledge(course.id, day), companion: getCardCompanion(course.id, day), card });
     }
   }
   return records;
@@ -212,7 +294,7 @@ async function renderCardCollection(container) {
       return `<button class="album-card ${unlockedCard ? 'unlocked' : 'locked'}" data-course="${item.course.id}" data-day="${item.day}" style="--card-color:${item.course.color}">
         <span class="album-card-head"><span class="album-card-code">NO.${String(item.day).padStart(2, '0')}</span><span class="album-card-rank">${rank.mark} ${rank.label}</span></span>
         <span class="album-card-art"><span class="album-card-orbit"></span><span class="album-card-symbol">${unlockedCard ? getCardSymbol(item.course.id, item.day) : '✦'}</span></span>
-        <span class="album-card-info"><strong>${unlockedCard ? recoveryEscape(item.theme) : '尚未相遇'}</strong><small>${unlockedCard ? getCardCode(item.course.id, item.day) + ' · 已发现' : '完成第 ' + item.day + ' 天后发现'}</small></span>
+        <span class="album-card-info"><strong>${unlockedCard ? recoveryEscape(item.companion.name) : '尚未相遇'}</strong><span class="album-card-theme">${unlockedCard ? recoveryEscape(item.theme) : '等待与你见面'}</span><small>${unlockedCard ? '技能 · ' + recoveryEscape(item.companion.skill) : '完成第 ' + item.day + ' 天后发现'}</small></span>
       </button>`;
     }).join('');
   }
@@ -245,7 +327,9 @@ function renderUnlockedCard(item) {
     <div class="achievement-card-top"><span>${getCardCode(item.course.id, item.day)}</span><span>${rank.mark} ${rank.label}</span></div>
     <div class="achievement-card-visual"><span class="achievement-card-halo"></span><div class="achievement-card-symbol">${getCardSymbol(item.course.id, item.day)}</div></div>
     <div class="achievement-card-course">${recoveryEscape(item.course.name)}</div>
-    <h3>${recoveryEscape(item.theme)}</h3>
+    <h3>${recoveryEscape(item.companion.name)}</h3>
+    <div class="achievement-card-skill"><small>专属技能 · ${recoveryEscape(item.companion.skill)}</small><p>${recoveryEscape(item.companion.help)}</p></div>
+    <div class="achievement-card-theme">第 ${item.day} 天 · ${recoveryEscape(item.theme)}</div>
     <div class="achievement-card-knowledge"><small>今日重点</small><p>${recoveryEscape(item.knowledge || getCardKnowledge(item.course.id, item.day))}</p></div>
     <div class="achievement-card-copy"><small>今天留下了</small><p>${recoveryEscape(item.card.takeaway)}</p></div>
     <div class="achievement-card-moods">${(item.card.moods || []).map(mood => '<span>' + recoveryEscape(mood) + '</span>').join('')}</div>
