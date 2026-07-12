@@ -110,6 +110,12 @@ function getCardKnowledge(courseId, day) {
   return items[day - 1] || '完成练习后，记住今天对自己最有帮助的一点。';
 }
 
+function getCardRank(day) {
+  if (day % 7 === 0 || day === 21 || day === 25) return { label: '里程碑', mark: '✦' };
+  if (day % 5 === 0) return { label: '闪光', mark: '◆' };
+  return { label: '日常发现', mark: '●' };
+}
+
 function renderDailyReview(container, progress, context, available, onSave, onFinished) {
   if (!container) return null;
   const recovery = ensureRecovery(progress);
@@ -177,13 +183,15 @@ async function renderCardCollection(container) {
   if (!container) return;
   const records = await collectCardRecords();
   const unlocked = records.filter(item => item.card && item.card.unlocked_at);
+  const completion = Math.round(unlocked.length / records.length * 100);
   container.innerHTML = `
     <div class="collection-summary">
-      <div><span>已发现</span><strong>${unlocked.length}<small>/ ${records.length}</small></strong></div>
-      ${COURSES.map(course => {
+      <div class="collection-emblem" style="--collection-progress:${completion * 3.6}deg"><div><strong>${completion}<small>%</small></strong><span>图鉴进度</span></div></div>
+      <div class="collection-summary-copy"><span class="collection-eyebrow">MY HEALING DEX</span><h3>我的疗愈图鉴</h3><p>每一次完成，都在发现一个更有力量的自己。</p></div>
+      <div class="collection-counts">${COURSES.map(course => {
         const count = unlocked.filter(item => item.course.id === course.id).length;
-        return '<div class="collection-course-count"><span>' + recoveryEscape(course.name) + '</span><b>' + count + '/' + course.totalDays + '</b></div>';
-      }).join('')}
+        return '<div class="collection-course-count" style="--course-color:' + course.color + '"><i></i><span>' + recoveryEscape(course.name) + '</span><b>' + count + '<small>/' + course.totalDays + '</small></b></div>';
+      }).join('')}</div>
     </div>
     <div class="collection-filters" role="tablist">
       <button class="selected" data-course="all">全部</button>
@@ -200,11 +208,11 @@ async function renderCardCollection(container) {
     const visible = filter === 'all' ? records : records.filter(item => item.course.id === filter);
     album.innerHTML = visible.map(item => {
       const unlockedCard = item.card && item.card.unlocked_at;
+      const rank = getCardRank(item.day);
       return `<button class="album-card ${unlockedCard ? 'unlocked' : 'locked'}" data-course="${item.course.id}" data-day="${item.day}" style="--card-color:${item.course.color}">
-        <span class="album-card-code">${getCardCode(item.course.id, item.day)}</span>
-        <span class="album-card-symbol">${unlockedCard ? getCardSymbol(item.course.id, item.day) : '？'}</span>
-        <strong>${unlockedCard ? recoveryEscape(item.theme) : '等待发现'}</strong>
-        <small>${unlockedCard ? '已收集' : '完成第 ' + item.day + ' 天后解锁'}</small>
+        <span class="album-card-head"><span class="album-card-code">NO.${String(item.day).padStart(2, '0')}</span><span class="album-card-rank">${rank.mark} ${rank.label}</span></span>
+        <span class="album-card-art"><span class="album-card-orbit"></span><span class="album-card-symbol">${unlockedCard ? getCardSymbol(item.course.id, item.day) : '✦'}</span></span>
+        <span class="album-card-info"><strong>${unlockedCard ? recoveryEscape(item.theme) : '尚未相遇'}</strong><small>${unlockedCard ? getCardCode(item.course.id, item.day) + ' · 已发现' : '完成第 ' + item.day + ' 天后发现'}</small></span>
       </button>`;
     }).join('');
   }
@@ -231,9 +239,12 @@ async function renderCardCollection(container) {
 
 function renderUnlockedCard(item) {
   const date = item.card.unlocked_at ? new Date(item.card.unlocked_at).toLocaleDateString('zh-CN') : '';
+  const rank = getCardRank(item.day);
   return `<article class="achievement-card" style="--card-color:${item.course.color}">
-    <div class="achievement-card-top"><span>${getCardCode(item.course.id, item.day)}</span><span>${recoveryEscape(item.course.name)}</span></div>
-    <div class="achievement-card-symbol">${getCardSymbol(item.course.id, item.day)}</div>
+    <div class="achievement-card-shine"></div>
+    <div class="achievement-card-top"><span>${getCardCode(item.course.id, item.day)}</span><span>${rank.mark} ${rank.label}</span></div>
+    <div class="achievement-card-visual"><span class="achievement-card-halo"></span><div class="achievement-card-symbol">${getCardSymbol(item.course.id, item.day)}</div></div>
+    <div class="achievement-card-course">${recoveryEscape(item.course.name)}</div>
     <h3>${recoveryEscape(item.theme)}</h3>
     <div class="achievement-card-knowledge"><small>今日重点</small><p>${recoveryEscape(item.knowledge || getCardKnowledge(item.course.id, item.day))}</p></div>
     <div class="achievement-card-copy"><small>今天留下了</small><p>${recoveryEscape(item.card.takeaway)}</p></div>
