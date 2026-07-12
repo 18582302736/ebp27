@@ -1,6 +1,6 @@
 // sw.js - Service Worker（离线缓存）
 
-const CACHE_STATIC = 'ebp-static-v80';
+const CACHE_STATIC = 'ebp-static-v81';
 const CACHE_AUDIO = 'ebp-audio-v1';
 const CACHE_PDF = 'ebp-pdf-v1';
 
@@ -37,7 +37,15 @@ const STATIC_FILES = [
   './icons/favicon.png',
   './assets/illustration.png',
   './assets/logo-lotus.png',
-  './assets/logo-lotus-small.png'
+  './assets/logo-lotus-small.png',
+  './assets/companions/sprout.png',
+  './assets/companions/scroll.png',
+  './assets/companions/deer.png',
+  './assets/companions/crane.png',
+  './assets/companions/lantern.png',
+  './assets/companions/mushroom.png',
+  './assets/companions/cloudray.png',
+  './assets/companions/shell.png'
 ];
 
 // 安装：预缓存静态资源

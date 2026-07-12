@@ -7,6 +7,22 @@ const CARD_SYMBOLS = {
   act: ['⛵','🧘','🌾','🚶','🧗','🌬️','🪁','🚪','👣','🌄','⛰️','🛶','🧭','🌊','🔥','🌌','🪵','🌲','🕯️','🌅','🏔️']
 };
 
+const CARD_ARTWORKS = ['sprout', 'deer', 'crane', 'lantern', 'mushroom', 'cloudray', 'shell', 'scroll'];
+
+function getCardArtwork(courseId, day, companionName) {
+  const name = companionName || '';
+  const semantic = [
+    [/鹿|羊|犬|獾|龙/, 'deer'], [/鸟|雀|鸽|鸮|鹦|蝶|蜂|鸦/, 'crane'],
+    [/云|鲸|企鹅|流/, 'cloudray'], [/灯|萤|光|火|初心/, 'lantern'],
+    [/菇|树|芽|莲|花|草|丰盛/, 'mushroom'], [/贝|龟|獭|海|壳/, 'shell'],
+    [/镜|书|记录|工具|地图|罗盘|想法|事实|题|念/, 'scroll']
+  ];
+  const matched = semantic.find(rule => rule[0].test(name));
+  const courseOffset = { ebp: 0, cbt: 3, act: 5 }[courseId] || 0;
+  const artwork = matched ? matched[1] : CARD_ARTWORKS[(day - 1 + courseOffset) % CARD_ARTWORKS.length];
+  return { src: 'assets/companions/' + artwork + '.png', hue: ((day - 1) % 7 - 3) * 4 };
+}
+
 // 67 只原创疗愈精灵：技能用于提示当天可练习的心理能力，不代表医疗效果。
 const CARD_COMPANIONS = {
   ebp: [
@@ -291,9 +307,10 @@ async function renderCardCollection(container) {
     album.innerHTML = visible.map(item => {
       const unlockedCard = item.card && item.card.unlocked_at;
       const rank = getCardRank(item.day);
+      const artwork = getCardArtwork(item.course.id, item.day, item.companion.name);
       return `<button class="album-card ${unlockedCard ? 'unlocked' : 'locked'}" data-course="${item.course.id}" data-day="${item.day}" style="--card-color:${item.course.color}">
         <span class="album-card-head"><span class="album-card-code">NO.${String(item.day).padStart(2, '0')}</span><span class="album-card-rank">${rank.mark} ${rank.label}</span></span>
-        <span class="album-card-art"><span class="album-card-orbit"></span><span class="album-card-symbol">${unlockedCard ? getCardSymbol(item.course.id, item.day) : '✦'}</span></span>
+        <span class="album-card-art"><span class="album-card-orbit"></span>${unlockedCard ? '<img class="album-card-creature" src="' + artwork.src + '" alt="' + recoveryEscape(item.companion.name) + '" style="--art-hue:' + artwork.hue + 'deg">' : '<span class="album-card-silhouette">✦</span>'}</span>
         <span class="album-card-info"><strong>${unlockedCard ? recoveryEscape(item.companion.name) : '尚未相遇'}</strong><span class="album-card-theme">${unlockedCard ? recoveryEscape(item.theme) : '等待与你见面'}</span><small>${unlockedCard ? '技能 · ' + recoveryEscape(item.companion.skill) : '完成第 ' + item.day + ' 天后发现'}</small></span>
       </button>`;
     }).join('');
@@ -322,16 +339,18 @@ async function renderCardCollection(container) {
 function renderUnlockedCard(item) {
   const date = item.card.unlocked_at ? new Date(item.card.unlocked_at).toLocaleDateString('zh-CN') : '';
   const rank = getCardRank(item.day);
+  const artwork = getCardArtwork(item.course.id, item.day, item.companion.name);
   return `<article class="achievement-card" style="--card-color:${item.course.color}">
     <div class="achievement-card-shine"></div>
     <div class="achievement-card-top"><span>${getCardCode(item.course.id, item.day)}</span><span>${rank.mark} ${rank.label}</span></div>
-    <div class="achievement-card-visual"><span class="achievement-card-halo"></span><div class="achievement-card-symbol">${getCardSymbol(item.course.id, item.day)}</div></div>
-    <div class="achievement-card-course">${recoveryEscape(item.course.name)}</div>
-    <h3>${recoveryEscape(item.companion.name)}</h3>
-    <div class="achievement-card-skill"><small>专属技能 · ${recoveryEscape(item.companion.skill)}</small><p>${recoveryEscape(item.companion.help)}</p></div>
-    <div class="achievement-card-theme">第 ${item.day} 天 · ${recoveryEscape(item.theme)}</div>
-    <div class="achievement-card-knowledge"><small>今日重点</small><p>${recoveryEscape(item.knowledge || getCardKnowledge(item.course.id, item.day))}</p></div>
-    <div class="achievement-card-copy"><small>今天留下了</small><p>${recoveryEscape(item.card.takeaway)}</p></div>
+    <div class="achievement-card-visual"><span class="achievement-card-halo"></span><span class="achievement-stars">✦ · ✧ · ✦</span><img class="achievement-card-creature" src="${artwork.src}" alt="${recoveryEscape(item.companion.name)}" style="--art-hue:${artwork.hue}deg"></div>
+    <div class="achievement-card-course">${recoveryEscape(item.course.name)} · 第 ${item.day} 天</div>
+    <div class="achievement-card-skill-name">${recoveryEscape(item.companion.skill)}</div>
+    <h3>✦ ${recoveryEscape(item.companion.name)} ✦</h3>
+    <p class="achievement-card-help">${recoveryEscape(item.companion.help)}</p>
+    <div class="achievement-card-theme">${recoveryEscape(item.theme)}</div>
+    <div class="achievement-card-knowledge"><i>✦</i><div><small>今日重点</small><p>${recoveryEscape(item.knowledge || getCardKnowledge(item.course.id, item.day))}</p></div></div>
+    <div class="achievement-card-copy"><i>◇</i><div><small>今天留下了</small><p>${recoveryEscape(item.card.takeaway)}</p></div></div>
     <div class="achievement-card-moods">${(item.card.moods || []).map(mood => '<span>' + recoveryEscape(mood) + '</span>').join('')}</div>
     <footer>${date} · 完成练习后发现</footer>
   </article>`;
