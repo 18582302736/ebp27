@@ -33,11 +33,7 @@ async function initApp() {
       themeToggle.innerHTML = next === 'dark' ? iconSun(20) : iconMoon(20);
     });
 
-    const refreshBtn = document.getElementById('refreshBtn');
-    if (refreshBtn) {
-      refreshBtn.innerHTML = iconRefresh(20);
-      refreshBtn.title = '强制更新应用';
-      refreshBtn.setAttribute('aria-label', '强制更新应用');
+    document.querySelectorAll('.footer-refresh').forEach(refreshBtn => {
       refreshBtn.addEventListener('click', async () => {
         if (!confirm('确定要强制更新应用吗？这只会清除应用代码缓存，不会删除你的书写和照片。')) return;
         refreshBtn.disabled = true;
@@ -47,7 +43,7 @@ async function initApp() {
           window.location.reload();
         }
       });
-    }
+    });
 
     const backIcon = document.getElementById('backIcon');
     if (backIcon) backIcon.innerHTML = iconArrowLeft(18);

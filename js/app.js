@@ -36,12 +36,8 @@ async function initApp() {
     collectionBtn.addEventListener('click', showCollection);
   }
 
-  // 刷新按钮
-  const refreshBtn = document.getElementById('refreshBtn');
-  if (refreshBtn) {
-    refreshBtn.innerHTML = iconRefresh(20);
-    refreshBtn.title = '强制更新应用';
-    refreshBtn.setAttribute('aria-label', '强制更新应用');
+  // 页脚强制刷新：低频操作不占用顶部空间
+  document.querySelectorAll('.footer-refresh').forEach(refreshBtn => {
     refreshBtn.addEventListener('click', async () => {
       if (!confirm('确定要强制更新应用吗？这只会清除应用代码缓存，不会删除你的书写和照片。')) return;
       refreshBtn.disabled = true;
@@ -51,7 +47,7 @@ async function initApp() {
         window.location.reload();
       }
     });
-  }
+  });
 
   // 检查是否首次使用
   const hasStarted = localStorage.getItem('ebp_has_started');

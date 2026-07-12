@@ -179,8 +179,8 @@ body {
 }
 
 .theme-toggle {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   border: 1px solid var(--border);
   background: var(--bg-card);
@@ -206,8 +206,18 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--bg-card);
 }
+
+.header-actions .theme-toggle { border-color: transparent; background: transparent; }
+.header-actions .theme-toggle:hover { background: var(--bg-card-hover); }
+.footer-refresh { margin-left: 5px; padding: 3px 7px; border: 0; border-radius: 999px; background: var(--bg-card); color: var(--text-muted); font: inherit; cursor: pointer; }
+.footer-refresh:hover { color: var(--primary); }
+.footer-refresh:active { transform: scale(.96); }
 
 /* ===== Progress Bar ===== */
 .progress-bar-wrapper {

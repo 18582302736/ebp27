@@ -41,7 +41,7 @@ async function updateBackupUI() {
       const s = await getBackupSummary();
       summary.textContent = s.unbackedDays.length
         ? s.unbackedDays.length + ' 个 Day 尚未备份：' + s.unbackedDays.map(formatBackupDay).join('、')
-        : s.progressCount + ' 天进度 · ' + s.journalCount + ' 篇书写 · ' + s.photoCount + ' 张照片';
+        : s.progressCount + ' 天进度 · ' + s.cardCount + ' 张成果卡 · ' + s.journalCount + ' 篇书写 · ' + s.photoCount + ' 张照片';
       if (statusIcon && statusText) {
         const hasData = s.progressCount > 0 || s.journalCount > 0 || s.unbackedDays.length > 0;
         const dirty = hasData && s.unbackedDays.length > 0;
@@ -59,7 +59,7 @@ async function openCreateBackupDialog() {
   let summary;
   try { summary = await getBackupSummary(); }
   catch (e) { showToast('读取本地数据失败', 'error'); return; }
-  openBackupDialog('创建备份', '<p class="backup-dialog-copy">将备份 ' + summary.progressCount + ' 天进度、' + summary.journalCount + ' 篇书写和 ' + summary.photoCount + ' 张照片。</p>'
+  openBackupDialog('创建备份', '<p class="backup-dialog-copy">将备份 ' + summary.progressCount + ' 天进度、' + summary.cardCount + ' 张成果卡、' + summary.journalCount + ' 篇书写和 ' + summary.photoCount + ' 张照片。</p>'
     + (summary.unbackedDays.length ? '<div class="backup-days"><strong>这次需要备份</strong><p>' + summary.unbackedDays.map(formatBackupDay).map(escapeSettingsHtml).join('、') + '</p></div>' : '<p class="backup-dialog-copy">目前没有尚未备份的 Day，你仍可以重新生成完整备份。</p>')
     + '<p class="backup-dialog-warning">所有内容都会保存在同一个 AnxietyHeal.ahbackup 文件里。请在 iCloud Drive 中选择原文件并确认替换。</p>'
     + '<div class="backup-dialog-actions"><button class="btn btn-secondary" data-close-backup>取消</button><button class="btn btn-primary" id="prepareBackupBtn">创建备份</button></div>');
@@ -98,7 +98,7 @@ async function previewRestoreBackup() {
   try {
     const payload = await readBackupFile(pendingRestore.file); pendingRestore.payload = payload;
     const summary = await getBackupSummary({ progress: payload.progress, journals: payload.journals });
-    setBackupDialogContent('<div class="backup-preview"><div><span>备份时间</span><strong>' + formatBackupTime(payload.createdAt) + '</strong></div><div><span>应用版本</span><strong>v' + escapeSettingsHtml(payload.appVersion || '未知') + '</strong></div><div><span>备份内容</span><strong>' + summary.progressCount + ' 天进度 · ' + summary.journalCount + ' 篇书写 · ' + summary.photoCount + ' 张照片</strong></div></div>'
+    setBackupDialogContent('<div class="backup-preview"><div><span>备份时间</span><strong>' + formatBackupTime(payload.createdAt) + '</strong></div><div><span>应用版本</span><strong>v' + escapeSettingsHtml(payload.appVersion || '未知') + '</strong></div><div><span>备份内容</span><strong>' + summary.progressCount + ' 天进度 · ' + summary.cardCount + ' 张成果卡 · ' + summary.journalCount + ' 篇书写 · ' + summary.photoCount + ' 张照片</strong></div></div>'
       + '<p class="backup-dialog-copy">恢复时以备份为准：同一个 Day 会恢复为备份时的内容；备份中没有的其他 Day 不受影响。</p>'
       + '<div class="backup-dialog-actions"><button class="btn btn-secondary" data-close-backup>取消</button><button class="btn btn-primary" id="confirmRestoreBtn">合并并恢复</button></div>');
     document.getElementById('confirmRestoreBtn').addEventListener('click', confirmRestoreBackup); bindBackupCloseButtons();
