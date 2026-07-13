@@ -197,9 +197,6 @@ async function initApp() {
           updateTaskCardStatus(card, true, progress[completedKey]);
           await checkAllDone();
         });
-        if (taskDone[taskKey] && taskBody.querySelector('.play-btn')) {
-          addTaskQuickAudio(card);
-        }
       }
 
       taskList.appendChild(card);
@@ -453,9 +450,9 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
       peerExample: getEBPPeerExample(day)
     });
     if (typeof createEBPJournal === 'function' && typeof getEBPJournalConfig === 'function') {
-      createEBPJournal(container, courseId, day, wsData, onComplete, { reviewMode: !!done });
+      createEBPJournal(container, courseId, day, wsData, onComplete);
     } else {
-      createJournal(container, courseId, day, wsData, onComplete, { reviewMode: !!done });
+      createJournal(container, courseId, day, wsData, onComplete);
     }
   } else if (taskKey === 'task3') {
     const audios = data.mindfulnessAudios || [];
@@ -488,7 +485,7 @@ function renderCBTTaskBody(courseId, data, taskKey, container, done, onComplete)
       worksheetHtml: worksheetHtml,
       writingGuideAudio: data.writingGuideAudio || null
     };
-    createJournal(container, courseId, day, wsData, onComplete, { reviewMode: !!done });
+    createJournal(container, courseId, day, wsData, onComplete);
   }
 }
 
@@ -505,7 +502,7 @@ function renderACTTaskBody(courseId, data, taskKey, container, done, onComplete)
       prompts: data.worksheetPrompts || null,
       worksheetHtml: worksheetHtml
     };
-    createJournal(container, courseId, day, wsData, onComplete, { reviewMode: !!done });
+    createJournal(container, courseId, day, wsData, onComplete);
   }
 }
 
@@ -726,66 +723,27 @@ function createTaskCard(index, iconHtml, name, desc, done, completedDate) {
     : '';
   const statusHtml = done ? `<div class="task-status-icon">${iconCheck(20)}</div>` : '';
 
-  const bodyId = 'task-body-' + index;
   card.innerHTML = `
-    <div class="task-card-head-row">
-      <button type="button" class="task-card-header task-card-toggle" aria-expanded="${done ? 'false' : 'true'}" aria-controls="${bodyId}">
-        <div class="task-icon">${iconHtml}</div>
-        <div class="task-info">
-          <div class="task-name">${name}</div>
-          <div class="task-desc">${desc}</div>
-          ${dateHtml}
-        </div>
-        ${statusHtml}
-        <span class="task-chevron" aria-hidden="true">⌄</span>
-      </button>
+    <div class="task-card-header">
+      <div class="task-icon">${iconHtml}</div>
+      <div class="task-info">
+        <div class="task-name">${name}</div>
+        <div class="task-desc">${desc}</div>
+        ${dateHtml}
+      </div>
+      ${statusHtml}
     </div>
-    <div class="task-body" id="${bodyId}"${done ? ' hidden' : ''}></div>
+    <div class="task-body"></div>
   `;
 
-  const toggle = card.querySelector('.task-card-toggle');
-  const body = card.querySelector('.task-body');
-  toggle.addEventListener('click', () => {
-    const expanded = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!expanded));
-    body.hidden = expanded;
-  });
-
   return card;
-}
-
-function addTaskQuickAudio(card) {
-  const row = card.querySelector('.task-card-head-row');
-  const toggle = card.querySelector('.task-card-toggle');
-  const body = card.querySelector('.task-body');
-  if (!row || !toggle || !body || row.querySelector('.task-quick-audio')) return;
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'task-quick-audio';
-  button.setAttribute('aria-label', '展开并播放本任务音频');
-  button.innerHTML = '<span class="svg-icon">' + iconPlay(14) + '</span><span>播放</span>';
-  button.addEventListener('click', () => {
-    if (body.hidden) {
-      body.hidden = false;
-      toggle.setAttribute('aria-expanded', 'true');
-    }
-    const playButton = body.querySelector('.play-btn');
-    if (playButton) playButton.click();
-  });
-  row.appendChild(button);
 }
 
 function updateTaskCardStatus(card, done, completedDate) {
   if (done) {
     card.classList.add('completed');
-    let statusIcon = card.querySelector('.task-status-icon');
-    if (!statusIcon) {
-      statusIcon = document.createElement('div');
-      statusIcon.className = 'task-status-icon';
-      const chevron = card.querySelector('.task-chevron');
-      chevron.parentNode.insertBefore(statusIcon, chevron);
-    }
-    statusIcon.innerHTML = iconCheck(20);
+    const statusIcon = card.querySelector('.task-status-icon');
+    if (statusIcon) statusIcon.innerHTML = iconCheck(20);
     if (completedDate) {
       const taskInfo = card.querySelector('.task-info');
       let dateEl = card.querySelector('.task-completed-date');
@@ -795,13 +753,6 @@ function updateTaskCardStatus(card, done, completedDate) {
         taskInfo.appendChild(dateEl);
       }
       dateEl.textContent = `完成于 ${formatDateWithWeekday(completedDate)}`;
-    }
-    const toggle = card.querySelector('.task-card-toggle');
-    const body = card.querySelector('.task-body');
-    if (toggle && body) {
-      toggle.setAttribute('aria-expanded', 'false');
-      body.hidden = true;
-      if (body.querySelector('.play-btn')) addTaskQuickAudio(card);
     }
   }
 }

@@ -27,7 +27,7 @@ python3 -m http.server 8088
 应用使用 Service Worker 实现离线缓存。SW 版本号定义在 `sw.js` 中：
 
 ```js
-const CACHE_STATIC = 'ebp-static-v83';
+const CACHE_STATIC = 'ebp-static-v84';
 ```
 
 ### 更新代码后用户看不到新版本？

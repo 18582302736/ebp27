@@ -1,21 +1,17 @@
 // EBP 结构化书写组件。CBT/ACT 继续使用 journal.js 的原组件。
-function createEBPJournal(container, courseId, day, worksheetData, onSaveComplete, options) {
+function createEBPJournal(container, courseId, day, worksheetData, onSaveComplete) {
   const config = getEBPJournalConfig(day);
   if (!config) return createJournal(container, courseId, day, worksheetData, onSaveComplete);
 
-  options = options || {};
   let state = defaultState(config);
   let entryId = null;
   let legacyText = '';
   let saveTimer = null;
-  let reviewMode = !!options.reviewMode;
-  let editingExisting = false;
-  let hasCompleted = reviewMode;
+  let hasCompleted = false;
 
   container.innerHTML = '<div class="journal-section structured-journal">'
     + '<div class="structured-intro"><h3>' + escapeJournalHtml(config.title) + '</h3>'
     + (config.note ? '<p>' + escapeJournalHtml(config.note) + '</p>' : '') + '</div>'
-    + '<div class="structured-mode-actions"><button type="button" class="btn btn-secondary btn-small structured-edit-btn"><span class="svg-icon">' + iconPen(16) + '</span> 编辑书写</button></div>'
     + '<div class="structured-form"></div>'
     + '<details class="legacy-journal" hidden><summary>原有记录</summary><div class="legacy-journal-text"></div></details>'
     + (worksheetData.peerExample ? '<details class="ws-example"><summary>同行伙伴书写示例</summary><div class="ws-example-body">' + worksheetData.peerExample + '</div></details>' : '')
@@ -26,70 +22,14 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
   const form = container.querySelector('.structured-form');
   const status = container.querySelector('.structured-save-status');
   const completeBtn = container.querySelector('.save-complete-btn');
-  const modeActions = container.querySelector('.structured-mode-actions');
-  const editBtn = container.querySelector('.structured-edit-btn');
 
   function render() {
-    if (reviewMode) {
-      renderReview();
-      modeActions.hidden = false;
-      completeBtn.hidden = true;
-      status.textContent = '完成于此前记录 · 可以随时回来修改';
-      form.querySelectorAll('.image-preview-item').forEach(bindImagePreview);
-    } else {
-      if (config.type === 'repeat') renderRepeatForm();
-      else if (config.type === 'mixed') renderMixedForm();
-      else renderFixedForm();
-      modeActions.hidden = true;
-      completeBtn.hidden = false;
-      completeBtn.innerHTML = '<span class="svg-icon">' + iconSave(16) + '</span> ' + (editingExisting ? '完成编辑' : '保存并完成书写');
-      bindFormEvents();
-    }
+    if (config.type === 'repeat') renderRepeatForm();
+    else if (config.type === 'mixed') renderMixedForm();
+    else renderFixedForm();
+    bindFormEvents();
     requestAnimationFrame(resizeAll);
   }
-
-  function renderReview() {
-    let html = '';
-    if (config.type === 'repeat' || config.type === 'mixed') {
-      const fields = config.type === 'mixed' ? config.repeatFields : config.fields;
-      html += '<div class="journal-review-list">' + (state.items || []).map((item, index) => reviewRecordHtml(item, fields, config.repeatLabel || '记录', index)).join('') + '</div>';
-    }
-    if (config.type === 'fixed' || config.type === 'mixed') {
-      html += '<section class="journal-review-record">' + reviewFieldsHtml(config.fields, state.values || {}) + reviewPhotosHtml(state.images || []) + '</section>';
-    }
-    if (!html || !hasReviewContent()) html = '<div class="journal-review-empty">这次练习没有留下文字，之后也可以点击“编辑书写”补充。</div>';
-    form.innerHTML = '<div class="journal-review-content">' + html + '</div>';
-  }
-
-  function reviewRecordHtml(item, fields, label, index) {
-    return '<section class="journal-review-record"><h4>' + escapeJournalHtml(label) + ' ' + (index + 1) + '</h4>'
-      + reviewFieldsHtml(fields, item.values || {}) + reviewPhotosHtml(item.images || []) + '</section>';
-  }
-
-  function reviewFieldsHtml(fields, values) {
-    return (fields || []).map(f => {
-      if (f.kind === 'heading') return '<h5 class="journal-review-heading">' + escapeJournalHtml(f.label) + '</h5>';
-      const raw = values[f.key];
-      const list = Array.isArray(raw) ? raw.filter(Boolean) : [];
-      const value = Array.isArray(raw) ? list.join('\n') : String(raw == null ? '' : raw).trim();
-      if (!value) return '';
-      return '<div class="journal-review-field"><span>' + escapeJournalHtml(f.label) + '</span><p>'
-        + escapeJournalHtml(value).replace(/\n/g, '<br>') + (f.type === 'range' ? ' / 9' : '') + '</p></div>';
-    }).join('');
-  }
-
-  function reviewPhotosHtml(images) {
-    if (!images || !images.length) return '';
-    return '<div class="journal-review-photos">' + images.map((src, i) => '<img class="image-preview-item" src="' + src + '" alt="练习照片 ' + (i + 1) + '" role="button" tabindex="0">').join('') + '</div>';
-  }
-
-  function hasReviewContent() {
-    if ((state.images || []).length) return true;
-    if (Object.values(state.values || {}).some(hasValue)) return true;
-    return (state.items || []).some(item => Object.values(item.values || {}).some(hasValue) || (item.images || []).length);
-  }
-
-  function hasValue(value) { return Array.isArray(value) ? value.some(Boolean) : String(value == null ? '' : value).trim().length > 0; }
 
   function renderRepeatForm() {
     const items = state.items || [];
@@ -166,15 +106,6 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
     form.querySelectorAll('.structured-image-input').forEach(el => el.addEventListener('change', handleImages));
     form.querySelectorAll('.image-preview-item').forEach(bindImagePreview);
   }
-
-  editBtn.addEventListener('click', () => {
-    reviewMode = false;
-    editingExisting = true;
-    status.textContent = '修改会自动保存在这台设备上';
-    render();
-    const firstInput = form.querySelector('.structured-input');
-    if (firstInput) firstInput.focus({ preventScroll: true });
-  });
 
   function updateFromInput(e) {
     const el = e.currentTarget;
@@ -254,12 +185,6 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
 
   completeBtn.addEventListener('click', async () => {
     await saveNow(); showToast('保存成功', 'success');
-    if (editingExisting) {
-      editingExisting = false;
-      reviewMode = true;
-      render();
-      return;
-    }
     if (!hasCompleted && onSaveComplete) { hasCompleted = true; await onSaveComplete(); }
   });
 
