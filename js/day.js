@@ -421,6 +421,27 @@ function getEBPPeerExample(day) {
   return null;
 }
 
+function getEBPWritingTemplate(day) {
+  const raw = (typeof getWorksheetText === 'function') ? getWorksheetText(day) : null;
+  if (!raw) return null;
+
+  const marker = '**书写模板**';
+  const start = raw.indexOf(marker);
+  if (start === -1) return null;
+
+  let text = raw.substring(start + marker.length);
+  const peerMarkers = ['**同行伙伴书写示例**', '**同行夥伴書寫示例**'];
+  for (const peerMarker of peerMarkers) {
+    const end = text.indexOf(peerMarker);
+    if (end !== -1) {
+      text = text.substring(0, end);
+      break;
+    }
+  }
+  text = text.trim();
+  return text ? ebpGuideTextToHtml(text).replace(/\n/g, '<br>') : null;
+}
+
 function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete) {
   const day = parseInt(getQueryParam('day')) || 1;
   if (taskKey === 'task1') {
@@ -520,6 +541,7 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
     }
   } else if (taskKey === 'task2') {
     const wsData = Object.assign({}, data.worksheet, {
+      writingTemplate: getEBPWritingTemplate(day),
       peerExample: getEBPPeerExample(day)
     });
     if (typeof createEBPJournal === 'function' && typeof getEBPJournalConfig === 'function') {

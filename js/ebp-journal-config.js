@@ -97,6 +97,44 @@ EBP_JOURNAL_CONFIG[14] = fixedConfig('第二阶段小结：允许情绪自然来
   heading('6. 请记住：这些体验是大脑和身体遭遇事件时的正常反应。它们会自然地升起、维持和消失。允许它们停留一会儿，然后继续投入当下的生活。')
 ]);
 
+// 交互表单沿用原有字段 key，避免影响已经保存的日记；显示文案逐项对齐原课程模板。
+setJournalFieldLabels(1, ['幸福瞬间', '我的感受']);
+setJournalFieldLabels(2, ['幸福瞬间', '我的感受']);
+setJournalFieldLabels(3, ['幸福瞬间', '我的感受']);
+setJournalFieldLabels(4, ['幸福瞬间', '我的感受']);
+setJournalFieldLabels(5, ['我记录的活动', '活动中的积极体验']);
+setJournalFieldLabels(6, ['开心小事']);
+setJournalFieldLabels(7, ['我是如何做到坚持的', '还有哪些可以帮助我坚持下去的行动']);
+setJournalRepeatFieldLabels(7, ['我的成就']);
+setJournalFieldLabels(8, ['幸福瞬间 1', '我的感受或联想 1', '幸福瞬间 2', '我的感受或联想 2', '幸福瞬间 3', '我的感受或联想 3']);
+setJournalFieldLabels(9, ['我今天经历的情绪', '当时的场景', '情绪强度分数', '情绪持续时间']);
+setJournalFieldLabels(10, ['我今天体验到的一个积极情绪是', '当时的场景', '情绪强度分数', '我感受到这个情绪，可能因为我渴望', '我今天体验到的一个消极情绪是', '当时的场景', '情绪强度分数', '我感受到这个情绪，可能因为我不想要']);
+setJournalFieldLabels(11, ['1. 影响我心情的事情是', '2. 我注意到，当时头脑里有这些想法', '3. 我注意到，当时头脑里有这些情绪', '4. 我注意到，当时身体有这些感受', '5. 我注意到，我做了这些事情']);
+setJournalFieldLabels(12, ['我给今天一整天的“情绪天气”起名为']);
+setJournalRepeatFieldLabels(12, ['时间', '事件', '情绪关键词', '情绪强度分数', '情绪持续时间']);
+setJournalFieldLabels(13, ['1. 我想到的情绪关键词', '2. 我遇到的事情是', '3. 我注意到，当时头脑里有一个“想法小人”，它说', '4. 我给这个“想法小人”取名为']);
+setJournalFieldLabels(14, ['1. 我想到的事情是', '2. 我注意到，当时我有这些情绪', '3. 我注意到，当时头脑里有这些想法', '4. 我注意到，当时身体还出现这些反应', '5. 这些来自头脑和身体的体验感受，我给它取名为']);
+setJournalFieldLabels(15, ['1. 我的情绪关键词是', '2. 当时，我所处的场景是', '3. 当时，我有这样的行动', '4. 从短期内，行为带来这样的效果', '5. 从长期看，行为带来这样的效果', '6. 根据上述分析，我认为这是一个值得保持的行为，或是要减少的行为（例如回避、拖延等）']);
+setJournalFieldLabels(16, ['1. 我的情绪关键词是', '2. 当时，我所处的场景是', '3. 当时，我有这样的行动', '4. 我这么做，原本的期待是', '5. 从结果看，这个行为是否满足期待', '6. 下一次，我也许能试试这些行动']);
+setJournalFieldLabels(17, ['1. 我重视的价值是', '2. 它对我来说，意味着', '3. 为了实现它，从现在开始，我可以做这些小事']);
+setJournalFieldLabels(18, ['1. 近期生活中，我想要达成的目标是', '2. 这个目标背后的价值是', '3. 为了达成目标，我可以在未来 24 小时里，完成这些小事', '4. 为了达成目标，我可以在未来数天至一周里，完成这些事', '5. 当遇到困难、挑战的时候，我可以这样做']);
+setJournalFieldLabels(19, ['1. 我想到的事情是', '2. 我注意到，当时（你的名字）有 ______ 的情绪', '3. 我注意到，当时（你的名字）有这样的想法', '4. 我注意到，当时（你的名字）的 ______（身体部位），有一些这样的感受', '5. 当时，我采取了这样的行动', '6. 回顾学到的技巧，我现在可以采取这些新行动', '7. 新行动带来的短期结果是', '8. 新行动带来的长期结果是']);
+setJournalFieldLabels(20, ['1. 近期生活中，我想要达成的目标是', '2. 这个目标背后的价值是', '3. 我可以把这个目标拆解成以下几步', '4. 马上就能开始做的、最容易达成的一个步骤是', '5. 你打算今天什么时候，开始做这一步', '6. 行动过程中，我可能会遇到这些阻碍（情绪、想法、身体感受、欲望）', '7. 回顾学到的技巧，当遇到困难、挑战的时候，我可以这样做']);
+setJournalFieldLabels(21, ['1. 我参加行动营的初心是', '2. 参加行动过程中，我积累了这些成就', '3. 这些方法能帮助我更好地坚持行动']);
+
+function setJournalFieldLabels(day, labels) {
+  const config = EBP_JOURNAL_CONFIG[day];
+  if (!config || !config.fields) return;
+  const fields = config.fields.filter(item => item.kind === 'field');
+  labels.forEach((label, index) => { if (fields[index]) fields[index].label = label; });
+}
+
+function setJournalRepeatFieldLabels(day, labels) {
+  const config = EBP_JOURNAL_CONFIG[day];
+  if (!config || !config.repeatFields) return;
+  labels.forEach((label, index) => { if (config.repeatFields[index]) config.repeatFields[index].label = label; });
+}
+
 function field(key, label, type, placeholder) { return { kind: 'field', key, label, type: type || 'textarea', placeholder: placeholder || '' }; }
 function heading(label) { return { kind: 'heading', label }; }
 function repeatConfig(title, note, repeatLabel, fields, photos) { return { type: 'repeat', title, note, repeatLabel, fields, photos: !!photos }; }

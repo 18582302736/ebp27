@@ -12,6 +12,7 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
   container.innerHTML = '<div class="journal-section structured-journal">'
     + '<div class="structured-intro"><h3>' + escapeJournalHtml(config.title) + '</h3>'
     + (config.note ? '<p>' + escapeJournalHtml(config.note) + '</p>' : '') + '</div>'
+    + (worksheetData.writingTemplate ? '<details class="ws-example ws-original-template" open><summary>原课程书写模板</summary><div class="ws-example-body guide-content">' + worksheetData.writingTemplate + '</div></details>' : '')
     + '<div class="structured-form"></div>'
     + '<details class="legacy-journal" hidden><summary>原有记录</summary><div class="legacy-journal-text"></div></details>'
     + (worksheetData.peerExample ? '<details class="ws-example"><summary>同行伙伴书写示例</summary><div class="ws-example-body">' + worksheetData.peerExample + '</div></details>' : '')
