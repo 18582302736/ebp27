@@ -54,7 +54,7 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
       + '<div class="repeat-card-actions">'
       + (index > 0 ? '<button type="button" data-action="move-up" aria-label="上移">↑</button>' : '')
       + (index < state.items.length - 1 ? '<button type="button" data-action="move-down" aria-label="下移">↓</button>' : '')
-      + '<button type="button" data-action="remove-item" aria-label="删除">删除</button></div></div>'
+      + (state.items.length > (config.minItems || 1) ? '<button type="button" data-action="remove-item" aria-label="删除">删除</button>' : '') + '</div></div>'
       + fieldsHtml(fields, item.values || {}, 'item-' + index)
       + (photos ? photosHtml(item.images || [], 'item', index) : '') + '</section>';
   }
@@ -208,11 +208,25 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
 
 function defaultState(config) {
   const state = { values: {}, items: [], images: [] };
-  if (config.type === 'repeat' || config.type === 'mixed') state.items.push(newItem(config.type === 'mixed' ? config.repeatFields : config.fields));
+  if (config.type === 'repeat' || config.type === 'mixed') {
+    const fields = config.type === 'mixed' ? config.repeatFields : config.fields;
+    const count = Math.max(1, config.initialItems || 1);
+    for (let i = 0; i < count; i++) state.items.push(newItem(fields));
+  }
   return state;
 }
 function newItem(fields) { const values = {}; (fields || []).forEach(f => { if (f.kind === 'field') values[f.key] = f.type === 'list' ? [''] : ''; }); return { values, images: [] }; }
-function normalizeState(config, data) { const base = defaultState(config); return { values: data.values || base.values, items: Array.isArray(data.items) && data.items.length ? data.items.map(x => ({ values: x.values || {}, images: x.images || [] })) : base.items, images: data.images || [] }; }
+function normalizeState(config, data) {
+  const base = defaultState(config);
+  const items = Array.isArray(data.items) && data.items.length
+    ? data.items.map(x => ({ values: x.values || {}, images: x.images || [] }))
+    : base.items;
+  if (config.type === 'repeat' || config.type === 'mixed') {
+    const fields = config.type === 'mixed' ? config.repeatFields : config.fields;
+    while (items.length < (config.minItems || 1)) items.push(newItem(fields));
+  }
+  return { values: data.values || base.values, items, images: data.images || [] };
+}
 function summaryText(config, state, legacyText) { const lines = []; (state.items || []).forEach((item, i) => { lines.push((config.repeatLabel || '记录') + ' ' + (i + 1)); Object.values(item.values || {}).forEach(v => lines.push(Array.isArray(v) ? v.filter(Boolean).join('\n') : v || '')); }); Object.values(state.values || {}).forEach(v => lines.push(Array.isArray(v) ? v.filter(Boolean).join('\n') : v || '')); if (legacyText) lines.push('原有记录\n' + legacyText); return lines.filter(Boolean).join('\n'); }
 function autoResizeStructured(el) { if (el.tagName !== 'TEXTAREA') return; el.style.height = 'auto'; el.style.height = Math.max(el.scrollHeight, 64) + 'px'; }
 function resizeAll() { document.querySelectorAll('.structured-journal textarea').forEach(autoResizeStructured); }

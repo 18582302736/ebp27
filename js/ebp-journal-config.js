@@ -1,5 +1,5 @@
 // EBP 第一阶段 25 天结构化书写配置（依据原始书写 PDF）
-const EBP_JOURNAL_CONFIG = {
+const EBP_LEGACY_JOURNAL_CONFIG = {
   1: repeatConfig('记录看到的积极画面', '暂时没有素材也没关系。可以先去生活，晚些时候再回来记录。', '幸福瞬间', [
     field('moment', '我看到了什么？', 'textarea', '描述眼睛看到的、带来积极体验的画面'),
     field('feeling', '它带给我什么感受或体验？', 'textarea')
@@ -74,6 +74,28 @@ const EBP_JOURNAL_CONFIG = {
   24: fixedConfig('我的初心与承诺', '', reflection(['我参加这个课程的初心是什么？','对未来，我给自己什么承诺？'])),
   25: fixedConfig('我的情绪小锦囊', '', reflection(['回顾 25 天，我最想带走的一个情绪锦囊是什么？','这个锦囊未来会如何帮助我？']))
 };
+
+// 结构化书写也严格跟随原始 PDF 1-25；第 8、14 天是正式总结日。
+const EBP_JOURNAL_CONFIG = {};
+for (let day = 1; day <= 7; day++) EBP_JOURNAL_CONFIG[day] = EBP_LEGACY_JOURNAL_CONFIG[day];
+for (let oldDay = 8; oldDay <= 12; oldDay++) EBP_JOURNAL_CONFIG[oldDay + 1] = EBP_LEGACY_JOURNAL_CONFIG[oldDay];
+for (let oldDay = 13; oldDay <= 23; oldDay++) EBP_JOURNAL_CONFIG[oldDay + 2] = EBP_LEGACY_JOURNAL_CONFIG[oldDay];
+
+EBP_JOURNAL_CONFIG[7].initialItems = 5;
+EBP_JOURNAL_CONFIG[7].minItems = 5;
+EBP_JOURNAL_CONFIG[8] = fixedConfig('第一阶段小结：回味幸福', '记录过去一天里带来幸福感的 3 个瞬间，并写下每个瞬间带来的感受或联想。', [
+  field('moment1', '幸福瞬间 1', 'textarea'), field('feeling1', '我的感受 1', 'textarea'),
+  field('moment2', '幸福瞬间 2', 'textarea'), field('feeling2', '我的感受 2', 'textarea'),
+  field('moment3', '幸福瞬间 3', 'textarea'), field('feeling3', '我的感受 3', 'textarea')
+]);
+EBP_JOURNAL_CONFIG[14] = fixedConfig('第二阶段小结：允许情绪自然来去', '把情绪、想法和身体反应视为会自然升起、维持和消失的内心体验。', [
+  field('event', '1. 我想到的事情是', 'textarea'),
+  field('emotions', '2. 当时我有这些情绪', 'textarea'),
+  field('thoughts', '3. 当时头脑里有这些想法', 'textarea'),
+  field('body', '4. 当时身体还出现这些反应', 'textarea'),
+  field('name', '5. 我给这些内心体验取名为', 'text'),
+  heading('6. 请记住：这些体验是大脑和身体遭遇事件时的正常反应。它们会自然地升起、维持和消失。允许它们停留一会儿，然后继续投入当下的生活。')
+]);
 
 function field(key, label, type, placeholder) { return { kind: 'field', key, label, type: type || 'textarea', placeholder: placeholder || '' }; }
 function heading(label) { return { kind: 'heading', label }; }

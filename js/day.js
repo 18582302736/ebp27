@@ -46,8 +46,6 @@ async function initApp() {
     const backIcon = document.getElementById('backIcon');
     if (backIcon) backIcon.innerHTML = iconArrowLeft(18);
 
-    setupPdfViewer();
-
     // 解析参数
     const day = parseInt(getQueryParam('day')) || 1;
     const courseId = getQueryParam('course') || 'ebp';
@@ -329,6 +327,79 @@ function parseEBPGuideSections(day) {
   };
 }
 
+// 将 PDF 中承担解释作用的图表重建为原生组件，避免白底图片影响夜间阅读。
+function getEBPNativeVisual(day) {
+  const visuals = {
+    1: {
+      title: '课程能力地图',
+      type: 'flow',
+      items: ['觉察：看见此刻', '接纳：容纳体验', '行动：走向重要的事']
+    },
+    8: {
+      title: '情绪风暴中的着陆步骤',
+      type: 'flow',
+      items: ['觉察想法与情绪', '说出看见的 3 样东西', '说出听见的 3 种声音', '缓慢呼吸并确认此刻']
+    },
+    9: {
+      title: '情绪强度参考尺',
+      type: 'scale',
+      items: ['1 很轻微', '3 可以察觉', '5 明显影响', '7 很强烈', '9 几乎淹没']
+    },
+    10: {
+      title: '情绪携带的信息',
+      type: 'split',
+      items: ['积极情绪｜提示我想靠近、珍惜或创造什么', '消极情绪｜提示我想避开、保护或改变什么']
+    },
+    11: {
+      title: '一次情绪反应是怎样形成的',
+      type: 'flow',
+      items: ['事件发生', '注意与解释', '想法出现', '情绪与身体反应', '行为选择']
+    },
+    12: {
+      title: '像观察天气一样观察情绪',
+      type: 'flow',
+      items: ['升起', '增强', '停留', '变化', '消散']
+    },
+    14: {
+      title: '为完整体验命名',
+      type: 'cluster',
+      items: ['事件', '情绪', '想法', '身体感觉', '我的命名']
+    },
+    17: {
+      title: '寻找你的价值方向',
+      type: 'chips',
+      items: ['关系', '健康', '成长', '工作与学习', '休闲', '贡献', '勇气', '自我关怀']
+    },
+    18: {
+      title: '把价值变成今天的行动',
+      type: 'flow',
+      items: ['我重视什么', '一个可执行的小目标', '今天迈出的一步']
+    },
+    19: {
+      title: '情绪日记回顾路径',
+      type: 'flow',
+      items: ['发生了什么', '我体验到什么', '我怎样回应', '下一次可以怎样行动']
+    },
+    20: {
+      title: '从觉察走向选择',
+      type: 'flow',
+      items: ['停一下', '看见内在体验', '确认价值方向', '选择下一步']
+    },
+    21: {
+      title: '情绪健康之树',
+      type: 'tree',
+      items: ['根｜初心与价值', '干｜觉察・接纳・行动', '枝｜持续练习', '叶｜新的选择、成就与连接']
+    }
+  };
+  const visual = visuals[day];
+  if (!visual) return '';
+  return '<aside class="ebp-native-visual ebp-native-' + visual.type + '">'
+    + '<div class="ebp-native-title">' + visual.title + '</div>'
+    + '<div class="ebp-native-items">'
+    + visual.items.map((item, index) => '<div class="ebp-native-item"><span>' + (index + 1) + '</span><b>' + item + '</b></div>').join('')
+    + '</div></aside>';
+}
+
 function getEBPPeerExample(day) {
   const raw = (typeof getWorksheetText === 'function') ? getWorksheetText(day) : null;
   if (!raw) return null;
@@ -366,6 +437,8 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
         + '<div class="today-writing-guide-body guide-content"><div class="guide-section">' + guideSections.writing + '</div></div>'
         + '</section>';
     }
+
+    html += getEBPNativeVisual(day);
 
     // 陪伴者分享音频
     const audios = data.readingAudios || [];
@@ -755,77 +828,6 @@ function updateTaskCardStatus(card, done, completedDate) {
       dateEl.textContent = `完成于 ${formatDateWithWeekday(completedDate)}`;
     }
   }
-}
-
-// ── 书写指南查看器 ──
-
-let _guideOverlayReady = false;
-
-function setupPdfViewer() {
-  if (_guideOverlayReady) return;
-  const overlay = document.getElementById('guideOverlay');
-  if (!overlay) return;
-
-  document.getElementById('guideClose').addEventListener('click', closePdfViewer);
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closePdfViewer();
-  });
-
-  _guideOverlayReady = true;
-}
-
-function openPdfViewer(src, title, day) {
-  const overlay = document.getElementById('guideOverlay');
-  if (!overlay) { window.open(src, '_blank', 'noopener'); return; }
-
-  document.getElementById('guideTitle').textContent = title || '阅读指南';
-  document.getElementById('guideExternalLink').href = src;
-
-  const article = document.getElementById('guideArticle');
-  const frame = document.getElementById('guideFrame');
-  const loading = document.getElementById('guideLoading');
-
-  const textContent = (typeof getWorksheetText === 'function' && day) ? getWorksheetText(day) : null;
-
-  const extLink = document.getElementById('guideExternalLink');
-  const footer = extLink ? extLink.parentNode : null;
-  if (loading) loading.style.display = 'none';
-
-  if (textContent) {
-    frame.style.display = 'none';
-    article.style.display = '';
-    let formatted = textContent
-      .replace(/【第\d+页】/g, '')
-      .replace(/\/\s*([^\/\n]+?)\s*([\n\/])/g, '<h3>$1</h3>')
-      .replace(/\n{2,}/g, '\n\n');
-    article.innerHTML = formatted;
-    if (footer) footer.style.display = src ? '' : 'none';
-  } else if (src) {
-    article.style.display = 'none';
-    frame.style.display = 'none';
-    frame.src = src;
-    frame.addEventListener('load', () => {
-      frame.style.display = '';
-    }, { once: true });
-    if (loading) loading.style.display = '';
-    if (footer) footer.style.display = '';
-  } else {
-    article.style.display = '';
-    article.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px 0;">本日无阅读指南，请根据提示自由练习</p>';
-    if (footer) footer.style.display = 'none';
-  }
-
-  overlay.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-function closePdfViewer() {
-  const overlay = document.getElementById('guideOverlay');
-  if (!overlay) return;
-  overlay.style.display = 'none';
-  document.body.style.overflow = '';
-  const frame = document.getElementById('guideFrame');
-  if (frame) frame.src = '';
 }
 
 const ENCOURAGEMENTS = [
