@@ -27,7 +27,7 @@ python3 -m http.server 8088
 应用使用 Service Worker 实现离线缓存。SW 版本号定义在 `sw.js` 中：
 
 ```js
-const CACHE_STATIC = 'ebp-static-v6';
+const CACHE_STATIC = 'ebp-static-v83';
 ```
 
 ### 更新代码后用户看不到新版本？
@@ -63,6 +63,6 @@ const CACHE_STATIC = 'ebp-static-v6';
 ## .gitignore 说明
 
 以下目录/文件不会被提交到 Git：
-- `.DS_Store`、`.claude/`、`.wrangler/`
+- `.DS_Store`、`.claude/`
 - `deploy/` — 部署参考文件，不影响线上
 - `test/`、`node_modules/`

@@ -1,6 +1,0 @@
-# wrangler.toml - Cloudflare Pages 配置
-name = "ebp27"
-pages_build_output_dir = "."
-compatibility_date = "2026-07-05"
-
-# 直接上传整个目录（不需要构建步骤）
