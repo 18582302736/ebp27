@@ -12,7 +12,6 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
   container.innerHTML = '<div class="journal-section structured-journal">'
     + '<div class="structured-intro"><h3>' + escapeJournalHtml(config.title) + '</h3>'
     + (config.note ? '<p>' + escapeJournalHtml(config.note) + '</p>' : '') + '</div>'
-    + (worksheetData.writingTemplate ? '<details class="ws-example ws-original-template" open><summary>原课程书写模板</summary><div class="ws-example-body guide-content">' + worksheetData.writingTemplate + '</div></details>' : '')
     + '<div class="structured-form"></div>'
     + '<details class="legacy-journal" hidden><summary>原有记录</summary><div class="legacy-journal-text"></div></details>'
     + (worksheetData.peerExample ? '<details class="ws-example"><summary>同行伙伴书写示例</summary><div class="ws-example-body">' + worksheetData.peerExample + '</div></details>' : '')
@@ -35,7 +34,8 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
   function renderRepeatForm() {
     const items = state.items || [];
     form.innerHTML = '<div class="repeat-list">' + items.map((item, index) => repeatCardHtml(item, index, config.fields, config.repeatLabel, config.photos)).join('') + '</div>'
-      + '<button class="btn btn-secondary structured-add" data-action="add-item">＋ 添加' + escapeJournalHtml(config.repeatLabel) + '</button>';
+      + '<button class="btn btn-secondary structured-add" data-action="add-item">＋ 添加' + escapeJournalHtml(config.repeatLabel) + '</button>'
+      + legacyUnassignedPhotosHtml();
   }
 
   function renderMixedForm() {
@@ -96,6 +96,10 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
   }
 
   function globalPhotosHtml() { return photosHtml(state.images || [], 'global', -1); }
+  function legacyUnassignedPhotosHtml() {
+    if (!state.images || !state.images.length) return '';
+    return '<div class="structured-fixed"><h4 class="structured-heading">之前上传的未分组照片</h4>' + globalPhotosHtml() + '</div>';
+  }
   function imageHtml(src, scope, itemIndex, imageIndex) { return '<div class="image-preview-wrapper"><img class="image-preview-item" src="' + src + '" alt="练习照片 ' + (imageIndex + 1) + '" role="button" tabindex="0" aria-label="查看练习照片 ' + (imageIndex + 1) + ' 大图"><button type="button" class="image-remove-btn" aria-label="删除练习照片 ' + (imageIndex + 1) + '" data-action="remove-image" data-photo-scope="' + scope + '" data-item-index="' + itemIndex + '" data-image-index="' + imageIndex + '">×</button></div>'; }
 
   function bindFormEvents() {
@@ -219,9 +223,18 @@ function defaultState(config) {
 function newItem(fields) { const values = {}; (fields || []).forEach(f => { if (f.kind === 'field') values[f.key] = f.type === 'list' ? [''] : ''; }); return { values, images: [] }; }
 function normalizeState(config, data) {
   const base = defaultState(config);
-  const items = Array.isArray(data.items) && data.items.length
+  let items = Array.isArray(data.items) && data.items.length
     ? data.items.map(x => ({ values: x.values || {}, images: x.images || [] }))
     : base.items;
+  if ((!data.items || !data.items.length) && config.legacyGroupCount && data.values) {
+    items = Array.from({ length: config.legacyGroupCount }, (_, index) => {
+      const values = {};
+      (config.fields || []).forEach(field => {
+        if (field.kind === 'field') values[field.key] = data.values[field.key + (index + 1)] || '';
+      });
+      return { values, images: [] };
+    });
+  }
   if (config.type === 'repeat' || config.type === 'mixed') {
     const fields = config.type === 'mixed' ? config.repeatFields : config.fields;
     while (items.length < (config.minItems || 1)) items.push(newItem(fields));

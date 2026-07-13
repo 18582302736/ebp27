@@ -335,11 +335,6 @@ function getEBPNativeVisual(day) {
       type: 'flow',
       items: ['觉察：看见此刻', '接纳：容纳体验', '行动：走向重要的事']
     },
-    8: {
-      title: '情绪风暴中的着陆步骤',
-      type: 'flow',
-      items: ['觉察想法与情绪', '说出看见的 3 样东西', '说出听见的 3 种声音', '缓慢呼吸并确认此刻']
-    },
     9: {
       title: '情绪强度参考尺',
       type: 'scale',
@@ -419,27 +414,6 @@ function getEBPPeerExample(day) {
     }
   }
   return null;
-}
-
-function getEBPWritingTemplate(day) {
-  const raw = (typeof getWorksheetText === 'function') ? getWorksheetText(day) : null;
-  if (!raw) return null;
-
-  const marker = '**书写模板**';
-  const start = raw.indexOf(marker);
-  if (start === -1) return null;
-
-  let text = raw.substring(start + marker.length);
-  const peerMarkers = ['**同行伙伴书写示例**', '**同行夥伴書寫示例**'];
-  for (const peerMarker of peerMarkers) {
-    const end = text.indexOf(peerMarker);
-    if (end !== -1) {
-      text = text.substring(0, end);
-      break;
-    }
-  }
-  text = text.trim();
-  return text ? ebpGuideTextToHtml(text).replace(/\n/g, '<br>') : null;
 }
 
 function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete) {
@@ -541,7 +515,6 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
     }
   } else if (taskKey === 'task2') {
     const wsData = Object.assign({}, data.worksheet, {
-      writingTemplate: getEBPWritingTemplate(day),
       peerExample: getEBPPeerExample(day)
     });
     if (typeof createEBPJournal === 'function' && typeof getEBPJournalConfig === 'function') {

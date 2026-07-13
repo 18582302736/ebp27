@@ -83,11 +83,14 @@ for (let oldDay = 13; oldDay <= 23; oldDay++) EBP_JOURNAL_CONFIG[oldDay + 2] = E
 
 EBP_JOURNAL_CONFIG[7].initialItems = 5;
 EBP_JOURNAL_CONFIG[7].minItems = 5;
-EBP_JOURNAL_CONFIG[8] = fixedConfig('第一阶段小结：回味幸福', '记录过去一天里带来幸福感的 3 个瞬间，并写下每个瞬间带来的感受或联想。', [
-  field('moment1', '幸福瞬间 1', 'textarea'), field('feeling1', '我的感受 1', 'textarea'),
-  field('moment2', '幸福瞬间 2', 'textarea'), field('feeling2', '我的感受 2', 'textarea'),
-  field('moment3', '幸福瞬间 3', 'textarea'), field('feeling3', '我的感受 3', 'textarea')
-]);
+EBP_JOURNAL_CONFIG[8] = repeatConfig('第一阶段小结：回味幸福', '记录过去一天里带来幸福感的 3 个瞬间，并写下每个瞬间带来的感受或联想。', '幸福瞬间', [
+  field('moment', '幸福瞬间', 'textarea'),
+  field('feeling', '我的感受或联想', 'textarea')
+], true);
+EBP_JOURNAL_CONFIG[8].initialItems = 3;
+EBP_JOURNAL_CONFIG[8].minItems = 3;
+// 兼容 v2.8.2 以前第 8 天按 moment1/feeling1 等固定字段保存的数据。
+EBP_JOURNAL_CONFIG[8].legacyGroupCount = 3;
 EBP_JOURNAL_CONFIG[14] = fixedConfig('第二阶段小结：允许情绪自然来去', '把情绪、想法和身体反应视为会自然升起、维持和消失的内心体验。', [
   field('event', '1. 我想到的事情是', 'textarea'),
   field('emotions', '2. 当时我有这些情绪', 'textarea'),
@@ -106,7 +109,7 @@ setJournalFieldLabels(5, ['我记录的活动', '活动中的积极体验']);
 setJournalFieldLabels(6, ['开心小事']);
 setJournalFieldLabels(7, ['我是如何做到坚持的', '还有哪些可以帮助我坚持下去的行动']);
 setJournalRepeatFieldLabels(7, ['我的成就']);
-setJournalFieldLabels(8, ['幸福瞬间 1', '我的感受或联想 1', '幸福瞬间 2', '我的感受或联想 2', '幸福瞬间 3', '我的感受或联想 3']);
+setJournalFieldLabels(8, ['幸福瞬间', '我的感受或联想']);
 setJournalFieldLabels(9, ['我今天经历的情绪', '当时的场景', '情绪强度分数', '情绪持续时间']);
 setJournalFieldLabels(10, ['我今天体验到的一个积极情绪是', '当时的场景', '情绪强度分数', '我感受到这个情绪，可能因为我渴望', '我今天体验到的一个消极情绪是', '当时的场景', '情绪强度分数', '我感受到这个情绪，可能因为我不想要']);
 setJournalFieldLabels(11, ['1. 影响我心情的事情是', '2. 我注意到，当时头脑里有这些想法', '3. 我注意到，当时头脑里有这些情绪', '4. 我注意到，当时身体有这些感受', '5. 我注意到，我做了这些事情']);
