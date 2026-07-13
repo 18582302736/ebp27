@@ -1,6 +1,6 @@
 // sw.js - Service Worker（离线缓存）
 
-const CACHE_STATIC = 'ebp-static-v81';
+const CACHE_STATIC = 'ebp-static-v83';
 const CACHE_AUDIO = 'ebp-audio-v1';
 const CACHE_PDF = 'ebp-pdf-v1';
 
@@ -38,9 +38,9 @@ const STATIC_FILES = [
   './assets/illustration.png',
   './assets/logo-lotus.png',
   './assets/logo-lotus-small.png',
-  './assets/companions/sprout.png',
+  './assets/companions/v2/ebp-01-curiosity-sprout.png',
+  './assets/companions/v2/ebp-02-slow-tasting-mochi.png',
   './assets/companions/scroll.png',
-  './assets/companions/deer.png',
   './assets/companions/crane.png',
   './assets/companions/lantern.png',
   './assets/companions/mushroom.png',

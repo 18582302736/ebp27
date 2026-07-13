@@ -309,32 +309,6 @@ function syncProgressFail() {
   setTimeout(function() { bar.className = 'sync-progress'; }, 1500);
 }
 
-// ── 同步指示器（仅控制版本号旁小圆点） ──
-
-function updateSyncIndicator() {
-  const dots = document.querySelectorAll('.sync-dot');
-  if (dots.length === 0) return;
-
-  const status = getSyncStatus();
-  const hasToken = hasGithubToken();
-
-  if (!hasToken) {
-    dots.forEach(function(d) { d.className = 'sync-dot'; d.title = ''; });
-    return;
-  }
-
-  if (status.syncing) {
-    dots.forEach(function(d) { d.className = 'sync-dot syncing'; d.title = ''; });
-  } else if (status.lastError) {
-    dots.forEach(function(d) { d.className = 'sync-dot error'; d.title = status.lastError; });
-  } else if (status.lastSync) {
-    var tooltip = '已同步 ' + formatSyncTime(status.lastSync);
-    dots.forEach(function(d) { d.className = 'sync-dot success'; d.title = tooltip; });
-  } else {
-    dots.forEach(function(d) { d.className = 'sync-dot active'; d.title = ''; });
-  }
-}
-
 function formatSyncTime(isoStr) {
   var d = new Date(isoStr);
   var pad = function(n) { return String(n).padStart(2, '0'); };

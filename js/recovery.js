@@ -2,50 +2,56 @@
 
 const CARD_MOODS = ['平静了一些', '更清楚了', '更愿意接纳', '有一点力量', '仍有些紧绷', '有些疲惫', '暂时没感觉'];
 const CARD_SYMBOLS = {
-  ebp: ['🌱','💧','🍃','🌼','🫧','☀️','⭐','🌙','🌊','🪷','🪶','🌈','🍀','🕊️','🐚','🌿','🪴','🌤️','🦋','🌻','🍵','🪨','🌳','✨','🏡'],
+  ebp: ['🌱','💧','🍃','🌼','🫧','☀️','⭐','🌙','🌊','🪷','🪶','🌈','🍀','🕊️','🐚','🌿','🪴','🌤️','✨','🌻','🍵','🪨','🌳','✨','🏡'],
   cbt: ['🔍','💡','🧭','🪞','🧩','🔦','⚖️','🗺️','🔭','🧠','🛤️','🪜','🔑','🧱','🛡️','📝','🧶','🎯','🧰','🌉','🏆'],
   act: ['⛵','🧘','🌾','🚶','🧗','🌬️','🪁','🚪','👣','🌄','⛰️','🛶','🧭','🌊','🔥','🌌','🪵','🌲','🕯️','🌅','🏔️']
 };
 
-const CARD_ARTWORKS = ['sprout', 'deer', 'crane', 'lantern', 'mushroom', 'cloudray', 'shell', 'scroll'];
+// 固定伙伴会在不同练习日再次出现；同一张图始终对应同一个名字。
+const COMPANION_POOL = [
+  { name: '好奇芽', src: 'assets/companions/v2/ebp-01-curiosity-sprout.png' },
+  { name: '慢尝团', src: 'assets/companions/v2/ebp-02-slow-tasting-mochi.png' },
+  { name: '向心鸟', src: 'assets/companions/crane.png' },
+  { name: '初心灯', src: 'assets/companions/lantern.png' },
+  { name: '安心菇', src: 'assets/companions/mushroom.png' },
+  { name: '流云鲸', src: 'assets/companions/cloudray.png' },
+  { name: '听心贝', src: 'assets/companions/shell.png' },
+  { name: '事实卷', src: 'assets/companions/scroll.png' }
+];
 
-function getCardArtwork(courseId, day, companionName) {
-  const name = companionName || '';
-  const semantic = [
-    [/鹿|羊|犬|獾|龙/, 'deer'], [/鸟|雀|鸽|鸮|鹦|蝶|蜂|鸦/, 'crane'],
-    [/云|鲸|企鹅|流/, 'cloudray'], [/灯|萤|光|火|初心/, 'lantern'],
-    [/菇|树|芽|莲|花|草|丰盛/, 'mushroom'], [/贝|龟|獭|海|壳/, 'shell'],
-    [/镜|书|记录|工具|地图|罗盘|想法|事实|题|念/, 'scroll']
-  ];
-  const matched = semantic.find(rule => rule[0].test(name));
-  const courseOffset = { ebp: 0, cbt: 3, act: 5 }[courseId] || 0;
-  const artwork = matched ? matched[1] : CARD_ARTWORKS[(day - 1 + courseOffset) % CARD_ARTWORKS.length];
-  return { src: 'assets/companions/' + artwork + '.png', hue: ((day - 1) % 7 - 3) * 4 };
+function getCompanionProfile(courseId, day) {
+  const courseOffset = { ebp: 0, cbt: 2, act: 5 }[courseId] || 0;
+  return COMPANION_POOL[(day - 1 + courseOffset) % COMPANION_POOL.length];
 }
 
-// 67 只原创疗愈精灵：技能用于提示当天可练习的心理能力，不代表医疗效果。
+function getCardArtwork(courseId, day) {
+  const profile = getCompanionProfile(courseId, day);
+  return { src: profile.src, hue: 0 };
+}
+
+// 每日能力文案：伙伴可以再次出现，技能用于提示当天可练习的心理能力，不代表医疗效果。
 const CARD_COMPANIONS = {
   ebp: [
     ['好奇芽','初见微光','带着好奇看见当下，而不是急着评价。'],
     ['慢尝团','一口此刻','把注意力带回味道与正在发生的体验。'],
     ['触触绒','柔软落地','借助触感回到身体，减轻思绪拉扯。'],
-    ['闻香鹿','气息寻路','用熟悉气味找到片刻安稳与愉悦。'],
+    ['闻香猫','气息寻路','用熟悉气味找到片刻安稳与愉悦。'],
     ['听身熊','身体来信','听见身体需要，并给自己温柔照顾。'],
     ['拾喜雀','小喜收藏','更容易发现并保存生活里的开心小事。'],
     ['微光芽','小步生长','看见已经做到的部分，减轻完美压力。'],
     ['流云团','情绪流动','提醒你情绪会变化，不必马上消灭它。'],
     ['名名狐','情绪点名','为感受准确命名，让内心变得更清楚。'],
     ['容容鲸','给它空间','允许情绪暂时存在，减少与它的对抗。'],
-    ['寻需鹿','内心译员','从情绪背后听见自己真正的需要。'],
+    ['寻心猫','内心译员','从情绪背后听见自己真正的需要。'],
     ['松手獭','停止较劲','接纳眼前现实，把力气留给下一步。'],
     ['向心鸟','方向罗盘','情绪摇晃时，仍记得自己重视的方向。'],
     ['行动芽','价值落地','把重要的事变成今天能做的小动作。'],
     ['一步龟','现在就走','不等状态完美，也能开始一小步。'],
-    ['同行鹿','带着感受走','让困难情绪同行，但不替你做决定。'],
+    ['同行兔','带着感受走','让困难情绪同行，但不替你做决定。'],
     ['日常狸','练习入袋','把觉察、接纳和行动带进普通生活。'],
     ['再来鸟','温柔重复','允许不完美，用重复练习积累能力。'],
     ['心树灵','持续照料','提醒你像照料树一样照料情绪能力。'],
-    ['丰盛蜂','幸福拼图','看见愉快之外的投入、意义与成长。'],
+    ['丰盛熊','幸福拼图','看见愉快之外的投入、意义与成长。'],
     ['信使鸽','情绪来信','理解情绪的信息，再选择怎样回应。'],
     ['觉容莲','看见与容纳','先觉察体验，再给它可以待着的位置。'],
     ['识己猫','认识自己','连接需要、优势和价值，稳定行动方向。'],
@@ -62,10 +68,10 @@ const CARD_COMPANIONS = {
     ['动能犬','压力出口','借适度运动让身体完成压力循环。'],
     ['降温企鹅','先稳身体','高强度情绪时先降温，再分析问题。'],
     ['想法镜','看见解释','发现事件之外，想法也在影响情绪。'],
-    ['事实鹿','事实分界','把可观察事实与脑中的解释分开。'],
+    ['事实猫','事实分界','把可观察事实与脑中的解释分开。'],
     ['核实猫','证据核验','检查情绪是否符合事实，再决定回应。'],
     ['灰度狐','连续光谱','跳出非黑即白，看见更多可能程度。'],
-    ['分责蜂','责任拼图','按比例分配责任，不把结果全压给自己。'],
+    ['分责狸','责任拼图','按比例分配责任，不把结果全压给自己。'],
     ['多面鸮','换角提问','用证据和不同视角形成平衡想法。'],
     ['旧声鹦','旧念识别','认出自动播放的旧信念并不等于事实。'],
     ['观念云','念头路过','把想法当心理事件，而非必须服从的命令。'],
@@ -76,15 +82,15 @@ const CARD_COMPANIONS = {
     ['工具象','灵活调用','建立个人工具库，按情境选择合适方法。']
   ],
   act: [
-    ['启程鹿','方向启航','看清焦虑代价与想要生活，找到改变方向。'],
+    ['启程猫','方向启航','看清焦虑代价与想要生活，找到改变方向。'],
     ['四象猫','焦虑地图','从外界、身体、想法和行为看清焦虑链。'],
     ['回避兔','循环识破','识别短暂轻松如何让回避被长期维持。'],
     ['估险狐','双面估算','同时检验风险大小与自己的应对能力。'],
     ['担忧鸦','有用检验','分辨担忧是在准备，还是只让自己打转。'],
     ['解题獭','下一步行动','把能解决的担忧转成清晰的下一步。'],
-    ['未知蝶','不确定练习','用小实验逐渐提升对不确定性的承受力。'],
+    ['未知鸟','不确定练习','用小实验逐渐提升对不确定性的承受力。'],
     ['护栏狸','安全松绑','看见安全行为如何阻挡你获得新证据。'],
-    ['靠近鹿','减少回避','逐步靠近曾躲开的事，验证真实能力。'],
+    ['靠近兔','减少回避','逐步靠近曾躲开的事，验证真实能力。'],
     ['自信熊','少问一次','减少反复确认，练习相信自己的判断。'],
     ['勇行犬','带着焦虑走','允许可承受的焦虑存在，同时靠近目标。'],
     ['阶梯羊','由易到难','把挑战排成阶梯，让练习可以持续。'],
@@ -96,7 +102,7 @@ const CARD_COMPANIONS = {
     ['够好熊','完成护盾','用足够好的行动挑战完美主义。'],
     ['记录鸮','实验笔记','记录预测、结果和应对，让练习可复盘。'],
     ['复盘狸','挫折成图','把挫折当数据，调整方法而非判定失败。'],
-    ['远行鹿','勇气续航','带上有效方法，让勇敢行动继续发生。']
+    ['远行猫','勇气续航','带上有效方法，让勇敢行动继续发生。']
   ]
 };
 
@@ -205,13 +211,8 @@ function getCardKnowledge(courseId, day) {
 
 function getCardCompanion(courseId, day) {
   const item = (CARD_COMPANIONS[courseId] || [])[day - 1] || ['陪伴芽','今日陪伴','陪你记住今天最有帮助的一点。'];
-  return { name: item[0], skill: item[1], help: item[2] };
-}
-
-function getCardRank(day) {
-  if (day % 7 === 0 || day === 21 || day === 25) return { label: '里程碑', mark: '✦' };
-  if (day % 5 === 0) return { label: '闪光', mark: '◆' };
-  return { label: '日常发现', mark: '●' };
+  const profile = getCompanionProfile(courseId, day);
+  return { name: profile.name, skill: item[1], help: item[2] };
 }
 
 function renderDailyReview(container, progress, context, available, onSave, onFinished) {
@@ -219,45 +220,76 @@ function renderDailyReview(container, progress, context, available, onSave, onFi
   const recovery = ensureRecovery(progress);
   const legacyAfter = recovery.after || {};
   const card = recovery.card || {};
-  const selectedMoods = card.moods || [];
   const initialTakeaway = card.takeaway || legacyAfter.understanding || '';
   container.className = 'recovery-card daily-review';
   container.hidden = !available;
-  container.innerHTML = `
-    <div class="recovery-heading">
-      <span class="recovery-kicker">完成今日练习</span>
-      <h2>留下今天的成果卡</h2>
-      <p>不需要总结得很深刻，写下此刻真正留下的一点就好。</p>
-    </div>
-    <div class="recovery-field">
-      <label for="cardTakeaway">今天留下了什么？</label>
-      <textarea id="cardTakeaway" rows="3" maxlength="160" placeholder="一句理解、一点感受，或一句想记住的话">${recoveryEscape(initialTakeaway)}</textarea>
-      <p class="recovery-field-hint">暂时没有明确收获也没关系，可以写“我完成了今天的练习”。</p>
-    </div>
-    <div class="recovery-field">
-      <label>此刻的心态 <small>可多选</small></label>
-      <div class="recovery-chips">${CARD_MOODS.map(item => '<label class="recovery-chip"><input type="checkbox" value="' + item + '"' + (selectedMoods.includes(item) ? ' checked' : '') + '><span>' + item + '</span></label>').join('')}</div>
-    </div>
-    <button type="button" class="btn btn-primary recovery-finish">${card.saved_at ? '更新成果卡' : '解锁今天的成果卡'}</button>`;
+  const companion = getCardCompanion(context.courseId, context.day);
+  const artwork = getCardArtwork(context.courseId, context.day, companion.name);
 
-  container.querySelector('.recovery-finish').addEventListener('click', async () => {
-    const takeaway = container.querySelector('#cardTakeaway').value.trim();
-    const moods = Array.from(container.querySelectorAll('.recovery-chip input:checked')).map(input => input.value);
-    if (!takeaway) { showToast('写下一句今天留下的内容吧', 'warning'); return; }
-    if (!moods.length) { showToast('选择一个最接近此刻的心态吧', 'warning'); return; }
-    recovery.card = {
-      takeaway,
-      moods,
-      code: getCardCode(context.courseId, context.day),
-      symbol: getCardSymbol(context.courseId, context.day),
-      unlocked_at: card.unlocked_at || new Date().toISOString(),
-      saved_at: new Date().toISOString()
+  function renderClosed() {
+    container.innerHTML = `<div class="encounter-intro">
+      <span class="recovery-kicker">今天的练习完成了</span>
+      <h2>有一位伙伴来到这里</h2>
+      <p>你认真走过的这一段，被它悄悄看见了。</p>
+      <button type="button" class="encounter-capsule" aria-label="打开今日心灵胶囊"><span></span><i>✦</i></button>
+      <button type="button" class="btn btn-primary encounter-open">看看是谁</button>
+    </div>`;
+    const open = async () => {
+      const openBtn = container.querySelector('.encounter-open');
+      if (openBtn.disabled) return;
+      openBtn.disabled = true;
+      recovery.card = {
+        takeaway: initialTakeaway,
+        moods: card.moods || [],
+        code: getCardCode(context.courseId, context.day),
+        symbol: getCardSymbol(context.courseId, context.day),
+        unlocked_at: card.unlocked_at || new Date().toISOString(),
+        saved_at: new Date().toISOString()
+      };
+      try {
+        await onSave();
+      } catch (error) {
+        openBtn.disabled = false;
+        showToast('伙伴暂时没有保存成功，请再试一次', 'error');
+        return;
+      }
+      container.classList.add('encounter-opening');
+      const delay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900;
+      setTimeout(() => {
+        container.classList.remove('encounter-opening');
+        renderRevealed();
+        if (onFinished) onFinished(recovery.card);
+      }, delay);
     };
-    await onSave();
-    container.querySelector('.recovery-finish').textContent = '更新成果卡';
-    showToast(card.saved_at ? '成果卡已更新' : '新的成果卡已解锁', 'success');
-    if (onFinished) onFinished(recovery.card);
-  });
+    container.querySelector('.encounter-open').addEventListener('click', open);
+    container.querySelector('.encounter-capsule').addEventListener('click', open);
+  }
+
+  function renderRevealed() {
+    const savedCard = recovery.card || card;
+    container.innerHTML = `<div class="encounter-revealed">
+      <span class="recovery-kicker">今日相遇</span>
+      <div class="encounter-halo"><img src="${artwork.src}" alt="${recoveryEscape(companion.name)}" style="--art-hue:${artwork.hue}deg"></div>
+      <h2>${recoveryEscape(companion.name)}来陪你了</h2>
+      <strong>${recoveryEscape(companion.skill)}</strong>
+      <p>${recoveryEscape(companion.help)}</p>
+      <div class="encounter-collected">✓ 已收进我的练习图鉴</div>
+      <details class="encounter-note"${savedCard.takeaway ? ' open' : ''}>
+        <summary>留下一句今天想记住的话 <span>可选</span></summary>
+        <textarea rows="3" maxlength="160" placeholder="一句理解、一点感受，或一句想记住的话">${recoveryEscape(savedCard.takeaway || '')}</textarea>
+        <button type="button" class="btn btn-secondary btn-small">保存这句话</button>
+      </details>
+    </div>`;
+    const note = container.querySelector('.encounter-note textarea');
+    container.querySelector('.encounter-note button').addEventListener('click', async () => {
+      recovery.card.takeaway = note.value.trim();
+      recovery.card.saved_at = new Date().toISOString();
+      await onSave();
+      showToast('已经替你收好了', 'success');
+    });
+  }
+
+  if (card && card.unlocked_at) renderRevealed(); else renderClosed();
   container.setAvailable = () => { container.hidden = false; };
   return container;
 }
@@ -306,10 +338,9 @@ async function renderCardCollection(container) {
     const visible = filter === 'all' ? records : records.filter(item => item.course.id === filter);
     album.innerHTML = visible.map(item => {
       const unlockedCard = item.card && item.card.unlocked_at;
-      const rank = getCardRank(item.day);
       const artwork = getCardArtwork(item.course.id, item.day, item.companion.name);
       return `<button class="album-card ${unlockedCard ? 'unlocked' : 'locked'}" data-course="${item.course.id}" data-day="${item.day}" style="--card-color:${item.course.color}">
-        <span class="album-card-head"><span class="album-card-code">NO.${String(item.day).padStart(2, '0')}</span><span class="album-card-rank">${rank.mark} ${rank.label}</span></span>
+        <span class="album-card-head"><span class="album-card-code">NO.${String(item.day).padStart(2, '0')}</span></span>
         <span class="album-card-art"><span class="album-card-orbit"></span>${unlockedCard ? '<img class="album-card-creature" src="' + artwork.src + '" alt="' + recoveryEscape(item.companion.name) + '" style="--art-hue:' + artwork.hue + 'deg">' : '<span class="album-card-silhouette">✦</span>'}</span>
         <span class="album-card-info"><strong>${unlockedCard ? recoveryEscape(item.companion.name) : '尚未相遇'}</strong><span class="album-card-theme">${unlockedCard ? recoveryEscape(item.theme) : '等待与你见面'}</span><small>${unlockedCard ? '技能 · ' + recoveryEscape(item.companion.skill) : '完成第 ' + item.day + ' 天后发现'}</small></span>
       </button>`;
@@ -338,11 +369,10 @@ async function renderCardCollection(container) {
 
 function renderUnlockedCard(item) {
   const date = item.card.unlocked_at ? new Date(item.card.unlocked_at).toLocaleDateString('zh-CN') : '';
-  const rank = getCardRank(item.day);
   const artwork = getCardArtwork(item.course.id, item.day, item.companion.name);
   return `<article class="achievement-card" style="--card-color:${item.course.color}">
     <div class="achievement-card-shine"></div>
-    <div class="achievement-card-top"><span>${getCardCode(item.course.id, item.day)}</span><span>${rank.mark} ${rank.label}</span></div>
+    <div class="achievement-card-top"><span>${getCardCode(item.course.id, item.day)}</span></div>
     <div class="achievement-card-visual"><span class="achievement-card-halo"></span><span class="achievement-stars">✦ · ✧ · ✦</span><img class="achievement-card-creature" src="${artwork.src}" alt="${recoveryEscape(item.companion.name)}" style="--art-hue:${artwork.hue}deg"></div>
     <div class="achievement-card-course">${recoveryEscape(item.course.name)} · 第 ${item.day} 天</div>
     <div class="achievement-card-skill-name">${recoveryEscape(item.companion.skill)}</div>
@@ -350,7 +380,7 @@ function renderUnlockedCard(item) {
     <p class="achievement-card-help">${recoveryEscape(item.companion.help)}</p>
     <div class="achievement-card-theme">${recoveryEscape(item.theme)}</div>
     <div class="achievement-card-knowledge"><i>✦</i><div><small>今日重点</small><p>${recoveryEscape(item.knowledge || getCardKnowledge(item.course.id, item.day))}</p></div></div>
-    <div class="achievement-card-copy"><i>◇</i><div><small>今天留下了</small><p>${recoveryEscape(item.card.takeaway)}</p></div></div>
+    ${item.card.takeaway ? '<div class="achievement-card-copy"><i>◇</i><div><small>今天留下了</small><p>' + recoveryEscape(item.card.takeaway) + '</p></div></div>' : ''}
     <div class="achievement-card-moods">${(item.card.moods || []).map(mood => '<span>' + recoveryEscape(mood) + '</span>').join('')}</div>
     <footer>${date} · 完成练习后发现</footer>
   </article>`;

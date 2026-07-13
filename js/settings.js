@@ -19,7 +19,6 @@ function initSettingsPage() {
   if (restoreBtn && fileInput) restoreBtn.addEventListener('click', () => fileInput.click());
   if (fileInput) fileInput.addEventListener('change', handleBackupFileSelected);
   updateBackupUI();
-  updateBackupIndicator();
 }
 
 function openSettings() {
@@ -40,17 +39,22 @@ async function updateBackupUI() {
     try {
       const s = await getBackupSummary();
       summary.textContent = s.unbackedDays.length
-        ? s.unbackedDays.length + ' 个 Day 尚未备份：' + s.unbackedDays.map(formatBackupDay).join('、')
+        ? s.unbackedDays.length + ' 天有新内容尚未备份：' + s.unbackedDays.map(formatBackupDay).join('、')
         : s.progressCount + ' 天进度 · ' + s.cardCount + ' 张成果卡 · ' + s.journalCount + ' 篇书写 · ' + s.photoCount + ' 张照片';
       if (statusIcon && statusText) {
         const hasData = s.progressCount > 0 || s.journalCount > 0 || s.unbackedDays.length > 0;
         const dirty = hasData && s.unbackedDays.length > 0;
         statusIcon.textContent = dirty ? '●' : '✓';
         statusIcon.className = 'backup-status-icon ' + (dirty ? 'pending' : 'safe');
-        statusText.textContent = dirty ? s.unbackedDays.length + ' 个 Day 有新内容待备份' : '本机内容已备份';
+        statusText.textContent = dirty ? s.unbackedDays.length + ' 天有新内容待备份' : '本机内容已备份';
       }
     } catch (e) {
       summary.textContent = '数据统计暂不可用';
+      if (statusIcon && statusText) {
+        statusIcon.textContent = '!';
+        statusIcon.className = 'backup-status-icon error';
+        statusText.textContent = '备份状态读取失败，请稍后重试';
+      }
     }
   }
 }
@@ -60,7 +64,7 @@ async function openCreateBackupDialog() {
   try { summary = await getBackupSummary(); }
   catch (e) { showToast('读取本地数据失败', 'error'); return; }
   openBackupDialog('创建备份', '<p class="backup-dialog-copy">将备份 ' + summary.progressCount + ' 天进度、' + summary.cardCount + ' 张成果卡、' + summary.journalCount + ' 篇书写和 ' + summary.photoCount + ' 张照片。</p>'
-    + (summary.unbackedDays.length ? '<div class="backup-days"><strong>这次需要备份</strong><p>' + summary.unbackedDays.map(formatBackupDay).map(escapeSettingsHtml).join('、') + '</p></div>' : '<p class="backup-dialog-copy">目前没有尚未备份的 Day，你仍可以重新生成完整备份。</p>')
+    + (summary.unbackedDays.length ? '<div class="backup-days"><strong>这次需要备份</strong><p>' + summary.unbackedDays.map(formatBackupDay).map(escapeSettingsHtml).join('、') + '</p></div>' : '<p class="backup-dialog-copy">目前没有尚未备份的练习，你仍可以重新生成完整备份。</p>')
     + '<p class="backup-dialog-warning">所有内容都会保存在同一个 AnxietyHeal.ahbackup 文件里。请在 iCloud Drive 中选择原文件并确认替换。</p>'
     + '<div class="backup-dialog-actions"><button class="btn btn-secondary" data-close-backup>取消</button><button class="btn btn-primary" id="prepareBackupBtn">创建备份</button></div>');
   document.getElementById('prepareBackupBtn').addEventListener('click', prepareBackupFile);

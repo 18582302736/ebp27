@@ -5,8 +5,6 @@ let currentCourseId = null;
 async function initApp() {
   await initStorage();
 
-  if (typeof updateBackupIndicator === 'function') updateBackupIndicator();
-
   // 主题
   const theme = getThemePreference();
   applyTheme(theme);

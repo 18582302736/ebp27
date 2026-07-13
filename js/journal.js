@@ -1,6 +1,6 @@
 // journal.js - 书写练习组件
 
-function createJournal(container, courseId, day, worksheetData, onSaveComplete) {
+function createJournal(container, courseId, day, worksheetData, onSaveComplete, options) {
   // 兼容旧调用：createJournal(container, day, worksheetData, onSaveComplete)
   if (arguments.length === 4) {
     onSaveComplete = worksheetData;
@@ -8,6 +8,7 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     day = courseId;
     courseId = 'ebp';
   }
+  options = options || {};
   const prompt = worksheetData ? (worksheetData.prompt || '记录今天的练习心得') : '记录今天的练习心得';
   const curiosityGuide = worksheetData ? worksheetData.curiosityGuide : null;
   const prompts = worksheetData && worksheetData.prompts ? worksheetData.prompts : null;
@@ -54,16 +55,20 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
 
   const html = `
     <div class="journal-section">
-      ${curiosityGuide ? `<div class="curiosity-guide"><span class="svg-icon">${iconBulb(16)}</span> ${curiosityGuide}</div>` : ''}
-      ${templateHtml}
-      ${writingGuideHtml}
-      ${promptsHtml}
-      ${isInlineMode ? '' : `<textarea class="journal-textarea" placeholder="${prompt}"></textarea>`}
-      <div class="journal-actions">
-        <button class="btn btn-secondary btn-small upload-image-btn"><span class="svg-icon">${iconImage(16)}</span> 添加图片</button>
+      <div class="journal-mode-actions" hidden><button type="button" class="btn btn-secondary btn-small journal-edit-btn"><span class="svg-icon">${iconPen(16)}</span> 编辑书写</button></div>
+      <div class="journal-review-generic" hidden></div>
+      <div class="journal-edit-content">
+        ${curiosityGuide ? `<div class="curiosity-guide"><span class="svg-icon">${iconBulb(16)}</span> ${curiosityGuide}</div>` : ''}
+        ${templateHtml}
+        ${writingGuideHtml}
+        ${promptsHtml}
+        ${isInlineMode ? '' : `<textarea class="journal-textarea" placeholder="${prompt}"></textarea>`}
+        <div class="journal-actions">
+          <button class="btn btn-secondary btn-small upload-image-btn"><span class="svg-icon">${iconImage(16)}</span> 添加图片</button>
+        </div>
+        <input type="file" class="hidden-input image-input" accept="image/*" multiple>
+        <div class="image-preview"></div>
       </div>
-      <input type="file" class="hidden-input image-input" accept="image/*" multiple>
-      <div class="image-preview"></div>
       ${peerExampleHtml}
       <button class="btn btn-primary save-complete-btn"><span class="svg-icon">${iconSave(16)}</span> 保存并完成书写</button>
     </div>
@@ -85,9 +90,15 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
   const uploadBtn = container.querySelector('.upload-image-btn');
   const imageInput = container.querySelector('.image-input');
   const imagePreview = container.querySelector('.image-preview');
+  const editContent = container.querySelector('.journal-edit-content');
+  const reviewContent = container.querySelector('.journal-review-generic');
+  const modeActions = container.querySelector('.journal-mode-actions');
+  const editBtn = container.querySelector('.journal-edit-btn');
 
   let savedImageBase64s = [];
-  let hasCompleted = false;
+  let reviewMode = !!options.reviewMode;
+  let editingExisting = false;
+  let hasCompleted = reviewMode;
   let saveTimer = null;
 
   // 自动撑高所有 textarea
@@ -131,6 +142,39 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     return textarea && textarea.value.trim().length > 0;
   }
 
+  function applyJournalMode() {
+    if (!reviewMode) {
+      editContent.hidden = false;
+      reviewContent.hidden = true;
+      modeActions.hidden = true;
+      saveCompleteBtn.hidden = false;
+      saveCompleteBtn.innerHTML = '<span class="svg-icon">' + iconSave(16) + '</span> ' + (editingExisting ? '完成编辑' : '保存并完成书写');
+      return;
+    }
+    editContent.hidden = true;
+    reviewContent.hidden = false;
+    modeActions.hidden = false;
+    saveCompleteBtn.hidden = true;
+    const values = isInlineMode ? Array.from(wsTextareas).map(ta => ta.value.trim()) : [textarea ? textarea.value.trim() : ''];
+    const fields = values.map((value, index) => {
+      if (!value) return '';
+      const ta = isInlineMode ? wsTextareas[index] : textarea;
+      const owner = ta ? ta.closest('.ws-field, .worksheet-field, label') : null;
+      const labelEl = owner ? owner.querySelector('.ws-field-label, .worksheet-field-label, label, strong') : null;
+      const label = labelEl ? labelEl.textContent.trim() : (values.length > 1 ? '回答 ' + (index + 1) : '我的书写');
+      return '<div class="journal-review-field"><span>' + escapeJournalReview(label) + '</span><p>' + escapeJournalReview(value).replace(/\n/g, '<br>') + '</p></div>';
+    }).join('');
+    const photos = savedImageBase64s.length ? '<div class="journal-review-photos">' + savedImageBase64s.map((src, i) => '<img class="image-preview-item" src="' + src + '" alt="练习图片 ' + (i + 1) + '" role="button" tabindex="0">').join('') + '</div>' : '';
+    reviewContent.innerHTML = fields || photos ? '<section class="journal-review-record">' + fields + photos + '</section>' : '<div class="journal-review-empty">这次练习没有留下文字，之后也可以点击“编辑书写”补充。</div>';
+    reviewContent.querySelectorAll('.image-preview-item').forEach(bindImagePreview);
+  }
+
+  function escapeJournalReview(value) {
+    const div = document.createElement('div');
+    div.textContent = String(value == null ? '' : value);
+    return div.innerHTML;
+  }
+
   // 保存函数
   async function doSave() {
     clearTimeout(saveTimer);
@@ -157,8 +201,16 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
       savedImageBase64s = entry.image_base64;
       showImagePreviews(entry.image_base64);
     }
+    applyJournalMode();
   }).catch(e => {
     console.error('加载日志失败:', e);
+    applyJournalMode();
+  });
+
+  editBtn.addEventListener('click', () => {
+    reviewMode = false;
+    editingExisting = true;
+    applyJournalMode();
   });
 
   // 保存按钮
@@ -166,6 +218,12 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
     try {
       await doSave();
       showToast('保存成功', 'success');
+      if (editingExisting) {
+        editingExisting = false;
+        reviewMode = true;
+        applyJournalMode();
+        return;
+      }
       if (onSaveComplete && !hasCompleted) {
         hasCompleted = true;
         await onSaveComplete();
@@ -229,6 +287,8 @@ function createJournal(container, courseId, day, worksheetData, onSaveComplete) 
       imageInput.value = '';
     });
   }
+
+  applyJournalMode();
 
   function showImagePreviews(base64s) {
     if (!imagePreview) return;
