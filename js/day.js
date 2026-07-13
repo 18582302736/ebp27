@@ -327,63 +327,18 @@ function parseEBPGuideSections(day) {
   };
 }
 
-// 将 PDF 中承担解释作用的图表重建为原生组件，避免白底图片影响夜间阅读。
+// 只重建 PDF 中确实存在、且有助于理解课程的图表；文字与结构严格对应原图。
 function getEBPNativeVisual(day) {
   const visuals = {
     1: {
-      title: '课程能力地图',
+      title: '锻炼 3 种情绪调节能力',
       type: 'flow',
-      items: ['觉察：看见此刻', '接纳：容纳体验', '行动：走向重要的事']
-    },
-    9: {
-      title: '情绪强度参考尺',
-      type: 'scale',
-      items: ['1 很轻微', '3 可以察觉', '5 明显影响', '7 很强烈', '9 几乎淹没']
-    },
-    10: {
-      title: '情绪携带的信息',
-      type: 'split',
-      items: ['积极情绪｜提示我想靠近、珍惜或创造什么', '消极情绪｜提示我想避开、保护或改变什么']
+      items: ['觉察', '接纳', '行动']
     },
     11: {
-      title: '一次情绪反应是怎样形成的',
+      title: '情绪产生的过程',
       type: 'flow',
-      items: ['事件发生', '注意与解释', '想法出现', '情绪与身体反应', '行为选择']
-    },
-    12: {
-      title: '像观察天气一样观察情绪',
-      type: 'flow',
-      items: ['升起', '增强', '停留', '变化', '消散']
-    },
-    14: {
-      title: '为完整体验命名',
-      type: 'cluster',
-      items: ['事件', '情绪', '想法', '身体感觉', '我的命名']
-    },
-    17: {
-      title: '寻找你的价值方向',
-      type: 'chips',
-      items: ['关系', '健康', '成长', '工作与学习', '休闲', '贡献', '勇气', '自我关怀']
-    },
-    18: {
-      title: '把价值变成今天的行动',
-      type: 'flow',
-      items: ['我重视什么', '一个可执行的小目标', '今天迈出的一步']
-    },
-    19: {
-      title: '情绪日记回顾路径',
-      type: 'flow',
-      items: ['发生了什么', '我体验到什么', '我怎样回应', '下一次可以怎样行动']
-    },
-    20: {
-      title: '从觉察走向选择',
-      type: 'flow',
-      items: ['停一下', '看见内在体验', '确认价值方向', '选择下一步']
-    },
-    21: {
-      title: '情绪健康之树',
-      type: 'tree',
-      items: ['根｜初心与价值', '干｜觉察・接纳・行动', '枝｜持续练习', '叶｜新的选择、成就与连接']
+      items: ['事件', '注意', '想法', '反应：情绪・身体感受・行为']
     }
   };
   const visual = visuals[day];
@@ -433,8 +388,6 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
         + '</section>';
     }
 
-    html += getEBPNativeVisual(day);
-
     // 陪伴者分享音频
     const audios = data.readingAudios || [];
     for (let ai = 0; ai < audios.length; ai++) {
@@ -448,12 +401,13 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
 
     // 陪伴者分享文字稿
     const guideHtml = guideSections.companion;
+    const sourceVisualHtml = getEBPNativeVisual(day);
     if (guideHtml) {
       html += '<details class="learning-text">'
         + '<summary class="learning-text-header">'
         + '<span class="svg-icon">' + iconBook(16) + '</span> 查看陪伴者分享文字'
         + '</summary>'
-        + '<div class="learning-text-body learning-text-html"><div class="guide-content"><div class="guide-section">' + guideHtml + '</div></div></div>'
+        + '<div class="learning-text-body learning-text-html">' + sourceVisualHtml + '<div class="guide-content"><div class="guide-section">' + guideHtml + '</div></div></div>'
         + '</details>';
     }
 

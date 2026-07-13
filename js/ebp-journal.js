@@ -26,6 +26,7 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
   function render() {
     if (config.type === 'repeat') renderRepeatForm();
     else if (config.type === 'mixed') renderMixedForm();
+    else if (config.type === 'grouped') renderGroupedForm();
     else renderFixedForm();
     bindFormEvents();
     requestAnimationFrame(resizeAll);
@@ -35,18 +36,33 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
     const items = state.items || [];
     form.innerHTML = '<div class="repeat-list">' + items.map((item, index) => repeatCardHtml(item, index, config.fields, config.repeatLabel, config.photos)).join('') + '</div>'
       + '<button class="btn btn-secondary structured-add" data-action="add-item">＋ 添加' + escapeJournalHtml(config.repeatLabel) + '</button>'
-      + legacyUnassignedPhotosHtml();
+      + legacyUnassignedPhotosHtml()
+      + sourceHelpHtml();
   }
 
   function renderMixedForm() {
     const items = state.items || [];
     form.innerHTML = '<div class="repeat-list">' + items.map((item, index) => repeatCardHtml(item, index, config.repeatFields, config.repeatLabel, config.photos)).join('') + '</div>'
       + '<button class="btn btn-secondary structured-add" data-action="add-item">＋ 添加' + escapeJournalHtml(config.repeatLabel) + '</button>'
-      + '<div class="structured-fixed">' + fieldsHtml(config.fields, state.values || {}, 'fixed') + globalPhotosHtml() + '</div>';
+      + '<div class="structured-fixed">' + fieldsHtml(config.fields, state.values || {}, 'fixed') + globalPhotosHtml() + '</div>'
+      + sourceHelpHtml();
+  }
+
+  function renderGroupedForm() {
+    form.innerHTML = '<div class="repeat-list">' + config.groups.map((group, index) => groupedCardHtml(group, state.items[index], index)).join('') + '</div>'
+      + legacyUnassignedPhotosHtml()
+      + sourceHelpHtml();
   }
 
   function renderFixedForm() {
-    form.innerHTML = '<div class="structured-fixed">' + fieldsHtml(config.fields, state.values || {}, 'fixed') + globalPhotosHtml() + '</div>';
+    form.innerHTML = '<div class="structured-fixed">' + fieldsHtml(config.fields, state.values || {}, 'fixed') + globalPhotosHtml() + '</div>' + sourceHelpHtml();
+  }
+
+  function groupedCardHtml(group, item, index) {
+    return '<section class="repeat-card" data-index="' + index + '">'
+      + '<div class="repeat-card-header"><strong>' + escapeJournalHtml(group.label) + '</strong></div>'
+      + fieldsHtml(group.fields, (item && item.values) || {}, 'item-' + index)
+      + photosHtml((item && item.images) || [], 'item', index) + '</section>';
   }
 
   function repeatCardHtml(item, index, fields, label, photos) {
@@ -98,7 +114,12 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
   function globalPhotosHtml() { return photosHtml(state.images || [], 'global', -1); }
   function legacyUnassignedPhotosHtml() {
     if (!state.images || !state.images.length) return '';
-    return '<div class="structured-fixed"><h4 class="structured-heading">之前上传的未分组照片</h4>' + globalPhotosHtml() + '</div>';
+    return '<div class="structured-fixed"><h4 class="structured-heading">之前上传的未分组照片</h4><div class="image-preview">'
+      + state.images.map((src, index) => imageHtml(src, 'global', -1, index)).join('') + '</div></div>';
+  }
+  function sourceHelpHtml() {
+    if (!config.help) return '';
+    return '<details class="ws-example structured-source-help"><summary>' + escapeJournalHtml(config.helpTitle || '原课程提示') + '</summary><div class="ws-example-body">' + escapeJournalHtml(config.help).replace(/\n/g, '<br>') + '</div></details>';
   }
   function imageHtml(src, scope, itemIndex, imageIndex) { return '<div class="image-preview-wrapper"><img class="image-preview-item" src="' + src + '" alt="练习照片 ' + (imageIndex + 1) + '" role="button" tabindex="0" aria-label="查看练习照片 ' + (imageIndex + 1) + ' 大图"><button type="button" class="image-remove-btn" aria-label="删除练习照片 ' + (imageIndex + 1) + '" data-action="remove-image" data-photo-scope="' + scope + '" data-item-index="' + itemIndex + '" data-image-index="' + imageIndex + '">×</button></div>'; }
 
@@ -213,7 +234,9 @@ function createEBPJournal(container, courseId, day, worksheetData, onSaveComplet
 
 function defaultState(config) {
   const state = { values: {}, items: [], images: [] };
-  if (config.type === 'repeat' || config.type === 'mixed') {
+  if (config.type === 'grouped') {
+    config.groups.forEach(group => state.items.push(newItem(group.fields)));
+  } else if (config.type === 'repeat' || config.type === 'mixed') {
     const fields = config.type === 'mixed' ? config.repeatFields : config.fields;
     const count = Math.max(1, config.initialItems || 1);
     for (let i = 0; i < count; i++) state.items.push(newItem(fields));
@@ -235,13 +258,20 @@ function normalizeState(config, data) {
       return { values, images: [] };
     });
   }
+  if ((!data.items || !data.items.length) && config.type === 'grouped' && data.values) {
+    items = config.groups.map(group => {
+      const values = {};
+      group.fields.forEach(field => { if (field.kind === 'field') values[field.key] = data.values[field.key] || ''; });
+      return { values, images: [] };
+    });
+  }
   if (config.type === 'repeat' || config.type === 'mixed') {
     const fields = config.type === 'mixed' ? config.repeatFields : config.fields;
     while (items.length < (config.minItems || 1)) items.push(newItem(fields));
   }
-  return { values: data.values || base.values, items, images: data.images || [] };
+  return { values: config.type === 'grouped' ? base.values : (data.values || base.values), items, images: data.images || [] };
 }
-function summaryText(config, state, legacyText) { const lines = []; (state.items || []).forEach((item, i) => { lines.push((config.repeatLabel || '记录') + ' ' + (i + 1)); Object.values(item.values || {}).forEach(v => lines.push(Array.isArray(v) ? v.filter(Boolean).join('\n') : v || '')); }); Object.values(state.values || {}).forEach(v => lines.push(Array.isArray(v) ? v.filter(Boolean).join('\n') : v || '')); if (legacyText) lines.push('原有记录\n' + legacyText); return lines.filter(Boolean).join('\n'); }
+function summaryText(config, state, legacyText) { const lines = []; (state.items || []).forEach((item, i) => { const groupLabel = config.type === 'grouped' && config.groups[i] ? config.groups[i].label : (config.repeatLabel || '记录') + ' ' + (i + 1); lines.push(groupLabel); Object.values(item.values || {}).forEach(v => lines.push(Array.isArray(v) ? v.filter(Boolean).join('\n') : v || '')); }); Object.values(state.values || {}).forEach(v => lines.push(Array.isArray(v) ? v.filter(Boolean).join('\n') : v || '')); if (legacyText) lines.push('原有记录\n' + legacyText); return lines.filter(Boolean).join('\n'); }
 function autoResizeStructured(el) { if (el.tagName !== 'TEXTAREA') return; el.style.height = 'auto'; el.style.height = Math.max(el.scrollHeight, 64) + 'px'; }
 function resizeAll() { document.querySelectorAll('.structured-journal textarea').forEach(autoResizeStructured); }
 function escapeJournalHtml(value) { const div = document.createElement('div'); div.textContent = String(value == null ? '' : value); return div.innerHTML; }
