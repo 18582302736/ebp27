@@ -1,7 +1,7 @@
 // backup.js - iCloud Drive 文件备份与恢复
 const BACKUP_MAGIC = 'AnxietyHealBackup';
 const BACKUP_VERSION = 1;
-const BACKUP_APP_VERSION = '2.6.0';
+const BACKUP_APP_VERSION = '2.7.1';
 const BACKUP_DIRTY_KEY = 'ebp_backup_dirty';
 const LAST_BACKUP_KEY = 'ebp_last_backup_at';
 const LAST_BACKUP_MANIFEST_KEY = 'ebp_last_backup_manifest';
@@ -16,7 +16,6 @@ function disableLegacyGithubSync() {
 
 function markBackupDirty() {
   localStorage.setItem(BACKUP_DIRTY_KEY, '1');
-  updateBackupIndicator();
   if (typeof updateBackupUI === 'function') updateBackupUI();
 }
 
@@ -24,7 +23,6 @@ function markBackupComplete(manifest, backedUpAt) {
   localStorage.setItem(BACKUP_DIRTY_KEY, '0');
   localStorage.setItem(LAST_BACKUP_KEY, backedUpAt || new Date().toISOString());
   if (manifest) localStorage.setItem(LAST_BACKUP_MANIFEST_KEY, JSON.stringify(manifest));
-  updateBackupIndicator();
   if (typeof updateBackupUI === 'function') updateBackupUI();
 }
 
@@ -84,14 +82,6 @@ function formatBackupDay(key) {
   if (!parsed) return key;
   const names = { ebp: '情绪EBP', cbt: 'CBT综合', act: 'ACT行动' };
   return (names[parsed.courseId] || parsed.courseId.toUpperCase()) + ' Day ' + parsed.day;
-}
-
-function updateBackupIndicator() {
-  const dirty = isBackupDirty();
-  document.querySelectorAll('.sync-dot').forEach(dot => {
-    dot.className = 'sync-dot ' + (dirty ? 'error' : 'success');
-    dot.title = dirty ? '有新内容待备份' : '本机内容已备份';
-  });
 }
 
 async function getBackupSummary(data) {

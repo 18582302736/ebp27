@@ -30,7 +30,7 @@ const EBP_JOURNAL_CONFIG = {
   8: repeatConfig('觉察一天中的情绪', '可以只记录 1 个，也可以记录 3 个以上。分数没有好坏对错。', '情绪', [
     field('emotion', '我经历的情绪', 'text', '例如：焦虑、平静、愉悦'), field('scene', '当时的场景', 'textarea'),
     field('intensity', '情绪强度', 'range'), field('duration', '持续时间', 'text', '没印象时可以估计')
-  ]),
+  ], true),
   9: fixedConfig('理解情绪传递的信息', '', [
     heading('积极情绪'), field('positiveEmotion', '我体验到的一个积极情绪', 'text'), field('positiveScene', '当时的场景', 'textarea'), field('positiveIntensity', '情绪强度', 'range'), field('desire', '我感受到它，可能因为我渴望', 'textarea'),
     heading('消极情绪'), field('negativeEmotion', '我体验到的一个消极情绪', 'text'), field('negativeScene', '当时的场景', 'textarea'), field('negativeIntensity', '情绪强度', 'range'), field('avoid', '我感受到它，可能因为我不想要', 'textarea')
@@ -79,7 +79,7 @@ function field(key, label, type, placeholder) { return { kind: 'field', key, lab
 function heading(label) { return { kind: 'heading', label }; }
 function repeatConfig(title, note, repeatLabel, fields, photos) { return { type: 'repeat', title, note, repeatLabel, fields, photos: !!photos }; }
 function fixedConfig(title, note, fields) { return { type: 'fixed', title, note, fields, photos: true }; }
-function mixedConfig(title, note, options) { return Object.assign({ type: 'mixed', title, note }, options); }
+function mixedConfig(title, note, options) { return Object.assign({ type: 'mixed', title, note, photos: true }, options); }
 function chain(items) { return items.map(x => field(x[0], x[1], 'textarea')); }
 function reflection(labels) { return labels.map((x, i) => field('answer' + (i + 1), x, 'textarea')); }
 

@@ -14,7 +14,7 @@ const COURSES = [
       { name: '行动 · 向价值方向', range: 'Day 13-25', start: 13, end: 25, cssClass: 'phase-3', gridId: 'phase3Grid' }
     ],
     taskKeys: ['task1', 'task2', 'task3'],
-    taskLabels: ['音频引导', '书写练习', '正念练习'],
+    taskLabels: ['了解今日练习', '书写练习', '正念练习'],
     taskIcons: ['headphones', 'pen', 'meditation'],
     color: '#6db88d',
     icon: 'iconEBP',

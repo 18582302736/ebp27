@@ -12,8 +12,6 @@ async function initApp() {
   try {
     await initStorage();
 
-    if (typeof updateBackupIndicator === 'function') updateBackupIndicator();
-
     const theme = getThemePreference();
     applyTheme(theme);
 
@@ -199,6 +197,9 @@ async function initApp() {
           updateTaskCardStatus(card, true, progress[completedKey]);
           await checkAllDone();
         });
+        if (taskDone[taskKey] && taskBody.querySelector('.play-btn')) {
+          addTaskQuickAudio(card);
+        }
       }
 
       taskList.appendChild(card);
@@ -211,37 +212,13 @@ async function initApp() {
         { courseId, day, theme: data.theme },
         allDone,
         persistRecovery,
-        showResultOverlay
+        () => showCompletionNavigation()
       );
     }
 
     // 重新进入已完成的日期时，仍提供前往下一天的入口。
     if (allDone && progress.recovery && progress.recovery.card && progress.recovery.card.unlocked_at) {
       showCompletionNavigation();
-    }
-
-    function showResultOverlay(card) {
-      const overlay = document.getElementById('resultOverlay');
-      if (!overlay || overlay.style.display === 'flex') return;
-      document.getElementById('resultTitle').textContent = `第${day}天完成：${data.theme}`;
-      document.getElementById('resultSubtitle').textContent = `完成于 ${formatDateWithWeekday(new Date().toISOString())}`;
-      const resultIcon = document.getElementById('resultIcon');
-      if (resultIcon) resultIcon.textContent = (card && card.symbol) || getCardSymbol(courseId, day);
-      const encouragement = document.getElementById('resultEncouragement');
-      if (encouragement) encouragement.textContent = '成果卡 ' + getCardCode(courseId, day) + ' 已加入「我的练习图鉴」';
-      const resultNextBtn = document.getElementById('resultNextBtn');
-      const resultRestBtn = document.getElementById('resultRestBtn');
-      resultRestBtn.href = `index.html?course=${courseId}`;
-      if (day < config.totalDays) {
-        resultNextBtn.href = `day.html?course=${courseId}&day=${day + 1}`;
-        resultNextBtn.innerHTML = '继续第 ' + (day + 1) + ' 天 <span class="svg-icon" style="display:inline-flex;">' + iconArrowRight(16) + '</span>';
-      } else {
-        resultNextBtn.href = 'index.html';
-        resultNextBtn.textContent = '完成本课程，返回首页';
-        resultRestBtn.style.display = 'none';
-      }
-      showCompletionNavigation();
-      overlay.style.display = 'flex';
     }
 
   } catch (e) {
@@ -305,11 +282,22 @@ function renderTaskBody(courseId, data, taskKey, container, done, onComplete) {
 
 // ── EBP 章节解析 ──
 
-function parseEBPGuideHtml(day) {
-  const raw = (typeof getWorksheetText === 'function') ? getWorksheetText(day) : null;
-  if (!raw) return null;
+function ebpGuideTextToHtml(text) {
+  if (!text) return '';
+  text = text.trim();
+  text = text.replace(/\*\*(.+?)\*\*/g, '<h3>$1</h3>');
+  text = text.replace(/\n{2,}/g, '</p><p>');
+  text = '<p>' + text + '</p>';
+  text = text.replace(/<p>\s*<\/p>/g, '');
+  text = text.replace(/<p><h3>/g, '<h3>');
+  text = text.replace(/<\/h3><\/p>/g, '</h3>');
+  return text;
+}
 
-  // 移除 "书写模板" 和 "同行伙伴书写示例" 之后的内容
+function parseEBPGuideSections(day) {
+  const raw = (typeof getWorksheetText === 'function') ? getWorksheetText(day) : null;
+  if (!raw) return { writing: '', companion: '' };
+
   let text = raw;
   const cutMarkers = ['**书写模板**', '**情緒強度參考示例**', '**情绪强度参考示例**'];
   for (const marker of cutMarkers) {
@@ -320,20 +308,28 @@ function parseEBPGuideHtml(day) {
     }
   }
 
-  // 将 **粗体标题** 转为 <h3>
-  text = text.replace(/\*\*(.+?)\*\*/g, '<h3>$1</h3>');
-
-  // 双换行 → 段落
-  text = text.replace(/\n{2,}/g, '</p><p>');
-  text = '<p>' + text + '</p>';
-
-  // 清理空段落
-  text = text.replace(/<p>\s*<\/p>/g, '');
-  // 清理 <p> 内单个 <h3>
-  text = text.replace(/<p><h3>/g, '<h3>');
-  text = text.replace(/<\/h3><\/p>/g, '</h3>');
-
-  return '<div class="guide-content"><div class="guide-section">' + text + '</div></div>';
+  const writingMarkers = ['**今日书写**', '**今日書寫**', '**今日练习**', '**今日練習**'];
+  const companionPattern = /\*\*陪伴[者者]分享[^*]*\*\*/;
+  let writingStart = -1;
+  let writingMarker = '';
+  for (const marker of writingMarkers) {
+    const idx = text.indexOf(marker);
+    if (idx !== -1) { writingStart = idx; writingMarker = marker; break; }
+  }
+  const companionMatch = text.match(companionPattern);
+  const companionStart = companionMatch ? companionMatch.index : -1;
+  let writingText = '';
+  let companionText = '';
+  if (writingStart !== -1) {
+    const start = writingStart + writingMarker.length;
+    writingText = text.substring(start, companionStart !== -1 ? companionStart : text.length);
+  }
+  if (companionStart !== -1) companionText = text.substring(companionStart);
+  if (!writingText && !companionText) companionText = text;
+  return {
+    writing: ebpGuideTextToHtml(writingText),
+    companion: ebpGuideTextToHtml(companionText)
+  };
 }
 
 function getEBPPeerExample(day) {
@@ -365,7 +361,16 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
 
     let html = '';
 
-    // 音频播放器
+    // 原课程顺序：今日书写指南 → 陪伴者分享音频 → 陪伴者分享文字。
+    const guideSections = parseEBPGuideSections(day);
+    if (guideSections.writing) {
+      html += '<section class="today-writing-guide">'
+        + '<div class="today-writing-guide-title"><span class="svg-icon">' + iconPen(16) + '</span> 今日书写指南</div>'
+        + '<div class="today-writing-guide-body guide-content"><div class="guide-section">' + guideSections.writing + '</div></div>'
+        + '</section>';
+    }
+
+    // 陪伴者分享音频
     const audios = data.readingAudios || [];
     for (let ai = 0; ai < audios.length; ai++) {
       html += '<div class="learning-audio">'
@@ -376,14 +381,14 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
         + '</div>';
     }
 
-    // 阅读指南文字（今日书写 + 陪伴者分享）
-    const guideHtml = parseEBPGuideHtml(day);
+    // 陪伴者分享文字稿
+    const guideHtml = guideSections.companion;
     if (guideHtml) {
       html += '<details class="learning-text">'
         + '<summary class="learning-text-header">'
-        + '<span class="svg-icon">' + iconBook(16) + '</span> 阅读指南'
+        + '<span class="svg-icon">' + iconBook(16) + '</span> 查看陪伴者分享文字'
         + '</summary>'
-        + '<div class="learning-text-body learning-text-html">' + guideHtml + '</div>'
+        + '<div class="learning-text-body learning-text-html"><div class="guide-content"><div class="guide-section">' + guideHtml + '</div></div></div>'
         + '</details>';
     }
 
@@ -448,9 +453,9 @@ function renderEBPTaskBody(courseId, data, taskKey, container, done, onComplete)
       peerExample: getEBPPeerExample(day)
     });
     if (typeof createEBPJournal === 'function' && typeof getEBPJournalConfig === 'function') {
-      createEBPJournal(container, courseId, day, wsData, onComplete);
+      createEBPJournal(container, courseId, day, wsData, onComplete, { reviewMode: !!done });
     } else {
-      createJournal(container, courseId, day, wsData, onComplete);
+      createJournal(container, courseId, day, wsData, onComplete, { reviewMode: !!done });
     }
   } else if (taskKey === 'task3') {
     const audios = data.mindfulnessAudios || [];
@@ -483,7 +488,7 @@ function renderCBTTaskBody(courseId, data, taskKey, container, done, onComplete)
       worksheetHtml: worksheetHtml,
       writingGuideAudio: data.writingGuideAudio || null
     };
-    createJournal(container, courseId, day, wsData, onComplete);
+    createJournal(container, courseId, day, wsData, onComplete, { reviewMode: !!done });
   }
 }
 
@@ -500,7 +505,7 @@ function renderACTTaskBody(courseId, data, taskKey, container, done, onComplete)
       prompts: data.worksheetPrompts || null,
       worksheetHtml: worksheetHtml
     };
-    createJournal(container, courseId, day, wsData, onComplete);
+    createJournal(container, courseId, day, wsData, onComplete, { reviewMode: !!done });
   }
 }
 
@@ -721,27 +726,66 @@ function createTaskCard(index, iconHtml, name, desc, done, completedDate) {
     : '';
   const statusHtml = done ? `<div class="task-status-icon">${iconCheck(20)}</div>` : '';
 
+  const bodyId = 'task-body-' + index;
   card.innerHTML = `
-    <div class="task-card-header">
-      <div class="task-icon">${iconHtml}</div>
-      <div class="task-info">
-        <div class="task-name">${name}</div>
-        <div class="task-desc">${desc}</div>
-        ${dateHtml}
-      </div>
-      ${statusHtml}
+    <div class="task-card-head-row">
+      <button type="button" class="task-card-header task-card-toggle" aria-expanded="${done ? 'false' : 'true'}" aria-controls="${bodyId}">
+        <div class="task-icon">${iconHtml}</div>
+        <div class="task-info">
+          <div class="task-name">${name}</div>
+          <div class="task-desc">${desc}</div>
+          ${dateHtml}
+        </div>
+        ${statusHtml}
+        <span class="task-chevron" aria-hidden="true">⌄</span>
+      </button>
     </div>
-    <div class="task-body"></div>
+    <div class="task-body" id="${bodyId}"${done ? ' hidden' : ''}></div>
   `;
 
+  const toggle = card.querySelector('.task-card-toggle');
+  const body = card.querySelector('.task-body');
+  toggle.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    body.hidden = expanded;
+  });
+
   return card;
+}
+
+function addTaskQuickAudio(card) {
+  const row = card.querySelector('.task-card-head-row');
+  const toggle = card.querySelector('.task-card-toggle');
+  const body = card.querySelector('.task-body');
+  if (!row || !toggle || !body || row.querySelector('.task-quick-audio')) return;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'task-quick-audio';
+  button.setAttribute('aria-label', '展开并播放本任务音频');
+  button.innerHTML = '<span class="svg-icon">' + iconPlay(14) + '</span><span>播放</span>';
+  button.addEventListener('click', () => {
+    if (body.hidden) {
+      body.hidden = false;
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+    const playButton = body.querySelector('.play-btn');
+    if (playButton) playButton.click();
+  });
+  row.appendChild(button);
 }
 
 function updateTaskCardStatus(card, done, completedDate) {
   if (done) {
     card.classList.add('completed');
-    const statusIcon = card.querySelector('.task-status-icon');
-    if (statusIcon) statusIcon.innerHTML = iconCheck(20);
+    let statusIcon = card.querySelector('.task-status-icon');
+    if (!statusIcon) {
+      statusIcon = document.createElement('div');
+      statusIcon.className = 'task-status-icon';
+      const chevron = card.querySelector('.task-chevron');
+      chevron.parentNode.insertBefore(statusIcon, chevron);
+    }
+    statusIcon.innerHTML = iconCheck(20);
     if (completedDate) {
       const taskInfo = card.querySelector('.task-info');
       let dateEl = card.querySelector('.task-completed-date');
@@ -751,6 +795,13 @@ function updateTaskCardStatus(card, done, completedDate) {
         taskInfo.appendChild(dateEl);
       }
       dateEl.textContent = `完成于 ${formatDateWithWeekday(completedDate)}`;
+    }
+    const toggle = card.querySelector('.task-card-toggle');
+    const body = card.querySelector('.task-body');
+    if (toggle && body) {
+      toggle.setAttribute('aria-expanded', 'false');
+      body.hidden = true;
+      if (body.querySelector('.play-btn')) addTaskQuickAudio(card);
     }
   }
 }
