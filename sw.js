@@ -1,8 +1,8 @@
 // sw.js - Service Worker（离线缓存）
 
-const CACHE_STATIC = 'ebp-static-v84';
-const CACHE_AUDIO = 'ebp-audio-v1';
-const CACHE_PDF = 'ebp-pdf-v1';
+const CACHE_STATIC = 'ebp-static-v86';
+const CACHE_AUDIO = 'ebp-audio-v2';
+const CACHE_PDF = 'ebp-pdf-v2';
 
 // 静态资源列表（安装时预缓存）
 const STATIC_FILES = [

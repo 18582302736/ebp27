@@ -2213,149 +2213,6 @@ body.lightbox-open { overflow: hidden; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== 书写指南弹窗 ===== */
-.guide-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 10001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  animation: fadeIn 0.25s ease;
-}
-.guide-modal {
-  background: var(--bg-card);
-  border-radius: 16px;
-  width: 100%;
-  max-width: 560px;
-  height: 88vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.15);
-  animation: slideUp 0.3s ease;
-}
-.guide-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.guide-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text);
-  margin: 0;
-}
-.guide-close {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text-secondary);
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  -webkit-tap-highlight-color: transparent;
-  flex-shrink: 0;
-}
-.guide-close:active { background: var(--bg-card-hover); }
-.guide-body {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.guide-body iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: #525659;
-}
-.guide-article {
-  padding: 20px 18px;
-  font-size: 0.9rem;
-  line-height: 1.9;
-  color: var(--text);
-  word-break: break-word;
-}
-.guide-article h2 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 0 0 14px;
-  color: var(--text);
-}
-.guide-article h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  margin: 20px 0 10px;
-  color: var(--primary);
-}
-.guide-article h3:first-child { margin-top: 0; }
-.guide-article h4 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin: 16px 0 8px;
-  color: var(--text);
-}
-.guide-article p { margin: 0 0 14px; }
-.guide-article ul,
-.guide-article ol {
-  margin: 8px 0 16px;
-  padding-left: 20px;
-}
-.guide-article li {
-  margin-bottom: 6px;
-  line-height: 1.8;
-}
-.guide-article blockquote {
-  margin: 12px 0 16px;
-  padding: 10px 14px;
-  border-left: 3px solid var(--primary);
-  background: rgba(74, 139, 111, 0.05);
-  border-radius: 0 8px 8px 0;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  line-height: 1.75;
-}
-.guide-article strong {
-  font-weight: 600;
-}
-.guide-article hr {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 18px 0;
-}
-.guide-footer {
-  padding: 10px 18px;
-  border-top: 1px solid var(--border);
-  text-align: center;
-  flex-shrink: 0;
-}
-.guide-footer a {
-  font-size: 0.8rem;
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 500;
-}
-.guide-footer a:active { opacity: 0.7; }
-.guide-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 120px;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
 /* ===== CBT 学习任务区（一体化排版）===== */
 .learning-zone {
   padding: 4px 0;
@@ -3067,6 +2924,81 @@ details.learning-text:not([open]) summary.learning-text-header {
 .task-reflection-body { padding-top: 10px; }
 .task-reflection-body label:not(:first-child) { margin-top: 12px; }
 .task-reflection-body .btn { width: 100%; margin-top: 12px; }
+
+/* PDF 中的关键图表用原生结构重建，可随主题切换且不会出现白底整页。 */
+.ebp-native-visual {
+  margin: 16px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+  border-radius: 16px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--primary) 8%, var(--bg-card)), var(--bg-card));
+}
+.ebp-native-title {
+  margin-bottom: 13px;
+  color: var(--primary);
+  font-size: .84rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.ebp-native-items { display: flex; flex-wrap: wrap; gap: 8px; }
+.ebp-native-item {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 125px;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  color: var(--text-secondary);
+  font-size: .76rem;
+  line-height: 1.45;
+}
+.ebp-native-item span {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-size: .66rem;
+  font-weight: 700;
+}
+.ebp-native-item b { font-weight: 600; }
+.ebp-native-flow .ebp-native-items { flex-wrap: nowrap; align-items: stretch; }
+.ebp-native-flow .ebp-native-item { position: relative; flex-basis: 0; }
+.ebp-native-flow .ebp-native-item:not(:last-child)::after {
+  content: '›';
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: -7px;
+  color: var(--primary);
+  transform: translateY(-50%);
+}
+.ebp-native-scale .ebp-native-items { display: grid; grid-template-columns: repeat(5, 1fr); }
+.ebp-native-scale .ebp-native-item { min-width: 0; flex-direction: column; text-align: center; }
+.ebp-native-split .ebp-native-item { flex-basis: 210px; }
+.ebp-native-cluster .ebp-native-items { justify-content: center; }
+.ebp-native-cluster .ebp-native-item:last-child { border-color: var(--primary); }
+.ebp-native-chips .ebp-native-item { flex: 0 1 auto; border-radius: 999px; }
+.ebp-native-tree .ebp-native-items { flex-direction: column-reverse; align-items: center; }
+.ebp-native-tree .ebp-native-item { width: min(100%, 330px); flex: 0 0 auto; justify-content: center; text-align: center; }
+.ebp-native-tree .ebp-native-item:nth-child(1) { width: min(78%, 255px); }
+.ebp-native-tree .ebp-native-item:nth-child(2) { width: min(48%, 160px); }
+.ebp-native-tree .ebp-native-item:nth-child(3) { width: min(72%, 235px); }
+
+@media (max-width: 520px) {
+  .ebp-native-flow .ebp-native-items { flex-direction: column; }
+  .ebp-native-flow .ebp-native-item { flex-basis: auto; }
+  .ebp-native-flow .ebp-native-item:not(:last-child)::after { content: '⌄'; top: auto; right: 50%; bottom: -11px; transform: translateX(50%); }
+  .ebp-native-scale .ebp-native-items { grid-template-columns: 1fr; }
+  .ebp-native-scale .ebp-native-item { flex-direction: row; text-align: left; }
+}
 
 .recovery-action-check {
   display: flex;

@@ -9,9 +9,9 @@ const COURSES = [
     description: '觉察→接纳→行动，用25天学会与情绪温柔相处',
     totalDays: 25,
     phases: [
-      { name: '觉察 · 投入当下', range: 'Day 1-7', start: 1, end: 7, cssClass: 'phase-1', gridId: 'phase1Grid' },
-      { name: '接纳 · 认识情绪', range: 'Day 8-12', start: 8, end: 12, cssClass: 'phase-2', gridId: 'phase2Grid' },
-      { name: '行动 · 向价值方向', range: 'Day 13-25', start: 13, end: 25, cssClass: 'phase-3', gridId: 'phase3Grid' }
+      { name: '觉察 · 投入当下', range: 'Day 1-8', start: 1, end: 8, cssClass: 'phase-1', gridId: 'phase1Grid' },
+      { name: '接纳 · 认识情绪', range: 'Day 9-14', start: 9, end: 14, cssClass: 'phase-2', gridId: 'phase2Grid' },
+      { name: '行动 · 向价值方向', range: 'Day 15-25', start: 15, end: 25, cssClass: 'phase-3', gridId: 'phase3Grid' }
     ],
     taskKeys: ['task1', 'task2', 'task3'],
     taskLabels: ['了解今日练习', '书写练习', '正念练习'],
@@ -66,7 +66,7 @@ function getCourseConfig(courseId) {
 }
 
 // 情绪EBP 25天课程数据
-const COURSE_DATA = [
+const EBP_LEGACY_COURSE_DATA = [
   {
     day: 1,
     theme: "投入当下，积累积极资源",
@@ -478,8 +478,100 @@ const COURSE_DATA = [
   }
 ];
 
+// 原始课程以 25 份同日 PDF 为准。旧数据曾把第 8、14 天的阶段总结
+// 并入前一天，导致后续 PDF 整体前移；这里按 PDF 1-25 重新建立日序。
+const EBP_READING_AUDIO = {
+  1: ['记录视觉幸福小事', '约11分钟'], 2: ['记录味觉幸福小事', '约7分钟'],
+  3: ['记录触觉幸福小事', '约7分钟'], 4: ['记录嗅觉幸福小事', '约6分钟'],
+  5: ['记录行走的体验', '约7分钟'], 6: ['收集开心清单', '约8分钟'],
+  7: ['记录成就清单', '约10分钟'], 8: ['小结：投入当下，积累积极资源', '约7分钟'],
+  9: ['用语言和数字，描述你的情绪', '约12分钟'], 10: ['认识情绪的功能', '约10分钟'],
+  11: ['看清情绪产生的过程', '约11分钟'], 12: ['认识情绪如何维持和变化', '约8分钟'],
+  13: ['给想法起个名字', '约12分钟'], 14: ['小结：接纳，让情绪自然来去', '约11分钟'],
+  15: ['识别行为模式', '约10分钟'], 16: ['澄清期待', '约6分钟'],
+  17: ['向价值的方向行动', '约8分钟'], 18: ['制定你的行动计划', '约10分钟'],
+  19: ['把应对情绪压力的技能，融入生活', '约12分钟'],
+  20: ['把向着价值行动的技能，融入生活', '约12分钟'],
+  21: ['培育情绪技能树', '约12分钟'],
+  22: ['从心理学家的视角，理解幸福', '约7分钟'],
+  23: ['从心理学家的视角，理解情绪', '约11分钟'],
+  24: ['从心理学家的视角，理解觉察与接纳', '约9分钟']
+};
+
+const EBP_MINDFULNESS_AUDIO = {
+  1: ['正念初体验：呼吸', '约12分钟'], 2: ['用正念的方式进食', '约12分钟'],
+  3: ['让注意力重回当下', '约14分钟'], 4: ['感受呼吸的气味', '约16分钟'],
+  5: ['在行走中休息大脑', '约13分钟'], 6: ['从想法回到呼吸', '约14分钟'],
+  7: ['允许想法自由来去', '约13分钟'], 8: ['用行走在情绪中着陆', '约14分钟'],
+  9: ['和身体重建连接', '约14分钟'], 10: ['放下头脑的担忧', '约13分钟'],
+  11: ['掌控注意的方向', '约15分钟'], 12: ['了解身体与情绪的关系', '约14分钟'],
+  13: ['不评判地和感受共处', '约14分钟'], 14: ['自我关怀的力量', '约15分钟'],
+  15: ['允许感受自然起伏', '约14分钟'], 16: ['正念地面对情绪', '约15分钟'],
+  17: ['正念地面对想法', '约16分钟'], 18: ['感受瑜伽中的内心体验', '约14分钟'],
+  19: ['和不适感和平相处', '约15分钟'], 20: ['总结：身体扫描练习', '约14分钟'],
+  21: ['总结：正念综合练习', '约20分钟'], 22: ['日常练习：正念呼吸', '约13分钟'],
+  23: ['日常练习：身体扫描', '约12分钟'], 24: ['日常练习：正念行走', '约13分钟'],
+  25: ['日常练习：情绪共处', '约13分钟']
+};
+
+function cloneEBPDay(item) {
+  return JSON.parse(JSON.stringify(item));
+}
+
+function makeMissingEBPDay(day) {
+  if (day === 8) {
+    return {
+      day: 8,
+      theme: '小结：投入当下，积累积极资源',
+      sensory: { icon: '✨', label: '幸福瞬间' },
+      worksheet: {
+        title: '第8天书写练习',
+        prompt: '回顾过去一天，记录三个给你带来幸福感的瞬间，并写下每个瞬间带来的感受或联想。'
+      }
+    };
+  }
+  return {
+    day: 14,
+    theme: '小结：允许情绪自然来去',
+    sensory: null,
+    worksheet: {
+      title: '第14天书写练习',
+      prompt: '回忆一件事，觉察当时的情绪、想法和身体反应，为这些内心体验取一个名字。'
+    }
+  };
+}
+
+const EBP_PDF_TO_LEGACY_INDEX = [0, 1, 2, 3, 4, 5, 6, null, 7, 8, 9, 10, 11, null, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+const EBP_PDF_THEMES = {
+  1: '建立与当下的连接', 2: '用味觉投入当下', 3: '用触觉投入当下', 4: '用气味锚定当下',
+  5: '在行动中投入当下', 6: '找回快乐的能力', 7: '认识了不起的我',
+  8: '小结：投入当下，积累积极资源', 9: '用语言和数字描述情绪', 10: '认识情绪的功能',
+  11: '看清情绪产生的过程', 12: '认识情绪如何维持和变化', 13: '给想法起个名字',
+  14: '小结：允许情绪自然来去', 15: '识别自己的行为模式', 16: '选择满足期待的行为',
+  17: '找到自己重视的价值', 18: '根据价值制定行动目标',
+  19: '把应对情绪压力的技巧融入生活', 20: '把向着价值行动的能力融入生活',
+  21: '带着耐心，培育情绪技能树', 22: '重新理解幸福', 23: '重新理解情绪',
+  24: '认识觉察与接纳', 25: '探索自我，成为自己'
+};
+
+const COURSE_DATA = EBP_PDF_TO_LEGACY_INDEX.map((legacyIndex, index) => {
+  const day = index + 1;
+  const item = legacyIndex == null ? makeMissingEBPDay(day) : cloneEBPDay(EBP_LEGACY_COURSE_DATA[legacyIndex]);
+  const dayCode = String(day).padStart(2, '0');
+  item.day = day;
+  item.theme = EBP_PDF_THEMES[day];
+  item.worksheet = item.worksheet || {};
+  delete item.worksheet.src;
+  item.worksheet.title = '第' + day + '天书写练习';
+  const reading = EBP_READING_AUDIO[day];
+  item.readingAudios = reading ? [{ src: 'assets/reading-audio/day-' + dayCode + '.mp3', title: reading[0], duration: reading[1] }] : [];
+  const mindfulness = EBP_MINDFULNESS_AUDIO[day];
+  item.mindfulnessAudios = mindfulness ? [{ src: 'assets/mindfulness-audio/day-' + dayCode + '.mp3', title: mindfulness[0], duration: mindfulness[1] }] : [];
+  return item;
+});
+
 // 每日书写模板引导问题（显示在 textarea 上方）
-const WORKSHEET_PROMPTS = {
+const EBP_LEGACY_WORKSHEET_PROMPTS = {
   1: ['幸福瞬间 1：描述你用眼睛看到的、感到美好的画面', '我的感受 1：这个画面带给你的情绪体验', '幸福瞬间 2：另一个美好画面', '我的感受 2：它带给你的情绪体验'],
   2: ['幸福瞬间 1：描述你尝到的、感到幸福的味道', '我的感受 1：这个味道带给你的情绪体验', '幸福瞬间 2：另一个美好味道', '我的感受 2：它带给你的情绪体验'],
   3: ['幸福瞬间 1：描述你触摸到的、感到幸福的触感', '我的感受 1：这个触感带给你的情绪体验', '幸福瞬间 2：另一个美好触感', '我的感受 2：它带给你的情绪体验'],
@@ -506,6 +598,14 @@ const WORKSHEET_PROMPTS = {
   24: ['写下你参加这个课程的初心', '对未来，你给自己什么承诺？'],
   25: ['回顾25天旅程，你最想带走的一个情绪锦囊是什么？', '这个锦囊未来如何帮到你？']
 };
+
+const WORKSHEET_PROMPTS = {};
+for (let day = 1; day <= 7; day++) WORKSHEET_PROMPTS[day] = EBP_LEGACY_WORKSHEET_PROMPTS[day];
+for (let oldDay = 8; oldDay <= 12; oldDay++) WORKSHEET_PROMPTS[oldDay + 1] = EBP_LEGACY_WORKSHEET_PROMPTS[oldDay];
+for (let oldDay = 13; oldDay <= 23; oldDay++) WORKSHEET_PROMPTS[oldDay + 2] = EBP_LEGACY_WORKSHEET_PROMPTS[oldDay];
+WORKSHEET_PROMPTS[7] = ['我的成就（记录 5 个，大小都算）', '我是如何做到坚持的：', '还有哪些可以帮助我坚持下去的行动：'];
+WORKSHEET_PROMPTS[8] = ['幸福瞬间 1：', '我的感受 1：', '幸福瞬间 2：', '我的感受 2：', '幸福瞬间 3：', '我的感受 3：'];
+WORKSHEET_PROMPTS[14] = ['我想到的事情：', '当时的情绪：', '当时头脑里的想法：', '当时身体的反应：', '给这些内心体验取一个名字：'];
 
 function getCourseData(courseId, day) {
   // 兼容旧调用：单参数 getCourseData(day)
