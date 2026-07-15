@@ -19,6 +19,24 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="css/style.css">
   <style>
+    .page-loader {
+      position: fixed; top: 0; left: 0; right: 0; height: 3px;
+      background: rgba(74, 139, 111, 0.14); z-index: 10001;
+      opacity: 1; transition: opacity 180ms ease;
+      pointer-events: none;
+    }
+    .page-loader-fill {
+      width: 8%; height: 100%; background: #4a8b6f;
+      border-radius: 0 999px 999px 0;
+      box-shadow: 0 0 8px rgba(74, 139, 111, 0.45);
+      transition: width 420ms ease-out;
+    }
+    .page-loader.done { opacity: 0; }
+    [data-theme="dark"] .page-loader { background: rgba(132, 190, 158, 0.16); }
+    [data-theme="dark"] .page-loader-fill { background: #84be9e; }
+    @media (prefers-reduced-motion: reduce) {
+      .page-loader, .page-loader-fill { transition-duration: 0.01ms; }
+    }
     .lock-screen {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg); z-index: 9999; display: flex;
@@ -48,6 +66,33 @@
   </style>
 </head>
 <body>
+  <div class="page-loader" id="pageLoader" role="progressbar" aria-label="页面加载中" aria-valuemin="0" aria-valuemax="100" aria-valuenow="8">
+    <div class="page-loader-fill" id="pageLoaderFill"></div>
+  </div>
+  <script>
+    (function() {
+      var loader = document.getElementById('pageLoader');
+      var fill = document.getElementById('pageLoaderFill');
+      var progress = 8;
+      var steps = [32, 58, 76, 88, 94];
+      var timer = setInterval(function() {
+        if (!steps.length) return clearInterval(timer);
+        progress = steps.shift();
+        fill.style.width = progress + '%';
+        loader.setAttribute('aria-valuenow', progress);
+      }, 650);
+      window.finishPageLoading = function() {
+        clearInterval(timer);
+        fill.style.width = '100%';
+        loader.setAttribute('aria-valuenow', '100');
+        setTimeout(function() {
+          loader.classList.add('done');
+          setTimeout(function() { loader.remove(); }, 200);
+        }, 120);
+      };
+      document.addEventListener('DOMContentLoaded', window.finishPageLoading, { once: true });
+    })();
+  </script>
   <!-- 密码锁屏 -->
   <div class="lock-screen" id="lockScreen">
     <div class="lock-icon" id="lockIcon"></div>
@@ -94,7 +139,7 @@
       <footer class="app-footer">
         <p>每天一小步，慢慢来</p>
         <p>你已经在路上了</p>
-        <p class="app-version">v2.8.4 <button class="footer-refresh" type="button" aria-label="强制更新应用">强制刷新</button></p>
+        <p class="app-version">v2.8.5 <button class="footer-refresh" type="button" aria-label="强制更新应用">强制刷新</button></p>
       </footer>
     </main>
   </div>
@@ -108,7 +153,7 @@
         <p>每完成一天，就会发现一张独特的成果卡。每一种心态，都是这段练习真实的一部分。</p>
       </div>
       <section id="cardCollection"></section>
-      <footer class="app-footer"><p class="app-version">v2.8.4 <button class="footer-refresh" type="button" aria-label="强制更新应用">强制刷新</button></p></footer>
+      <footer class="app-footer"><p class="app-version">v2.8.5 <button class="footer-refresh" type="button" aria-label="强制更新应用">强制刷新</button></p></footer>
     </main>
   </div>
 
@@ -154,7 +199,7 @@
       <footer class="app-footer">
         <p>每天一小步，慢慢来</p>
         <p>你已经在路上了</p>
-        <p class="app-version">v2.8.4 <button class="footer-refresh" type="button" aria-label="强制更新应用">强制刷新</button></p>
+        <p class="app-version">v2.8.5 <button class="footer-refresh" type="button" aria-label="强制更新应用">强制刷新</button></p>
       </footer>
     </main>
   </div>
