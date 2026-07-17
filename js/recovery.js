@@ -454,6 +454,8 @@ async function renderCardCollection(container) {
     const item = records.find(record => record.course.id === button.dataset.course && record.day === Number(button.dataset.day));
     if (!item) return;
     modalBody.innerHTML = renderUnlockedCard(item);
+    const saveButton = modalBody.querySelector('.achievement-save');
+    saveButton.addEventListener('click', () => saveCompanionCardImage(item, saveButton));
     modal.hidden = false;
   });
   modal.querySelector('.collection-modal-close').addEventListener('click', () => { modal.hidden = true; });
@@ -476,14 +478,233 @@ function renderUnlockedCard(item) {
       <div><small>性格</small><p>${recoveryEscape(item.companion.personality)}</p></div>
       <div><small>喜欢</small><p>${recoveryEscape(item.companion.favorite)}</p></div>
     </div>
-    <div class="achievement-card-story"><small>相遇故事</small><p>${recoveryEscape(item.companion.story)}</p></div>
-    <div class="achievement-card-duo"><small>和田田、缓缓的日常</small><p>${recoveryEscape(item.companion.duo)}</p></div>
-    <div class="achievement-card-relationship"><i>♡</i><div><small>朋友关系</small><p>${recoveryEscape(item.companion.relation)}</p></div></div>
-    <blockquote class="achievement-card-message">${recoveryEscape(item.companion.message)}</blockquote>
+    <details class="achievement-card-lore">
+      <summary><span>故事档案</span><small>相遇 · 日常 · 朋友 · 寄语</small><i>⌄</i></summary>
+      <div class="achievement-card-story"><small>相遇故事</small><p>${recoveryEscape(item.companion.story)}</p></div>
+      <div class="achievement-card-duo"><small>和田田、缓缓的日常</small><p>${recoveryEscape(item.companion.duo)}</p></div>
+      <div class="achievement-card-relationship"><i>♡</i><div><small>朋友关系</small><p>${recoveryEscape(item.companion.relation)}</p></div></div>
+      <blockquote class="achievement-card-message">${recoveryEscape(item.companion.message)}</blockquote>
+    </details>
     <div class="achievement-card-theme">${recoveryEscape(item.theme)}</div>
     <div class="achievement-card-knowledge"><i>✦</i><div><small>今日重点</small><p>${recoveryEscape(item.knowledge || getCardKnowledge(item.course.id, item.day))}</p></div></div>
     ${item.card.takeaway ? '<div class="achievement-card-copy"><i>◇</i><div><small>今天留下了</small><p>' + recoveryEscape(item.card.takeaway) + '</p></div></div>' : ''}
     <div class="achievement-card-moods">${(item.card.moods || []).map(mood => '<span>' + recoveryEscape(mood) + '</span>').join('')}</div>
     <footer>${date} · 田田与缓缓共同收藏</footer>
-  </article>`;
+  </article>
+  <div class="achievement-card-actions"><button type="button" class="achievement-save"><span>⇩</span> 保存完整卡片图片</button><small>图片会包含全部故事内容</small></div>`;
+}
+
+function recoveryCanvasRoundRect(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + width - r, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+  ctx.lineTo(x + width, y + height - r);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+  ctx.lineTo(x + r, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function recoveryCanvasLines(ctx, text, maxWidth) {
+  const source = String(text || '');
+  const lines = [];
+  let line = '';
+  for (const character of source) {
+    const test = line + character;
+    if (line && ctx.measureText(test).width > maxWidth) {
+      lines.push(line);
+      line = character;
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function recoveryCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+  const lines = recoveryCanvasLines(ctx, text, maxWidth);
+  const visible = typeof maxLines === 'number' ? lines.slice(0, maxLines) : lines;
+  visible.forEach((line, index) => {
+    let value = line;
+    if (index === visible.length - 1 && visible.length < lines.length) value = value.replace(/[，。；、]$/, '') + '…';
+    ctx.fillText(value, x, y + index * lineHeight);
+  });
+  return y + visible.length * lineHeight;
+}
+
+function recoveryCanvasSection(ctx, label, text, y, accent, options) {
+  const config = options || {};
+  const height = config.height || 172;
+  recoveryCanvasRoundRect(ctx, 70, y, 940, height, 30);
+  ctx.fillStyle = config.background || '#fffdf5';
+  ctx.fill();
+  ctx.strokeStyle = accent + '55';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.fillStyle = accent;
+  ctx.font = '700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
+  ctx.fillText(label, 105, y + 47);
+  ctx.fillStyle = '#40564c';
+  ctx.font = '29px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
+  recoveryCanvasText(ctx, text, 105, y + 93, 870, 43, config.maxLines || 2);
+  return y + height;
+}
+
+function recoveryLoadImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error('伙伴图片加载失败'));
+    image.src = src;
+  });
+}
+
+async function createCompanionCardCanvas(item) {
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  const artwork = getCardArtwork(item.course.id, item.day, item.companion.name);
+  const creature = await recoveryLoadImage(artwork.src);
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 2200;
+  const ctx = canvas.getContext('2d');
+  const accent = item.course.color || '#779b86';
+
+  const background = ctx.createLinearGradient(0, 0, 1080, 2200);
+  background.addColorStop(0, '#f2f4e8');
+  background.addColorStop(.55, '#fffaf0');
+  background.addColorStop(1, '#eee7d4');
+  ctx.fillStyle = background;
+  ctx.fillRect(0, 0, 1080, 2200);
+  recoveryCanvasRoundRect(ctx, 34, 34, 1012, 2132, 64);
+  ctx.strokeStyle = '#b99a54';
+  ctx.lineWidth = 7;
+  ctx.stroke();
+  recoveryCanvasRoundRect(ctx, 54, 54, 972, 2092, 50);
+  ctx.strokeStyle = '#d7c58d';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.fillStyle = '#80652c';
+  ctx.font = '700 28px Georgia, serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(getCardCode(item.course.id, item.day), 82, 105);
+  ctx.textAlign = 'right';
+  ctx.fillText('TIANTIAN & HUANHUAN', 998, 105);
+
+  ctx.save();
+  ctx.globalAlpha = .2;
+  ctx.fillStyle = accent;
+  ctx.beginPath();
+  ctx.arc(540, 325, 228, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  const scale = Math.min(430 / creature.naturalWidth, 390 / creature.naturalHeight);
+  const artWidth = creature.naturalWidth * scale;
+  const artHeight = creature.naturalHeight * scale;
+  ctx.save();
+  ctx.filter = 'drop-shadow(0 24px 18px rgba(48,60,51,.22))';
+  ctx.drawImage(creature, 540 - artWidth / 2, 335 - artHeight / 2, artWidth, artHeight);
+  ctx.restore();
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#76652f';
+  ctx.font = '700 24px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
+  ctx.fillText(item.course.name + ' · 第 ' + item.day + ' 天 · ' + item.companion.title, 540, 555);
+  recoveryCanvasRoundRect(ctx, 375, 580, 330, 62, 31);
+  ctx.fillStyle = accent;
+  ctx.fill();
+  ctx.fillStyle = '#fff9dc';
+  ctx.font = '700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
+  ctx.fillText(item.companion.skill, 540, 621);
+  ctx.fillStyle = '#314b3c';
+  ctx.font = '600 52px Georgia, "Songti SC", serif';
+  ctx.fillText('✦ ' + item.companion.name + ' ✦', 540, 704);
+  ctx.fillStyle = '#5c7166';
+  ctx.font = '30px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
+  recoveryCanvasText(ctx, item.companion.help, 540, 755, 850, 44, 2);
+
+  const profile = [
+    ['住在', item.companion.home],
+    ['性格', item.companion.personality],
+    ['喜欢', item.companion.favorite]
+  ];
+  profile.forEach((entry, index) => {
+    const x = 70 + index * 320;
+    recoveryCanvasRoundRect(ctx, x, 835, 300, 112, 24);
+    ctx.fillStyle = '#ffffffaa';
+    ctx.fill();
+    ctx.fillStyle = '#8a7b57';
+    ctx.font = '23px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(entry[0], x + 150, 872);
+    ctx.fillStyle = '#40564c';
+    ctx.font = '700 25px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
+    recoveryCanvasText(ctx, entry[1], x + 150, 915, 250, 34, 1);
+  });
+
+  ctx.textAlign = 'left';
+  let sectionY = 978;
+  sectionY = recoveryCanvasSection(ctx, '相遇故事', item.companion.story, sectionY, accent, { height: 188, maxLines: 3 });
+  sectionY += 16;
+  sectionY = recoveryCanvasSection(ctx, '和田田、缓缓的日常', item.companion.duo, sectionY, accent, { height: 188, maxLines: 3 });
+  sectionY += 16;
+  sectionY = recoveryCanvasSection(ctx, '朋友关系', item.companion.relation, sectionY, '#c0857a', { height: 156, maxLines: 2 });
+  sectionY += 16;
+  sectionY = recoveryCanvasSection(ctx, '精灵寄语', item.companion.message, sectionY, '#b58b36', { height: 188, maxLines: 3, background: '#fff8e8' });
+  sectionY += 16;
+  sectionY = recoveryCanvasSection(ctx, '今日重点', item.knowledge || getCardKnowledge(item.course.id, item.day), sectionY, accent, { height: 168, maxLines: 2 });
+  if (item.card.takeaway) {
+    sectionY += 16;
+    recoveryCanvasSection(ctx, '今天留下了', item.card.takeaway, sectionY, '#8b769d', { height: 150, maxLines: 2 });
+  }
+
+  const date = item.card.unlocked_at ? new Date(item.card.unlocked_at).toLocaleDateString('zh-CN') : '';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#7b806f';
+  ctx.font = '25px Georgia, "Songti SC", serif';
+  ctx.fillText(date + ' · 田田与缓缓共同收藏', 540, 2120);
+  return canvas;
+}
+
+async function saveCompanionCardImage(item, button) {
+  const original = button.innerHTML;
+  button.disabled = true;
+  button.textContent = '正在绘制完整卡片…';
+  try {
+    const canvas = await createCompanionCardCanvas(item);
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob(value => value ? resolve(value) : reject(new Error('图片生成失败')), 'image/png');
+    });
+    const filename = '田田与缓缓-' + getCardCode(item.course.id, item.day) + '-' + item.companion.name + '.png';
+    const file = typeof File === 'function' ? new File([blob], filename, { type: 'image/png' }) : null;
+    if (file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: item.companion.name + '的疗愈卡片' });
+      } catch (error) {
+        if (error && error.name === 'AbortError') return;
+        throw error;
+      }
+    } else {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    }
+    showToast('完整卡片图片已经准备好了', 'success');
+  } catch (error) {
+    console.error('保存图鉴卡片失败', error);
+    showToast('卡片图片暂时没有生成成功，请再试一次', 'error');
+  } finally {
+    button.disabled = false;
+    button.innerHTML = original;
+  }
 }
