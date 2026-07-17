@@ -2671,6 +2671,7 @@ details.learning-text:not([open]) summary.learning-text-header {
 .encounter-halo img { max-width: 168px; max-height: 168px; object-fit: contain; filter: hue-rotate(var(--art-hue)); animation: encounterArrive .7s cubic-bezier(.2,.8,.2,1); }
 @keyframes encounterArrive { from { opacity: 0; transform: translateY(12px) scale(.84); } to { opacity: 1; transform: none; } }
 .encounter-revealed > strong { display: inline-block; margin-bottom: 5px; color: var(--primary); font-size: .84rem; }
+.encounter-character-title { display: block; margin: -2px 0 7px; color: var(--text-muted); font-size: .7rem; letter-spacing: .04em; }
 .encounter-collected { margin: 14px auto; color: var(--success); font-size: .8rem; }
 .encounter-note { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px; text-align: left; }
 .encounter-note summary { cursor: pointer; color: var(--text-secondary); font-size: .82rem; }
@@ -2808,6 +2809,13 @@ details.learning-text:not([open]) summary.learning-text-header {
 .achievement-card-skill-name { width: fit-content; margin: 8px auto 10px; padding: 6px 18px; border: 1px solid #d5bc77; border-radius: 999px; background: #829579; color: #fff9dc; box-shadow: inset 0 0 0 2px rgba(255,255,255,.25); font-size: .72rem; letter-spacing: .12em; }
 .achievement-card h3 { margin: 0; color: #314b3c; font-family: Georgia,'Songti SC',serif; font-size: 1.55rem; font-weight: 500; letter-spacing: .06em; text-align: center; }
 .achievement-card-help { margin: 8px 9px 15px; color: #6b786f; font-size: .76rem; line-height: 1.6; text-align: center; }
+.achievement-card-profile { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7px; margin: 0 0 9px; }
+.achievement-card-profile > div { min-width: 0; padding: 9px 7px; border: 1px solid rgba(177,143,70,.25); border-radius: 13px; background: rgba(255,255,255,.48); text-align: center; }
+.achievement-card-profile small,.achievement-card-relationship small { color: #8a7b57; font-size: .6rem; }
+.achievement-card-profile p { margin: 4px 0 0; color: #4d6257; font-size: .68rem; line-height: 1.4; }
+.achievement-card-relationship { position: relative; z-index: 1; display: grid; grid-template-columns: 34px 1fr; gap: 9px; align-items: center; margin-bottom: 10px; padding: 10px 12px; border-radius: 15px; background: color-mix(in srgb,var(--card-color) 11%,rgba(255,255,255,.7)); }
+.achievement-card-relationship i { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #d6a9a0; color: #fff8f0; font-size: 1rem; font-style: normal; }
+.achievement-card-relationship p { margin: 3px 0 0; color: #52665b; font-size: .7rem; line-height: 1.55; }
 .achievement-card-theme { margin: 0 0 9px; color: #7c714f; font-size: .65rem; font-weight: 700; text-align: center; }
 .achievement-card-knowledge, .achievement-card-copy { position: relative; z-index: 1; display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: center; padding: 13px; border-radius: 18px; }
 .achievement-card-knowledge i,.achievement-card-copy i { display: flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 50%; background: #74886b; color: #f6df9d; box-shadow: 0 4px 10px rgba(42,61,50,.18); font-size: 1.2rem; font-style: normal; }
@@ -2827,6 +2835,10 @@ details.learning-text:not([open]) summary.learning-text-header {
 }
 [data-theme="dark"] .achievement-card h3 { color: #edf0dc; }
 [data-theme="dark"] .achievement-card-help { color: #b9c3ba; }
+[data-theme="dark"] .achievement-card-profile > div { border-color: rgba(202,178,112,.22); background: rgba(255,255,255,.055); }
+[data-theme="dark"] .achievement-card-profile small,[data-theme="dark"] .achievement-card-relationship small { color: #b9aa85; }
+[data-theme="dark"] .achievement-card-profile p,[data-theme="dark"] .achievement-card-relationship p { color: #d4ddd5; }
+[data-theme="dark"] .achievement-card-relationship { background: color-mix(in srgb,var(--card-color) 13%,#252d27); }
 [data-theme="dark"] .achievement-card-skill-name { background: #526650; color: #f4e5b5; }
 [data-theme="dark"] .achievement-card-knowledge { border-color: color-mix(in srgb, var(--card-color) 34%, #3a443c); background: color-mix(in srgb, var(--card-color) 13%, #252d27); }
 [data-theme="dark"] .achievement-card-copy { background: rgba(49,59,51,.82); }

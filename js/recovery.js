@@ -7,29 +7,87 @@ const CARD_SYMBOLS = {
   act: ['⛵','🧘','🌾','🚶','🧗','🌬️','🪁','🚪','👣','🌄','⛰️','🛶','🧭','🌊','🔥','🌌','🪵','🌲','🕯️','🌅','🏔️']
 };
 
-// 固定伙伴会在不同练习日再次出现；同一张图始终对应同一个名字。
-const COMPANION_POOL = [
-  { name: '好奇芽', src: 'assets/companions/v2/ebp-01-curiosity-sprout.png' },
-  { name: '慢尝团', src: 'assets/companions/v2/ebp-02-slow-tasting-mochi.png' },
-  { name: '向心鸟', src: 'assets/companions/crane.png' },
-  { name: '初心灯', src: 'assets/companions/lantern.png' },
-  { name: '安心菇', src: 'assets/companions/mushroom.png' },
-  { name: '流云鲸', src: 'assets/companions/cloudray.png' },
-  { name: '听心贝', src: 'assets/companions/shell.png' },
-  { name: '事实卷', src: 'assets/companions/scroll.png' }
-];
+// 每一天都对应独立精灵与独立插画；数组顺序严格对应课程天数。
+const COMPANION_ARTWORK = {
+  ebp: [
+    'ebp-01-curiosity-sprout', 'ebp-02-slow-tasting-mochi', 'ebp-03-tactile-grounding-plush',
+    'ebp-04-scent-finding-cat', 'ebp-05-body-listening-bear', 'ebp-06-joy-gathering-magpie',
+    'ebp-07-glimmer-sprout', 'ebp-08-flowing-cloud-mochi', 'ebp-09-emotion-naming-fox',
+    'ebp-10-space-giving-whale', 'ebp-11-inner-listening-cat', 'ebp-12-letting-go-otter',
+    'ebp-13-direction-bird', 'ebp-14-action-sprout', 'ebp-15-one-step-turtle',
+    'ebp-16-feelings-along-rabbit', 'ebp-17-daily-practice-raccoon', 'ebp-18-gentle-repeat-bird',
+    'ebp-19-heart-tree-spirit', 'ebp-20-flourishing-bear', 'ebp-21-emotion-messenger-pigeon',
+    'ebp-22-awareness-lotus', 'ebp-23-self-knowing-cat', 'ebp-24-original-light-firefly',
+    'ebp-25-coping-kit-raccoon'
+  ],
+  cbt: [
+    'cbt-01-three-way-fox', 'cbt-02-cost-balance-otter', 'cbt-03-intensity-meter-bear',
+    'cbt-04-safe-touch-lamb', 'cbt-05-five-senses-raccoon', 'cbt-06-muscle-melting-bear',
+    'cbt-07-motion-dog', 'cbt-08-cooling-penguin', 'cbt-09-thought-mirror',
+    'cbt-10-fact-boundary-cat', 'cbt-11-evidence-check-cat', 'cbt-12-grayscale-fox',
+    'cbt-13-responsibility-raccoon', 'cbt-14-perspective-owl', 'cbt-15-old-belief-parrot',
+    'cbt-16-passing-thought-cloud', 'cbt-17-positive-evidence-sparrow', 'cbt-18-pause-turtle',
+    'cbt-19-problem-shaping-mouse', 'cbt-20-smallest-step-badger', 'cbt-21-flexible-tool-elephant'
+  ],
+  act: [
+    'act-01-departure-cat', 'act-02-four-part-map-cat', 'act-03-avoidance-rabbit',
+    'act-04-risk-estimating-fox', 'act-05-worry-crow', 'act-06-problem-solving-otter',
+    'act-07-uncertainty-bird', 'act-08-safety-rail-raccoon', 'act-09-approaching-rabbit',
+    'act-10-self-trust-bear', 'act-11-courage-walking-dog', 'act-12-step-ladder-sheep',
+    'act-13-fact-review-sparrow', 'act-14-experiment-fox', 'act-15-heartbeat-whale',
+    'act-16-outward-attention-cat', 'act-17-repeat-upgrade-dragon', 'act-18-good-enough-bear',
+    'act-19-experiment-notes-owl', 'act-20-setback-map-raccoon', 'act-21-long-journey-cat'
+  ]
+};
 
-function getCompanionProfile(courseId, day) {
-  const courseOffset = { ebp: 0, cbt: 2, act: 5 }[courseId] || 0;
-  return COMPANION_POOL[(day - 1 + courseOffset) % COMPANION_POOL.length];
+const COMPANION_NICKNAMES = {
+  ebp: ['芽芽','糯糯','绒桃','香柚','听朵','喜啾','微灯','云泡','名米','容蓝','心铃','松栗','向晴','动芽','步步','伴伴','日狸','再啾','木木','丰糖','信团','莲露','知知','初萤','囊宝'],
+  cbt: ['岔岔','衡豆','刻刻','安绵','五五','松饼','跳跳','冰豆','镜圆','实实','核桃','灰米','分分','鸮鸮','旧啾','云念','光雀','缓缓','拆米','小獾','象宝'],
+  act: ['启米','四叶','躲躲','估估','忧啾','解宝','未未','栏狸','靠靠','信熊','勇豆','阶绵','真啾','验验','心蓝','向外','升升','够够','记鸮','复复','远星']
+};
+
+const COMPANION_FAVORITES = {
+  ebp: ['清晨的露珠','草莓牛奶','晒过太阳的软毯','橘皮和花香','窗边的雨声','亮晶晶纽扣','睡前小灯','看云朵变形','给心情挑颜色','留一张空椅','听朋友慢慢说','放走一片落叶','清晨吹来的风','把种子装进口袋','走短短的小路','雨后一起散步','整理随身小包','重复同一首晚安歌','给新叶浇水','拼一幅暖暖的画','送出手写小信','清水与莲香','照一会儿小镜子','黄昏亮起灯','收集实用小物'],
+  cbt: ['看三岔路口','把东西放平衡','观察颜色刻度','柔软的抱抱','五种味道的小点心','慢慢伸懒腰','绕院子跑一圈','凉凉的毛巾','擦亮圆镜子','收集真实脚印','核对小线索','排列深浅石子','分一块小蛋糕','从不同窗户看风景','关小旧唱机','看念头云飘过','找藏起来的亮点','等沙漏落完','拆开打结的线团','搭第一层台阶','整理工具围裙'],
+  act: ['在港口看小船','画四格小地图','从门后探出头','练习估算远近','把乱线绕成团','搭一座小桥','雾里找星星','解开护栏绳结','向门口靠近一步','自己看指南针','带着雨云散步','爬圆圆的台阶','收集行动后的石子','做安全的小实验','听海浪和心跳','看朋友说话的眼睛','把旧台阶再走一遍','做完不完美的小手工','记下旅途小事','在地图上重画路线','背着灯去看日出']
+};
+
+const COMPANION_TRAITS = ['好奇又认真','慢热但很可靠','柔软又细心','安静却有主见','爱照顾身边的人','有一点冒失但很真诚','喜欢把复杂的事变简单','遇到困难会先歇一歇','擅长发现别人忽略的小事','愿意陪朋友多试一次','温柔又勇敢','喜欢用行动表达关心'];
+
+function getCompanionHome(courseId, day) {
+  const homes = {
+    ebp: day <= 7 ? '微光花园' : day <= 12 ? '云朵邮局' : day <= 19 ? '向前小径' : '心愿街',
+    cbt: day <= 3 ? '三岔观察所' : day <= 8 ? '五感暖屋' : day <= 15 ? '事实侦探社' : '工具工坊',
+    act: day <= 7 ? '启程港' : day <= 14 ? '勇气练习场' : '远行山谷'
+  };
+  return homes[courseId] || '微光花园';
+}
+
+function getCompanionLore(courseId, day) {
+  const names = COMPANION_NICKNAMES[courseId] || COMPANION_NICKNAMES.ebp;
+  const index = Math.max(0, Math.min(names.length - 1, day - 1));
+  const previous = names[(index - 1 + names.length) % names.length];
+  const next = names[(index + 1) % names.length];
+  const courseOrder = ['ebp', 'cbt', 'act'];
+  const crossCourse = courseOrder[(Math.max(0, courseOrder.indexOf(courseId)) + 1) % courseOrder.length];
+  const crossNames = COMPANION_NICKNAMES[crossCourse];
+  const penPal = crossNames[index % crossNames.length];
+  const offset = { ebp: 0, cbt: 4, act: 8 }[courseId] || 0;
+  return {
+    nickname: names[index],
+    home: getCompanionHome(courseId, day),
+    personality: COMPANION_TRAITS[(index + offset) % COMPANION_TRAITS.length],
+    favorite: (COMPANION_FAVORITES[courseId] || COMPANION_FAVORITES.ebp)[index],
+    relation: '和' + previous + '、' + next + '是日常搭档，也会和笔友' + penPal + '交换近况小纸条。'
+  };
 }
 
 function getCardArtwork(courseId, day) {
-  const profile = getCompanionProfile(courseId, day);
-  return { src: profile.src, hue: 0 };
+  const filename = (COMPANION_ARTWORK[courseId] || [])[day - 1] || COMPANION_ARTWORK.ebp[0];
+  return { src: 'assets/companions/v2/' + filename + '.webp', hue: 0 };
 }
 
-// 每日能力文案：伙伴可以再次出现，技能用于提示当天可练习的心理能力，不代表医疗效果。
+// 每日能力文案：精灵与技能都唯一对应当天内容，不代表医疗效果。
 const CARD_COMPANIONS = {
   ebp: [
     ['好奇芽','初见微光','带着好奇看见当下，而不是急着评价。'],
@@ -211,8 +269,8 @@ function getCardKnowledge(courseId, day) {
 
 function getCardCompanion(courseId, day) {
   const item = (CARD_COMPANIONS[courseId] || [])[day - 1] || ['陪伴芽','今日陪伴','陪你记住今天最有帮助的一点。'];
-  const profile = getCompanionProfile(courseId, day);
-  return { name: profile.name, skill: item[1], help: item[2] };
+  const lore = getCompanionLore(courseId, day);
+  return { name: lore.nickname, title: item[0], skill: item[1], help: item[2], ...lore };
 }
 
 function renderDailyReview(container, progress, context, available, onSave, onFinished) {
@@ -271,6 +329,7 @@ function renderDailyReview(container, progress, context, available, onSave, onFi
       <span class="recovery-kicker">今日相遇</span>
       <div class="encounter-halo"><img src="${artwork.src}" alt="${recoveryEscape(companion.name)}" style="--art-hue:${artwork.hue}deg"></div>
       <h2>${recoveryEscape(companion.name)}来陪你了</h2>
+      <span class="encounter-character-title">${recoveryEscape(companion.title)} · 来自${recoveryEscape(companion.home)}</span>
       <strong>${recoveryEscape(companion.skill)}</strong>
       <p>${recoveryEscape(companion.help)}</p>
       <div class="encounter-collected">✓ 已收进我的练习图鉴</div>
@@ -374,10 +433,16 @@ function renderUnlockedCard(item) {
     <div class="achievement-card-shine"></div>
     <div class="achievement-card-top"><span>${getCardCode(item.course.id, item.day)}</span></div>
     <div class="achievement-card-visual"><span class="achievement-card-halo"></span><span class="achievement-stars">✦ · ✧ · ✦</span><img class="achievement-card-creature" src="${artwork.src}" alt="${recoveryEscape(item.companion.name)}" style="--art-hue:${artwork.hue}deg"></div>
-    <div class="achievement-card-course">${recoveryEscape(item.course.name)} · 第 ${item.day} 天</div>
+    <div class="achievement-card-course">${recoveryEscape(item.course.name)} · 第 ${item.day} 天 · ${recoveryEscape(item.companion.title)}</div>
     <div class="achievement-card-skill-name">${recoveryEscape(item.companion.skill)}</div>
     <h3>✦ ${recoveryEscape(item.companion.name)} ✦</h3>
     <p class="achievement-card-help">${recoveryEscape(item.companion.help)}</p>
+    <div class="achievement-card-profile">
+      <div><small>住在</small><p>${recoveryEscape(item.companion.home)}</p></div>
+      <div><small>性格</small><p>${recoveryEscape(item.companion.personality)}</p></div>
+      <div><small>喜欢</small><p>${recoveryEscape(item.companion.favorite)}</p></div>
+    </div>
+    <div class="achievement-card-relationship"><i>♡</i><div><small>朋友关系</small><p>${recoveryEscape(item.companion.relation)}</p></div></div>
     <div class="achievement-card-theme">${recoveryEscape(item.theme)}</div>
     <div class="achievement-card-knowledge"><i>✦</i><div><small>今日重点</small><p>${recoveryEscape(item.knowledge || getCardKnowledge(item.course.id, item.day))}</p></div></div>
     ${item.card.takeaway ? '<div class="achievement-card-copy"><i>◇</i><div><small>今天留下了</small><p>' + recoveryEscape(item.card.takeaway) + '</p></div></div>' : ''}

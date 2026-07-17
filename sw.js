@@ -1,6 +1,6 @@
 // sw.js - Service Worker（离线缓存）
 
-const CACHE_STATIC = 'ebp-static-v90';
+const CACHE_STATIC = 'ebp-static-v91';
 const CACHE_AUDIO = 'ebp-audio-v2';
 const CACHE_PDF = 'ebp-pdf-v2';
 
@@ -38,14 +38,73 @@ const STATIC_FILES = [
   './assets/illustration.png',
   './assets/logo-lotus.png',
   './assets/logo-lotus-small.png',
-  './assets/companions/v2/ebp-01-curiosity-sprout.png',
-  './assets/companions/v2/ebp-02-slow-tasting-mochi.png',
-  './assets/companions/scroll.png',
-  './assets/companions/crane.png',
-  './assets/companions/lantern.png',
-  './assets/companions/mushroom.png',
-  './assets/companions/cloudray.png',
-  './assets/companions/shell.png'
+  './assets/companions/v2/act-01-departure-cat.webp',
+  './assets/companions/v2/act-02-four-part-map-cat.webp',
+  './assets/companions/v2/act-03-avoidance-rabbit.webp',
+  './assets/companions/v2/act-04-risk-estimating-fox.webp',
+  './assets/companions/v2/act-05-worry-crow.webp',
+  './assets/companions/v2/act-06-problem-solving-otter.webp',
+  './assets/companions/v2/act-07-uncertainty-bird.webp',
+  './assets/companions/v2/act-08-safety-rail-raccoon.webp',
+  './assets/companions/v2/act-09-approaching-rabbit.webp',
+  './assets/companions/v2/act-10-self-trust-bear.webp',
+  './assets/companions/v2/act-11-courage-walking-dog.webp',
+  './assets/companions/v2/act-12-step-ladder-sheep.webp',
+  './assets/companions/v2/act-13-fact-review-sparrow.webp',
+  './assets/companions/v2/act-14-experiment-fox.webp',
+  './assets/companions/v2/act-15-heartbeat-whale.webp',
+  './assets/companions/v2/act-16-outward-attention-cat.webp',
+  './assets/companions/v2/act-17-repeat-upgrade-dragon.webp',
+  './assets/companions/v2/act-18-good-enough-bear.webp',
+  './assets/companions/v2/act-19-experiment-notes-owl.webp',
+  './assets/companions/v2/act-20-setback-map-raccoon.webp',
+  './assets/companions/v2/act-21-long-journey-cat.webp',
+  './assets/companions/v2/cbt-01-three-way-fox.webp',
+  './assets/companions/v2/cbt-02-cost-balance-otter.webp',
+  './assets/companions/v2/cbt-03-intensity-meter-bear.webp',
+  './assets/companions/v2/cbt-04-safe-touch-lamb.webp',
+  './assets/companions/v2/cbt-05-five-senses-raccoon.webp',
+  './assets/companions/v2/cbt-06-muscle-melting-bear.webp',
+  './assets/companions/v2/cbt-07-motion-dog.webp',
+  './assets/companions/v2/cbt-08-cooling-penguin.webp',
+  './assets/companions/v2/cbt-09-thought-mirror.webp',
+  './assets/companions/v2/cbt-10-fact-boundary-cat.webp',
+  './assets/companions/v2/cbt-11-evidence-check-cat.webp',
+  './assets/companions/v2/cbt-12-grayscale-fox.webp',
+  './assets/companions/v2/cbt-13-responsibility-raccoon.webp',
+  './assets/companions/v2/cbt-14-perspective-owl.webp',
+  './assets/companions/v2/cbt-15-old-belief-parrot.webp',
+  './assets/companions/v2/cbt-16-passing-thought-cloud.webp',
+  './assets/companions/v2/cbt-17-positive-evidence-sparrow.webp',
+  './assets/companions/v2/cbt-18-pause-turtle.webp',
+  './assets/companions/v2/cbt-19-problem-shaping-mouse.webp',
+  './assets/companions/v2/cbt-20-smallest-step-badger.webp',
+  './assets/companions/v2/cbt-21-flexible-tool-elephant.webp',
+  './assets/companions/v2/ebp-01-curiosity-sprout.webp',
+  './assets/companions/v2/ebp-02-slow-tasting-mochi.webp',
+  './assets/companions/v2/ebp-03-tactile-grounding-plush.webp',
+  './assets/companions/v2/ebp-04-scent-finding-cat.webp',
+  './assets/companions/v2/ebp-05-body-listening-bear.webp',
+  './assets/companions/v2/ebp-06-joy-gathering-magpie.webp',
+  './assets/companions/v2/ebp-07-glimmer-sprout.webp',
+  './assets/companions/v2/ebp-08-flowing-cloud-mochi.webp',
+  './assets/companions/v2/ebp-09-emotion-naming-fox.webp',
+  './assets/companions/v2/ebp-10-space-giving-whale.webp',
+  './assets/companions/v2/ebp-11-inner-listening-cat.webp',
+  './assets/companions/v2/ebp-12-letting-go-otter.webp',
+  './assets/companions/v2/ebp-13-direction-bird.webp',
+  './assets/companions/v2/ebp-14-action-sprout.webp',
+  './assets/companions/v2/ebp-15-one-step-turtle.webp',
+  './assets/companions/v2/ebp-16-feelings-along-rabbit.webp',
+  './assets/companions/v2/ebp-17-daily-practice-raccoon.webp',
+  './assets/companions/v2/ebp-18-gentle-repeat-bird.webp',
+  './assets/companions/v2/ebp-19-heart-tree-spirit.webp',
+  './assets/companions/v2/ebp-20-flourishing-bear.webp',
+  './assets/companions/v2/ebp-21-emotion-messenger-pigeon.webp',
+  './assets/companions/v2/ebp-22-awareness-lotus.webp',
+  './assets/companions/v2/ebp-23-self-knowing-cat.webp',
+  './assets/companions/v2/ebp-24-original-light-firefly.webp',
+  './assets/companions/v2/ebp-25-coping-kit-raccoon.webp'
 ];
 
 // 安装：预缓存静态资源
@@ -107,7 +166,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // 静态资源：Cache-First
-  if (pathname.match(/\.(js|css|png|jpg|svg|ico|json)$/) || pathname === '/' || pathname.endsWith('/') || pathname.endsWith('.html')) {
+  if (pathname.match(/\.(js|css|png|webp|jpg|svg|ico|json)$/) || pathname === '/' || pathname.endsWith('/') || pathname.endsWith('.html')) {
     event.respondWith(cacheFirst(event.request, CACHE_STATIC));
     return;
   }
