@@ -2809,13 +2809,21 @@ details.learning-text:not([open]) summary.learning-text-header {
 .achievement-card-skill-name { width: fit-content; margin: 8px auto 10px; padding: 6px 18px; border: 1px solid #d5bc77; border-radius: 999px; background: #829579; color: #fff9dc; box-shadow: inset 0 0 0 2px rgba(255,255,255,.25); font-size: .72rem; letter-spacing: .12em; }
 .achievement-card h3 { margin: 0; color: #314b3c; font-family: Georgia,'Songti SC',serif; font-size: 1.55rem; font-weight: 500; letter-spacing: .06em; text-align: center; }
 .achievement-card-help { margin: 8px 9px 15px; color: #6b786f; font-size: .76rem; line-height: 1.6; text-align: center; }
+.encounter-story,.encounter-duo { margin: 10px 0; padding: 13px 14px; border: 1px solid color-mix(in srgb,var(--primary) 20%,var(--border)); border-radius: 16px; background: color-mix(in srgb,var(--primary) 7%,var(--bg-card)); text-align: left; }
+.encounter-story span,.encounter-duo span { display: block; margin-bottom: 5px; color: var(--primary); font-size: .68rem; font-weight: 800; letter-spacing: .06em; }
+.encounter-story p,.encounter-duo p { margin: 0; color: var(--text-secondary); font-size: .78rem; line-height: 1.75; }
+.encounter-message { margin: 12px 0; padding: 12px 14px; border: 0; border-left: 3px solid var(--primary); border-radius: 0 14px 14px 0; background: color-mix(in srgb,var(--primary) 10%,var(--bg-card)); color: var(--text); font-size: .78rem; line-height: 1.7; text-align: left; }
 .achievement-card-profile { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7px; margin: 0 0 9px; }
 .achievement-card-profile > div { min-width: 0; padding: 9px 7px; border: 1px solid rgba(177,143,70,.25); border-radius: 13px; background: rgba(255,255,255,.48); text-align: center; }
 .achievement-card-profile small,.achievement-card-relationship small { color: #8a7b57; font-size: .6rem; }
 .achievement-card-profile p { margin: 4px 0 0; color: #4d6257; font-size: .68rem; line-height: 1.4; }
+.achievement-card-story,.achievement-card-duo { position: relative; z-index: 1; margin-bottom: 9px; padding: 12px 13px; border: 1px solid rgba(177,143,70,.25); border-radius: 15px; background: rgba(255,255,255,.48); }
+.achievement-card-story small,.achievement-card-duo small { color: #8a7b57; font-size: .62rem; font-weight: 700; }
+.achievement-card-story p,.achievement-card-duo p { margin: 5px 0 0; color: #4d6257; font-size: .72rem; line-height: 1.65; }
 .achievement-card-relationship { position: relative; z-index: 1; display: grid; grid-template-columns: 34px 1fr; gap: 9px; align-items: center; margin-bottom: 10px; padding: 10px 12px; border-radius: 15px; background: color-mix(in srgb,var(--card-color) 11%,rgba(255,255,255,.7)); }
 .achievement-card-relationship i { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #d6a9a0; color: #fff8f0; font-size: 1rem; font-style: normal; }
 .achievement-card-relationship p { margin: 3px 0 0; color: #52665b; font-size: .7rem; line-height: 1.55; }
+.achievement-card-message { position: relative; z-index: 1; margin: 0 0 10px; padding: 12px 14px; border: 0; border-left: 3px solid #c49c49; border-radius: 0 14px 14px 0; background: rgba(255,255,255,.5); color: #52665b; font-family: Georgia,'Songti SC',serif; font-size: .74rem; line-height: 1.7; }
 .achievement-card-theme { margin: 0 0 9px; color: #7c714f; font-size: .65rem; font-weight: 700; text-align: center; }
 .achievement-card-knowledge, .achievement-card-copy { position: relative; z-index: 1; display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: center; padding: 13px; border-radius: 18px; }
 .achievement-card-knowledge i,.achievement-card-copy i { display: flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 50%; background: #74886b; color: #f6df9d; box-shadow: 0 4px 10px rgba(42,61,50,.18); font-size: 1.2rem; font-style: normal; }
@@ -2836,6 +2844,9 @@ details.learning-text:not([open]) summary.learning-text-header {
 [data-theme="dark"] .achievement-card h3 { color: #edf0dc; }
 [data-theme="dark"] .achievement-card-help { color: #b9c3ba; }
 [data-theme="dark"] .achievement-card-profile > div { border-color: rgba(202,178,112,.22); background: rgba(255,255,255,.055); }
+[data-theme="dark"] .achievement-card-story,[data-theme="dark"] .achievement-card-duo,[data-theme="dark"] .achievement-card-message { border-color: rgba(202,178,112,.22); background: rgba(255,255,255,.055); }
+[data-theme="dark"] .achievement-card-story small,[data-theme="dark"] .achievement-card-duo small { color: #b9aa85; }
+[data-theme="dark"] .achievement-card-story p,[data-theme="dark"] .achievement-card-duo p,[data-theme="dark"] .achievement-card-message { color: #d4ddd5; }
 [data-theme="dark"] .achievement-card-profile small,[data-theme="dark"] .achievement-card-relationship small { color: #b9aa85; }
 [data-theme="dark"] .achievement-card-profile p,[data-theme="dark"] .achievement-card-relationship p { color: #d4ddd5; }
 [data-theme="dark"] .achievement-card-relationship { background: color-mix(in srgb,var(--card-color) 13%,#252d27); }

@@ -42,8 +42,27 @@ const COMPANION_ARTWORK = {
 
 const COMPANION_NICKNAMES = {
   ebp: ['芽芽','糯糯','绒桃','香柚','听朵','喜啾','微灯','云泡','名米','容蓝','心铃','松栗','向晴','动芽','步步','伴伴','日狸','再啾','木木','丰糖','信团','莲露','知知','初萤','囊宝'],
-  cbt: ['岔岔','衡豆','刻刻','安绵','五五','松饼','跳跳','冰豆','镜圆','实实','核桃','灰米','分分','鸮鸮','旧啾','云念','光雀','缓缓','拆米','小獾','象宝'],
+  cbt: ['岔岔','衡豆','刻刻','安绵','五五','松饼','跳跳','冰豆','镜圆','实实','核桃','灰米','分分','鸮鸮','旧啾','云念','光雀','停停','拆米','小獾','象宝'],
   act: ['启米','四叶','躲躲','估估','忧啾','解宝','未未','栏狸','靠靠','信熊','勇豆','阶绵','真啾','验验','心蓝','向外','升升','够够','记鸮','复复','远星']
+};
+
+const STORY_LEADS = { hero: '田田', heroine: '缓缓' };
+const DUO_MOMENTS = {
+  ebp: [
+    '田田负责把细小的变化记下来，缓缓负责提醒两个人慢一点感受；它会陪他们把普通日子过成可以珍藏的小故事。',
+    '田田会在忙乱时找回此刻，缓缓会在疲惫时留出温柔空间；它愿意做两个人身边那盏不催促的小灯。',
+    '田田带着好奇发现生活，缓缓把感受轻轻说出来；它会帮两个人把每一次觉察都收进共同回忆。'
+  ],
+  cbt: [
+    '田田负责收集事实线索，缓缓负责补上一种更温柔的解释；它会陪两个人一起把担心看得更清楚。',
+    '田田提醒两个人先暂停，缓缓陪着分清想法与事实；它是他们共同工具箱里认真又柔软的小助手。',
+    '田田愿意试着换个角度，缓缓会记得肯定已经做到的部分；它陪两个人把难题拆成可以商量的小步骤。'
+  ],
+  act: [
+    '田田负责迈出可以做到的一小步，缓缓负责守住舒服的节奏；它会陪两个人带着不确定继续靠近生活。',
+    '田田在前面探一探路，缓缓在身边确认感受；它不催促谁勇敢，只为两个人记住每一次真实尝试。',
+    '田田把方向装进口袋，缓缓把耐心放进行囊；它会和两个人一起走，把“做过一次”慢慢变成新的底气。'
+  ]
 };
 
 const COMPANION_FAVORITES = {
@@ -73,12 +92,17 @@ function getCompanionLore(courseId, day) {
   const crossNames = COMPANION_NICKNAMES[crossCourse];
   const penPal = crossNames[index % crossNames.length];
   const offset = { ebp: 0, cbt: 4, act: 8 }[courseId] || 0;
+  const favorite = (COMPANION_FAVORITES[courseId] || COMPANION_FAVORITES.ebp)[index];
+  const home = getCompanionHome(courseId, day);
+  const duoMoments = DUO_MOMENTS[courseId] || DUO_MOMENTS.ebp;
   return {
     nickname: names[index],
-    home: getCompanionHome(courseId, day),
+    home,
     personality: COMPANION_TRAITS[(index + offset) % COMPANION_TRAITS.length],
-    favorite: (COMPANION_FAVORITES[courseId] || COMPANION_FAVORITES.ebp)[index],
-    relation: '和' + previous + '、' + next + '是日常搭档，也会和笔友' + penPal + '交换近况小纸条。'
+    favorite,
+    relation: '和' + previous + '、' + next + '是日常搭档，也会和笔友' + penPal + '交换近况小纸条。',
+    story: '在' + home + '，' + names[index] + '正忙着' + favorite + '。它听说' + STORY_LEADS.hero + '和' + STORY_LEADS.heroine + '一起完成了第' + day + '天练习，便带着自己的小本领赶来，成为两个人今天遇见的新伙伴。',
+    duo: duoMoments[index % duoMoments.length]
   };
 }
 
@@ -270,7 +294,14 @@ function getCardKnowledge(courseId, day) {
 function getCardCompanion(courseId, day) {
   const item = (CARD_COMPANIONS[courseId] || [])[day - 1] || ['陪伴芽','今日陪伴','陪你记住今天最有帮助的一点。'];
   const lore = getCompanionLore(courseId, day);
-  return { name: lore.nickname, title: item[0], skill: item[1], help: item[2], ...lore };
+  return {
+    name: lore.nickname,
+    title: item[0],
+    skill: item[1],
+    help: item[2],
+    message: '“' + STORY_LEADS.hero + '、' + STORY_LEADS.heroine + '，' + item[2] + ' 今天不必做到完美，愿意一起练习就已经很珍贵了。”',
+    ...lore
+  };
 }
 
 function renderDailyReview(container, progress, context, available, onSave, onFinished) {
@@ -332,7 +363,10 @@ function renderDailyReview(container, progress, context, available, onSave, onFi
       <span class="encounter-character-title">${recoveryEscape(companion.title)} · 来自${recoveryEscape(companion.home)}</span>
       <strong>${recoveryEscape(companion.skill)}</strong>
       <p>${recoveryEscape(companion.help)}</p>
-      <div class="encounter-collected">✓ 已收进我的练习图鉴</div>
+      <div class="encounter-story"><span>相遇故事</span><p>${recoveryEscape(companion.story)}</p></div>
+      <div class="encounter-duo"><span>和田田、缓缓的日常</span><p>${recoveryEscape(companion.duo)}</p></div>
+      <blockquote class="encounter-message">${recoveryEscape(companion.message)}</blockquote>
+      <div class="encounter-collected">✓ 已收进田田与缓缓的练习图鉴</div>
       <details class="encounter-note"${savedCard.takeaway ? ' open' : ''}>
         <summary>留下一句今天想记住的话 <span>可选</span></summary>
         <textarea rows="3" maxlength="160" placeholder="一句理解、一点感受，或一句想记住的话">${recoveryEscape(savedCard.takeaway || '')}</textarea>
@@ -376,7 +410,7 @@ async function renderCardCollection(container) {
   container.innerHTML = `
     <div class="collection-summary">
       <div class="collection-emblem" style="--collection-progress:${completion * 3.6}deg"><div><strong>${completion}<small>%</small></strong><span>图鉴进度</span></div></div>
-      <div class="collection-summary-copy"><span class="collection-eyebrow">MY HEALING DEX</span><h3>我的疗愈图鉴</h3><p>每一次完成，都在发现一个更有力量的自己。</p></div>
+      <div class="collection-summary-copy"><span class="collection-eyebrow">TIANTIAN & HUANHUAN'S HEALING DEX</span><h3>田田与缓缓的疗愈图鉴</h3><p>两个人一起练习，也一起收藏生活里慢慢长出的力量。</p></div>
       <div class="collection-counts">${COURSES.map(course => {
         const count = unlocked.filter(item => item.course.id === course.id).length;
         return '<div class="collection-course-count" style="--course-color:' + course.color + '"><i></i><span>' + recoveryEscape(course.name) + '</span><b>' + count + '<small>/' + course.totalDays + '</small></b></div>';
@@ -442,11 +476,14 @@ function renderUnlockedCard(item) {
       <div><small>性格</small><p>${recoveryEscape(item.companion.personality)}</p></div>
       <div><small>喜欢</small><p>${recoveryEscape(item.companion.favorite)}</p></div>
     </div>
+    <div class="achievement-card-story"><small>相遇故事</small><p>${recoveryEscape(item.companion.story)}</p></div>
+    <div class="achievement-card-duo"><small>和田田、缓缓的日常</small><p>${recoveryEscape(item.companion.duo)}</p></div>
     <div class="achievement-card-relationship"><i>♡</i><div><small>朋友关系</small><p>${recoveryEscape(item.companion.relation)}</p></div></div>
+    <blockquote class="achievement-card-message">${recoveryEscape(item.companion.message)}</blockquote>
     <div class="achievement-card-theme">${recoveryEscape(item.theme)}</div>
     <div class="achievement-card-knowledge"><i>✦</i><div><small>今日重点</small><p>${recoveryEscape(item.knowledge || getCardKnowledge(item.course.id, item.day))}</p></div></div>
     ${item.card.takeaway ? '<div class="achievement-card-copy"><i>◇</i><div><small>今天留下了</small><p>' + recoveryEscape(item.card.takeaway) + '</p></div></div>' : ''}
     <div class="achievement-card-moods">${(item.card.moods || []).map(mood => '<span>' + recoveryEscape(mood) + '</span>').join('')}</div>
-    <footer>${date} · 完成练习后发现</footer>
+    <footer>${date} · 田田与缓缓共同收藏</footer>
   </article>`;
 }
