@@ -49,19 +49,19 @@ const COMPANION_NICKNAMES = {
 const STORY_LEADS = { hero: '田田', heroine: '缓缓' };
 const DUO_MOMENTS = {
   ebp: [
-    '田田负责把细小的变化记下来，缓缓负责提醒两个人慢一点感受；它会陪他们把普通日子过成可以珍藏的小故事。',
-    '田田会在忙乱时找回此刻，缓缓会在疲惫时留出温柔空间；它愿意做两个人身边那盏不催促的小灯。',
-    '田田带着好奇发现生活，缓缓把感受轻轻说出来；它会帮两个人把每一次觉察都收进共同回忆。'
+    '田田把细小的变化记下来，缓缓在生活里提醒他慢一点感受；它会陪田田把普通日子过成可以珍藏的小故事。',
+    '田田在忙乱时练习找回此刻，缓缓给他留出温柔空间；它愿意做两个人身边那盏不催促的小灯。',
+    '田田带着好奇重新发现生活，缓缓陪他分享眼前的感受；它会把每一次觉察都收进他们的生活回忆。'
   ],
   cbt: [
-    '田田负责收集事实线索，缓缓负责补上一种更温柔的解释；它会陪两个人一起把担心看得更清楚。',
-    '田田提醒两个人先暂停，缓缓陪着分清想法与事实；它是他们共同工具箱里认真又柔软的小助手。',
-    '田田愿意试着换个角度，缓缓会记得肯定已经做到的部分；它陪两个人把难题拆成可以商量的小步骤。'
+    '田田练习收集事实线索，缓缓在身边补上一种更温柔的解释；它会陪田田把担心看得更清楚。',
+    '田田练习先暂停、分清想法与事实，缓缓陪他聊聊真实发生了什么；它是认真又柔软的小助手。',
+    '田田试着换个角度，缓缓会记得肯定他已经做到的部分；它陪田田把难题拆成可以完成的小步骤。'
   ],
   act: [
-    '田田负责迈出可以做到的一小步，缓缓负责守住舒服的节奏；它会陪两个人带着不确定继续靠近生活。',
-    '田田在前面探一探路，缓缓在身边确认感受；它不催促谁勇敢，只为两个人记住每一次真实尝试。',
-    '田田把方向装进口袋，缓缓把耐心放进行囊；它会和两个人一起走，把“做过一次”慢慢变成新的底气。'
+    '田田迈出可以做到的一小步，缓缓在身边帮他守住舒服的节奏；它会陪田田带着不确定继续靠近生活。',
+    '田田在前面探一探路，缓缓在身边听他说感受；它不催促田田勇敢，只替他记住每一次真实尝试。',
+    '田田把方向装进口袋，缓缓把陪伴放进行囊；它会陪田田继续走，把“做过一次”慢慢变成新的底气。'
   ]
 };
 
@@ -101,7 +101,7 @@ function getCompanionLore(courseId, day) {
     personality: COMPANION_TRAITS[(index + offset) % COMPANION_TRAITS.length],
     favorite,
     relation: '和' + previous + '、' + next + '是日常搭档，也会和笔友' + penPal + '交换近况小纸条。',
-    story: '在' + home + '，' + names[index] + '正忙着' + favorite + '。它听说' + STORY_LEADS.hero + '和' + STORY_LEADS.heroine + '一起完成了第' + day + '天练习，便带着自己的小本领赶来，成为两个人今天遇见的新伙伴。',
+    story: '在' + home + '，' + names[index] + '正忙着' + favorite + '。它听说' + STORY_LEADS.hero + '完成了第' + day + '天练习，也知道' + STORY_LEADS.heroine + '一直在生活里陪着他，便带着自己的小本领赶来，成为他们今天遇见的新伙伴。',
     duo: duoMoments[index % duoMoments.length]
   };
 }
@@ -299,7 +299,7 @@ function getCardCompanion(courseId, day) {
     title: item[0],
     skill: item[1],
     help: item[2],
-    message: '“' + STORY_LEADS.hero + '、' + STORY_LEADS.heroine + '，' + item[2] + ' 今天不必做到完美，愿意一起练习就已经很珍贵了。”',
+    message: '“' + STORY_LEADS.hero + '，' + item[2] + ' 今天不必做到完美；' + STORY_LEADS.heroine + '和我都会陪着你，愿意继续练习就已经很珍贵了。”',
     ...lore
   };
 }
@@ -364,9 +364,9 @@ function renderDailyReview(container, progress, context, available, onSave, onFi
       <strong>${recoveryEscape(companion.skill)}</strong>
       <p>${recoveryEscape(companion.help)}</p>
       <div class="encounter-story"><span>相遇故事</span><p>${recoveryEscape(companion.story)}</p></div>
-      <div class="encounter-duo"><span>和田田、缓缓的日常</span><p>${recoveryEscape(companion.duo)}</p></div>
+      <div class="encounter-duo"><span>田田练习时，缓缓陪伴的日常</span><p>${recoveryEscape(companion.duo)}</p></div>
       <blockquote class="encounter-message">${recoveryEscape(companion.message)}</blockquote>
-      <div class="encounter-collected">✓ 已收进田田与缓缓的练习图鉴</div>
+      <div class="encounter-collected">✓ 已收进田田的练习图鉴</div>
       <details class="encounter-note"${savedCard.takeaway ? ' open' : ''}>
         <summary>留下一句今天想记住的话 <span>可选</span></summary>
         <textarea rows="3" maxlength="160" placeholder="一句理解、一点感受，或一句想记住的话">${recoveryEscape(savedCard.takeaway || '')}</textarea>
@@ -410,7 +410,7 @@ async function renderCardCollection(container) {
   container.innerHTML = `
     <div class="collection-summary">
       <div class="collection-emblem" style="--collection-progress:${completion * 3.6}deg"><div><strong>${completion}<small>%</small></strong><span>图鉴进度</span></div></div>
-      <div class="collection-summary-copy"><span class="collection-eyebrow">TIANTIAN & HUANHUAN'S HEALING DEX</span><h3>田田与缓缓的疗愈图鉴</h3><p>两个人一起练习，也一起收藏生活里慢慢长出的力量。</p></div>
+      <div class="collection-summary-copy"><span class="collection-eyebrow">TIANTIAN'S PRACTICE DEX</span><h3>田田的练习图鉴</h3><p>记录每一次认真练习，也收藏生活里慢慢长出的力量。</p></div>
       <div class="collection-counts">${COURSES.map(course => {
         const count = unlocked.filter(item => item.course.id === course.id).length;
         return '<div class="collection-course-count" style="--course-color:' + course.color + '"><i></i><span>' + recoveryEscape(course.name) + '</span><b>' + count + '<small>/' + course.totalDays + '</small></b></div>';
@@ -485,11 +485,11 @@ function renderUnlockedCard(item) {
     <div class="achievement-card-lore">
       <div class="achievement-card-lore-title"><span>✦ 伙伴故事 ✦</span><small>相遇 · 日常 · 朋友 · 寄语</small></div>
       <div class="achievement-card-story"><small>相遇故事</small><p>${recoveryEscape(item.companion.story)}</p></div>
-      <div class="achievement-card-duo"><small>和田田、缓缓的日常</small><p>${recoveryEscape(item.companion.duo)}</p></div>
+      <div class="achievement-card-duo"><small>田田练习时，缓缓陪伴的日常</small><p>${recoveryEscape(item.companion.duo)}</p></div>
       <div class="achievement-card-relationship"><i>♡</i><div><small>朋友关系</small><p>${recoveryEscape(item.companion.relation)}</p></div></div>
       <blockquote class="achievement-card-message">${recoveryEscape(item.companion.message)}</blockquote>
     </div>
-    <footer>${date} · 田田与缓缓共同收藏</footer>
+    <footer>${date} · 田田的练习收藏</footer>
   </article>
   <div class="achievement-card-actions"><button type="button" class="achievement-save"><span>⇩</span> 保存完整卡片图片</button><small>图片会包含全部故事内容</small></div>`;
 }
@@ -594,7 +594,7 @@ async function createCompanionCardCanvas(item) {
   ctx.textAlign = 'left';
   ctx.fillText(getCardCode(item.course.id, item.day), 82, 105);
   ctx.textAlign = 'right';
-  ctx.fillText('TIANTIAN & HUANHUAN', 998, 105);
+  ctx.fillText("TIANTIAN'S PRACTICE DEX", 998, 105);
 
   ctx.save();
   ctx.globalAlpha = .2;
@@ -651,7 +651,7 @@ async function createCompanionCardCanvas(item) {
   let sectionY = 978;
   sectionY = recoveryCanvasSection(ctx, '相遇故事', item.companion.story, sectionY, accent, { height: 188, maxLines: 3 });
   sectionY += 16;
-  sectionY = recoveryCanvasSection(ctx, '和田田、缓缓的日常', item.companion.duo, sectionY, accent, { height: 188, maxLines: 3 });
+  sectionY = recoveryCanvasSection(ctx, '田田练习时，缓缓陪伴的日常', item.companion.duo, sectionY, accent, { height: 188, maxLines: 3 });
   sectionY += 16;
   sectionY = recoveryCanvasSection(ctx, '朋友关系', item.companion.relation, sectionY, '#c0857a', { height: 156, maxLines: 2 });
   sectionY += 16;
@@ -667,7 +667,7 @@ async function createCompanionCardCanvas(item) {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#7b806f';
   ctx.font = '25px Georgia, "Songti SC", serif';
-  ctx.fillText(date + ' · 田田与缓缓共同收藏', 540, 2120);
+  ctx.fillText(date + ' · 田田的练习收藏', 540, 2120);
   return canvas;
 }
 
@@ -680,7 +680,7 @@ async function saveCompanionCardImage(item, button) {
     const blob = await new Promise((resolve, reject) => {
       canvas.toBlob(value => value ? resolve(value) : reject(new Error('图片生成失败')), 'image/png');
     });
-    const filename = '田田与缓缓-' + getCardCode(item.course.id, item.day) + '-' + item.companion.name + '.png';
+    const filename = '田田的练习图鉴-' + getCardCode(item.course.id, item.day) + '-' + item.companion.name + '.png';
     const file = typeof File === 'function' ? new File([blob], filename, { type: 'image/png' }) : null;
     if (file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
