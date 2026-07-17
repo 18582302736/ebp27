@@ -366,7 +366,7 @@ function renderDailyReview(container, progress, context, available, onSave, onFi
       <div class="encounter-story"><span>相遇故事</span><p>${recoveryEscape(companion.story)}</p></div>
       <div class="encounter-duo"><span>田田练习时，缓缓陪伴的日常</span><p>${recoveryEscape(companion.duo)}</p></div>
       <blockquote class="encounter-message">${recoveryEscape(companion.message)}</blockquote>
-      <div class="encounter-collected">✓ 已收进田田的练习图鉴</div>
+      <div class="encounter-collected">✓ 已收进我的图鉴</div>
       <details class="encounter-note"${savedCard.takeaway ? ' open' : ''}>
         <summary>留下一句今天想记住的话 <span>可选</span></summary>
         <textarea rows="3" maxlength="160" placeholder="一句理解、一点感受，或一句想记住的话">${recoveryEscape(savedCard.takeaway || '')}</textarea>
@@ -410,7 +410,7 @@ async function renderCardCollection(container) {
   container.innerHTML = `
     <div class="collection-summary">
       <div class="collection-emblem" style="--collection-progress:${completion * 3.6}deg"><div><strong>${completion}<small>%</small></strong><span>图鉴进度</span></div></div>
-      <div class="collection-summary-copy"><span class="collection-eyebrow">TIANTIAN'S PRACTICE DEX</span><h3>田田的练习图鉴</h3><p>记录每一次认真练习，也收藏生活里慢慢长出的力量。</p></div>
+      <div class="collection-summary-copy"><span class="collection-eyebrow">MY COLLECTION</span><h3>我的图鉴</h3><p>记录每一次认真练习，也收藏生活里慢慢长出的力量。</p></div>
       <div class="collection-counts">${COURSES.map(course => {
         const count = unlocked.filter(item => item.course.id === course.id).length;
         return '<div class="collection-course-count" style="--course-color:' + course.color + '"><i></i><span>' + recoveryEscape(course.name) + '</span><b>' + count + '<small>/' + course.totalDays + '</small></b></div>';
@@ -489,7 +489,7 @@ function renderUnlockedCard(item) {
       <div class="achievement-card-relationship"><i>♡</i><div><small>朋友关系</small><p>${recoveryEscape(item.companion.relation)}</p></div></div>
       <blockquote class="achievement-card-message">${recoveryEscape(item.companion.message)}</blockquote>
     </div>
-    <footer>${date} · 田田的练习收藏</footer>
+    <footer>${date} · 我的练习收藏</footer>
   </article>
   <div class="achievement-card-actions"><button type="button" class="achievement-save"><span>⇩</span> 保存完整卡片图片</button><small>图片会包含全部故事内容</small></div>`;
 }
@@ -594,7 +594,7 @@ async function createCompanionCardCanvas(item) {
   ctx.textAlign = 'left';
   ctx.fillText(getCardCode(item.course.id, item.day), 82, 105);
   ctx.textAlign = 'right';
-  ctx.fillText("TIANTIAN'S PRACTICE DEX", 998, 105);
+  ctx.fillText('MY COLLECTION', 998, 105);
 
   ctx.save();
   ctx.globalAlpha = .2;
@@ -667,7 +667,7 @@ async function createCompanionCardCanvas(item) {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#7b806f';
   ctx.font = '25px Georgia, "Songti SC", serif';
-  ctx.fillText(date + ' · 田田的练习收藏', 540, 2120);
+  ctx.fillText(date + ' · 我的练习收藏', 540, 2120);
   return canvas;
 }
 
@@ -680,7 +680,7 @@ async function saveCompanionCardImage(item, button) {
     const blob = await new Promise((resolve, reject) => {
       canvas.toBlob(value => value ? resolve(value) : reject(new Error('图片生成失败')), 'image/png');
     });
-    const filename = '田田的练习图鉴-' + getCardCode(item.course.id, item.day) + '-' + item.companion.name + '.png';
+    const filename = '我的图鉴-' + getCardCode(item.course.id, item.day) + '-' + item.companion.name + '.png';
     const file = typeof File === 'function' ? new File([blob], filename, { type: 'image/png' }) : null;
     if (file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
