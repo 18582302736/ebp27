@@ -467,7 +467,7 @@ function renderUnlockedCard(item) {
   const artwork = getCardArtwork(item.course.id, item.day, item.companion.name);
   return `<article class="achievement-card" style="--card-color:${item.course.color}">
     <div class="achievement-card-shine"></div>
-    <div class="achievement-card-top"><span>${getCardCode(item.course.id, item.day)}</span></div>
+    <div class="achievement-card-top"><span>${getCardCode(item.course.id, item.day)}</span><span>✦ ${recoveryEscape(item.companion.skill)}</span></div>
     <div class="achievement-card-visual"><span class="achievement-card-halo"></span><span class="achievement-stars">✦ · ✧ · ✦</span><img class="achievement-card-creature" src="${artwork.src}" alt="${recoveryEscape(item.companion.name)}" style="--art-hue:${artwork.hue}deg"></div>
     <div class="achievement-card-course">${recoveryEscape(item.course.name)} · 第 ${item.day} 天 · ${recoveryEscape(item.companion.title)}</div>
     <div class="achievement-card-skill-name">${recoveryEscape(item.companion.skill)}</div>
@@ -478,17 +478,17 @@ function renderUnlockedCard(item) {
       <div><small>性格</small><p>${recoveryEscape(item.companion.personality)}</p></div>
       <div><small>喜欢</small><p>${recoveryEscape(item.companion.favorite)}</p></div>
     </div>
-    <details class="achievement-card-lore">
-      <summary><span>故事档案</span><small>相遇 · 日常 · 朋友 · 寄语</small><i>⌄</i></summary>
-      <div class="achievement-card-story"><small>相遇故事</small><p>${recoveryEscape(item.companion.story)}</p></div>
-      <div class="achievement-card-duo"><small>和田田、缓缓的日常</small><p>${recoveryEscape(item.companion.duo)}</p></div>
-      <div class="achievement-card-relationship"><i>♡</i><div><small>朋友关系</small><p>${recoveryEscape(item.companion.relation)}</p></div></div>
-      <blockquote class="achievement-card-message">${recoveryEscape(item.companion.message)}</blockquote>
-    </details>
     <div class="achievement-card-theme">${recoveryEscape(item.theme)}</div>
     <div class="achievement-card-knowledge"><i>✦</i><div><small>今日重点</small><p>${recoveryEscape(item.knowledge || getCardKnowledge(item.course.id, item.day))}</p></div></div>
     ${item.card.takeaway ? '<div class="achievement-card-copy"><i>◇</i><div><small>今天留下了</small><p>' + recoveryEscape(item.card.takeaway) + '</p></div></div>' : ''}
     <div class="achievement-card-moods">${(item.card.moods || []).map(mood => '<span>' + recoveryEscape(mood) + '</span>').join('')}</div>
+    <div class="achievement-card-lore">
+      <div class="achievement-card-lore-title"><span>✦ 伙伴故事 ✦</span><small>相遇 · 日常 · 朋友 · 寄语</small></div>
+      <div class="achievement-card-story"><small>相遇故事</small><p>${recoveryEscape(item.companion.story)}</p></div>
+      <div class="achievement-card-duo"><small>和田田、缓缓的日常</small><p>${recoveryEscape(item.companion.duo)}</p></div>
+      <div class="achievement-card-relationship"><i>♡</i><div><small>朋友关系</small><p>${recoveryEscape(item.companion.relation)}</p></div></div>
+      <blockquote class="achievement-card-message">${recoveryEscape(item.companion.message)}</blockquote>
+    </div>
     <footer>${date} · 田田与缓缓共同收藏</footer>
   </article>
   <div class="achievement-card-actions"><button type="button" class="achievement-save"><span>⇩</span> 保存完整卡片图片</button><small>图片会包含全部故事内容</small></div>`;

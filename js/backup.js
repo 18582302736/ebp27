@@ -1,7 +1,7 @@
 // backup.js - iCloud Drive 文件备份与恢复
 const BACKUP_MAGIC = 'AnxietyHealBackup';
 const BACKUP_VERSION = 1;
-const BACKUP_APP_VERSION = '2.11.0';
+const BACKUP_APP_VERSION = '2.11.1';
 const BACKUP_DIRTY_KEY = 'ebp_backup_dirty';
 const LAST_BACKUP_KEY = 'ebp_last_backup_at';
 const LAST_BACKUP_MANIFEST_KEY = 'ebp_last_backup_manifest';
