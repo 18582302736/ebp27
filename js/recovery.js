@@ -7,7 +7,7 @@ const CARD_SYMBOLS = {
   act: ['⛵','🧘','🌾','🚶','🧗','🌬️','🪁','🚪','👣','🌄','⛰️','🛶','🧭','🌊','🔥','🌌','🪵','🌲','🕯️','🌅','🏔️']
 };
 
-// 每一天都对应独立精灵与独立插画；数组顺序严格对应课程天数。
+// 每一天都对应一张独立配图；数组顺序严格对应课程天数。
 const COMPANION_ARTWORK = {
   ebp: [
     'ebp-01-curiosity-sprout', 'ebp-02-slow-tasting-mochi', 'ebp-03-tactile-grounding-plush',
@@ -46,99 +46,39 @@ const COMPANION_NICKNAMES = {
   act: ['启米','四叶','躲躲','估估','忧啾','解宝','未未','栏狸','靠靠','信熊','勇豆','阶绵','真啾','验验','心蓝','向外','升升','够够','记鸮','复复','远星']
 };
 
-const STORY_LEADS = { hero: '田田', heroine: '缓缓' };
-const DUO_MOMENTS = {
-  ebp: [
-    '田田把细小的变化记下来，缓缓在生活里提醒他慢一点感受；它会陪田田把普通日子过成可以珍藏的小故事。',
-    '田田在忙乱时练习找回此刻，缓缓给他留出温柔空间；它愿意做两个人身边那盏不催促的小灯。',
-    '田田带着好奇重新发现生活，缓缓陪他分享眼前的感受；它会把每一次觉察都收进他们的生活回忆。'
-  ],
-  cbt: [
-    '田田练习收集事实线索，缓缓在身边补上一种更温柔的解释；它会陪田田把担心看得更清楚。',
-    '田田练习先暂停、分清想法与事实，缓缓陪他聊聊真实发生了什么；它是认真又柔软的小助手。',
-    '田田试着换个角度，缓缓会记得肯定他已经做到的部分；它陪田田把难题拆成可以完成的小步骤。'
-  ],
-  act: [
-    '田田迈出可以做到的一小步，缓缓在身边帮他守住舒服的节奏；它会陪田田带着不确定继续靠近生活。',
-    '田田在前面探一探路，缓缓在身边听他说感受；它不催促田田勇敢，只替他记住每一次真实尝试。',
-    '田田把方向装进口袋，缓缓把陪伴放进行囊；它会陪田田继续走，把“做过一次”慢慢变成新的底气。'
-  ]
-};
-
-const COMPANION_FAVORITES = {
-  ebp: ['清晨的露珠','草莓牛奶','晒过太阳的软毯','橘皮和花香','窗边的雨声','亮晶晶纽扣','睡前小灯','看云朵变形','给心情挑颜色','留一张空椅','听朋友慢慢说','放走一片落叶','清晨吹来的风','把种子装进口袋','走短短的小路','雨后一起散步','整理随身小包','重复同一首晚安歌','给新叶浇水','拼一幅暖暖的画','送出手写小信','清水与莲香','照一会儿小镜子','黄昏亮起灯','收集实用小物'],
-  cbt: ['看三岔路口','把东西放平衡','观察颜色刻度','柔软的抱抱','五种味道的小点心','慢慢伸懒腰','绕院子跑一圈','凉凉的毛巾','擦亮圆镜子','收集真实脚印','核对小线索','排列深浅石子','分一块小蛋糕','从不同窗户看风景','关小旧唱机','看念头云飘过','找藏起来的亮点','等沙漏落完','拆开打结的线团','搭第一层台阶','整理工具围裙'],
-  act: ['在港口看小船','画四格小地图','从门后探出头','练习估算远近','把乱线绕成团','搭一座小桥','雾里找星星','解开护栏绳结','向门口靠近一步','自己看指南针','带着雨云散步','爬圆圆的台阶','收集行动后的石子','做安全的小实验','听海浪和心跳','看朋友说话的眼睛','把旧台阶再走一遍','做完不完美的小手工','记下旅途小事','在地图上重画路线','背着灯去看日出']
-};
-
-const COMPANION_TRAITS = ['好奇又认真','慢热但很可靠','柔软又细心','安静却有主见','爱照顾身边的人','有一点冒失但很真诚','喜欢把复杂的事变简单','遇到困难会先歇一歇','擅长发现别人忽略的小事','愿意陪朋友多试一次','温柔又勇敢','喜欢用行动表达关心'];
-
-function getCompanionHome(courseId, day) {
-  const homes = {
-    ebp: day <= 7 ? '微光花园' : day <= 12 ? '云朵邮局' : day <= 19 ? '向前小径' : '心愿街',
-    cbt: day <= 3 ? '三岔观察所' : day <= 8 ? '五感暖屋' : day <= 15 ? '事实侦探社' : '工具工坊',
-    act: day <= 7 ? '启程港' : day <= 14 ? '勇气练习场' : '远行山谷'
-  };
-  return homes[courseId] || '微光花园';
-}
-
-function getCompanionLore(courseId, day) {
-  const names = COMPANION_NICKNAMES[courseId] || COMPANION_NICKNAMES.ebp;
-  const index = Math.max(0, Math.min(names.length - 1, day - 1));
-  const previous = names[(index - 1 + names.length) % names.length];
-  const next = names[(index + 1) % names.length];
-  const courseOrder = ['ebp', 'cbt', 'act'];
-  const crossCourse = courseOrder[(Math.max(0, courseOrder.indexOf(courseId)) + 1) % courseOrder.length];
-  const crossNames = COMPANION_NICKNAMES[crossCourse];
-  const penPal = crossNames[index % crossNames.length];
-  const offset = { ebp: 0, cbt: 4, act: 8 }[courseId] || 0;
-  const favorite = (COMPANION_FAVORITES[courseId] || COMPANION_FAVORITES.ebp)[index];
-  const home = getCompanionHome(courseId, day);
-  const duoMoments = DUO_MOMENTS[courseId] || DUO_MOMENTS.ebp;
-  return {
-    nickname: names[index],
-    home,
-    personality: COMPANION_TRAITS[(index + offset) % COMPANION_TRAITS.length],
-    favorite,
-    relation: '和' + previous + '、' + next + '是日常搭档，也会和笔友' + penPal + '交换近况小纸条。',
-    story: '在' + home + '，' + names[index] + '正忙着' + favorite + '。它听说' + STORY_LEADS.hero + '完成了第' + day + '天练习，也知道' + STORY_LEADS.heroine + '一直在生活里陪着他，便带着自己的小本领赶来，成为他们今天遇见的新伙伴。',
-    duo: duoMoments[index % duoMoments.length]
-  };
-}
-
 function getCardArtwork(courseId, day) {
   const filename = (COMPANION_ARTWORK[courseId] || [])[day - 1] || COMPANION_ARTWORK.ebp[0];
   return { src: 'assets/companions/v2/' + filename + '.webp', hue: 0 };
 }
 
-// 每日能力文案：精灵与技能都唯一对应当天内容，不代表医疗效果。
+// 每日能力文案：与当天课程内容对应，不代表医疗效果。
 const CARD_COMPANIONS = {
   ebp: [
     ['好奇芽','初见微光','带着好奇看见当下，而不是急着评价。'],
     ['慢尝团','一口此刻','把注意力带回味道与正在发生的体验。'],
     ['触触绒','柔软落地','借助触感回到身体，减轻思绪拉扯。'],
     ['闻香猫','气息寻路','用熟悉气味找到片刻安稳与愉悦。'],
-    ['听身熊','身体来信','听见身体需要，并给自己温柔照顾。'],
+    ['听身熊','行走觉察','在行动中感受身体与环境，让注意力回到当下。'],
     ['拾喜雀','小喜收藏','更容易发现并保存生活里的开心小事。'],
     ['微光芽','小步生长','看见已经做到的部分，减轻完美压力。'],
-    ['流云团','情绪流动','提醒你情绪会变化，不必马上消灭它。'],
+    ['流云团','感官回望','回顾多种感官练习，找到最适合自己的当下入口。'],
     ['名名狐','情绪点名','为感受准确命名，让内心变得更清楚。'],
-    ['容容鲸','给它空间','允许情绪暂时存在，减少与它的对抗。'],
-    ['寻心猫','内心译员','从情绪背后听见自己真正的需要。'],
-    ['松手獭','停止较劲','接纳眼前现实，把力气留给下一步。'],
-    ['向心鸟','方向罗盘','情绪摇晃时，仍记得自己重视的方向。'],
-    ['行动芽','价值落地','把重要的事变成今天能做的小动作。'],
-    ['一步龟','现在就走','不等状态完美，也能开始一小步。'],
-    ['同行兔','带着感受走','让困难情绪同行，但不替你做决定。'],
-    ['日常狸','练习入袋','把觉察、接纳和行动带进普通生活。'],
-    ['再来鸟','温柔重复','允许不完美，用重复练习积累能力。'],
-    ['心树灵','持续照料','提醒你像照料树一样照料情绪能力。'],
-    ['丰盛熊','幸福拼图','看见愉快之外的投入、意义与成长。'],
-    ['信使鸽','情绪来信','理解情绪的信息，再选择怎样回应。'],
-    ['觉容莲','看见与容纳','先觉察体验，再给它可以待着的位置。'],
-    ['识己猫','认识自己','连接需要、优势和价值，稳定行动方向。'],
-    ['初心萤','动力微光','困难时重新想起自己为什么开始。'],
-    ['锦囊狸','随身工具箱','整理有效方法，需要时更快调用。']
+    ['容容鲸','读懂信号','理解情绪在提醒什么，再选择合适的回应。'],
+    ['寻心猫','看清链条','分清事件、想法、情绪、身体和行为如何相互影响。'],
+    ['松手獭','识别循环','看见念头与行为如何维持情绪，找到可以改变的一环。'],
+    ['向心鸟','念头命名','给反复出现的想法起名字，与它拉开一点距离。'],
+    ['行动芽','允许来去','觉察情绪、想法和身体反应，不评判地让它们自然变化。'],
+    ['一步龟','模式观察','识别行为带来的短期效果与长期影响。'],
+    ['同行兔','回应选择','澄清自己的期待，选择更能满足需要的行为。'],
+    ['日常狸','价值罗盘','找到真正重视的方向，为后续行动提供坐标。'],
+    ['再来鸟','目标落地','把抽象价值转成具体、可执行的近期目标。'],
+    ['心树灵','应对组合','把觉察、接纳和调节方法组合起来，应对日常压力。'],
+    ['丰盛熊','日常践行','让重要的价值进入日常安排，而不只停留在想法里。'],
+    ['信使鸽','耐心培育','把情绪能力看成需要反复练习、逐渐生长的系统。'],
+    ['觉容莲','幸福全景','看见幸福不只来自愉快，也来自投入、关系、意义和成长。'],
+    ['识己猫','情绪来信','把情绪当作信息，理解它与环境、需要和行动的关系。'],
+    ['初心萤','觉察与接纳','先看见正在发生的体验，再允许它如实存在。'],
+    ['锦囊狸','成为自己','整合需要、优势与价值，选择更符合自己的生活方向。']
   ],
   cbt: [
     ['分流狐','三路选择','判断强度后选择安抚、检验或解决。'],
@@ -164,21 +104,21 @@ const CARD_COMPANIONS = {
     ['工具象','灵活调用','建立个人工具库，按情境选择合适方法。']
   ],
   act: [
-    ['启程猫','方向启航','看清焦虑代价与想要生活，找到改变方向。'],
+    ['启程猫','方向启航','看清焦虑的代价与想要的生活，找到改变方向。'],
     ['四象猫','焦虑地图','从外界、身体、想法和行为看清焦虑链。'],
     ['回避兔','循环识破','识别短暂轻松如何让回避被长期维持。'],
     ['估险狐','双面估算','同时检验风险大小与自己的应对能力。'],
     ['担忧鸦','有用检验','分辨担忧是在准备，还是只让自己打转。'],
     ['解题獭','下一步行动','把能解决的担忧转成清晰的下一步。'],
-    ['未知鸟','不确定练习','用小实验逐渐提升对不确定性的承受力。'],
-    ['护栏狸','安全松绑','看见安全行为如何阻挡你获得新证据。'],
-    ['靠近兔','减少回避','逐步靠近曾躲开的事，验证真实能力。'],
+    ['未知鸟','不确定练习','用小实验练习与不确定性相处，逐步扩大可承受范围。'],
+    ['护栏狸','安全松绑','看见安全行为如何让人难以获得新证据。'],
+    ['靠近兔','减少回避','逐步靠近曾躲开的事，收集自己能够应对的现实证据。'],
     ['自信熊','少问一次','减少反复确认，练习相信自己的判断。'],
     ['勇行犬','带着焦虑走','允许可承受的焦虑存在，同时靠近目标。'],
     ['阶梯羊','由易到难','把挑战排成阶梯，让练习可以持续。'],
     ['事实雀','行动复盘','行动后记录真实结果，而不只看感受。'],
     ['实验狐','预测验证','用现实实验检验未来预测，停止空转想象。'],
-    ['心跳鲸','感觉重学','安全接触身体感觉，修正危险误解。'],
+    ['心跳鲸','感觉重学','在安全且可承受的范围内接触身体感觉，修正危险误解。'],
     ['外向猫','注意外移','减少自我监控，把注意力放回真实互动。'],
     ['升级龙','重复进阶','通过重复和升级，让新学习逐渐稳定。'],
     ['够好熊','完成护盾','用足够好的行动挑战完美主义。'],
@@ -195,27 +135,27 @@ const CARD_KNOWLEDGE = {
     '专注味道与进食过程，让注意力回到此刻。',
     '觉察温度、质地与触感，用身体连接当下。',
     '留意气味带来的细微感受，积累积极体验。',
-    '倾听身体信号，温柔地照顾当下的需要。',
+    '在行走与活动中留意身体感受，让注意力重新回到当下。',
     '主动记录开心小事，会让积极体验更容易被看见。',
     '小成就也值得记录，专注今天更容易坚持。',
-    '情绪是会变化的体验，不是需要立刻消灭的问题。',
-    '给情绪准确命名，能帮助我们更清楚地理解自己。',
-    '允许情绪存在，比压抑或对抗更有助于它自然流动。',
-    '情绪背后常有需要，觉察它比责备自己更有帮助。',
-    '接纳不是认同或放弃，而是停止与现实继续较劲。',
-    '价值像方向，帮助我们在情绪波动时仍知道往哪走。',
-    '把价值变成具体小行动，改变才会在生活里发生。',
-    '行动不必等状态完美，可以从当下能做的一小步开始。',
-    '困难情绪可以同行，但不必替我们决定下一步。',
-    '把觉察、接纳和行动放进日常，技能才会逐渐稳固。',
-    '反复练习比一次做到完美更重要。',
-    '情绪能力像一棵树，需要持续照料与练习。',
-    '幸福不只是一时愉快，也来自投入、意义与成长。',
-    '情绪都有功能，理解信息后再选择如何回应。',
-    '觉察让我们看见体验，接纳让我们不被体验困住。',
-    '了解自己的需要、优势与价值，是稳定行动的基础。',
-    '记住开始的原因，能在困难时重新连接改变的动力。',
-    '把有效方法整理成锦囊，需要时就能更快调用。'
+    '回顾视觉、味觉、触觉、嗅觉与行动体验，建立自己的当下练习组合。',
+    '用名称、强度和持续时间描述情绪，比笼统地说“难受”更清楚。',
+    '情绪有提醒和保护功能，读懂信息后再决定如何回应。',
+    '事件、想法、情绪、身体反应和行为会彼此影响，共同构成情绪过程。',
+    '情绪会随时间和行动变化；看清维持它的环节，才能找到切入点。',
+    '给反复出现的想法起名字，能帮助我们把“念头”与“事实”分开。',
+    '觉察内心体验而不急着评判，允许情绪、想法和身体反应自然来去。',
+    '行为可能立即减轻不适，也可能带来长期代价；需要把两者一起看。',
+    '先澄清真正期待，再选择更可能满足这些期待的行为。',
+    '价值是想要持续靠近的生活方向，不是一次完成就结束的目标。',
+    '把价值转成近24小时和未来一周可以采取的具体行动。',
+    '根据情绪强度与现实处境，组合使用觉察、接纳、调节和行动技能。',
+    '将价值行动放进日常安排，并为可能的阻碍预留应对方法。',
+    '情绪能力不靠一次顿悟，而是在反复练习与调整中逐渐生长。',
+    '幸福不只是愉快感，也来自投入、关系、胜任、意义与成长。',
+    '情绪不是故障，而是与环境、需要和行动有关的信息。',
+    '觉察是如实看见当下体验，接纳是允许体验暂时按它本来的样子存在。',
+    '把需要、优势与价值连在一起，更清楚地选择自己想成为的人。'
   ],
   cbt: [
     '先判断情绪是否过强，再选择安抚、检验或解决问题。',
@@ -247,21 +187,99 @@ const CARD_KNOWLEDGE = {
     '焦虑常高估风险、低估能力，需要同时检验两部分。',
     '反复担忧不等于有效准备，要看它是否真的帮助生活。',
     '能解决的问题就确定下一步，把担忧转化为行动。',
-    '通过小实验接触不确定性，大脑会逐渐学会承受它。',
+    '通过小实验接触不确定性，练习逐步扩大自己的可承受范围。',
     '安全行为带来短暂安心，也可能阻止我们获得新证据。',
-    '逐步减少回避，才能验证自己是否真的无法应对。',
+    '逐步减少回避，才有机会收集自己能够应对的现实证据。',
     '减少确认、依赖等靠近型安全行为，练习相信自己的能力。',
     '带着可承受的焦虑靠近目标，是重新学习安全的过程。',
     '把挑战排成由易到难的阶梯，练习更可持续。',
     '行动前允许焦虑存在，行动后记录事实而非只看感受。',
     '针对未来担忧，用现实实验检验预测，而非继续想象。',
-    '主动接触身体感觉，可以修正“这些感觉很危险”的误解。',
+    '在安全且可承受的范围内接触身体感觉，有助于检验“这些感觉很危险”的理解。',
     '在社交场景中减少自我监控，把注意力带回真实互动。',
     '一次实验不是终点，重复和升级才能形成稳定的新学习。',
     '用“足够好”的行动挑战完美主义，而不是等待万无一失。',
     '实验要具体、可重复，并同时记录预测、结果与应对。',
     '挫折也是数据，复盘和调整比给自己判失败更重要。',
     '回顾勇敢行动与有效方法，把练习继续带进未来生活。'
+  ]
+};
+
+// 67 天共同构成一条连续旅程：回到当下 → 看清想法 → 走进生活。
+// 故事只承载课程重点，不另造一套庞大世界观。
+const CARD_STORIES = {
+  ebp: [
+    '不急着得出结论，先看清眼前正在发生的事。',
+    '第二天，他把速度慢下来，从一口食物里重新感受“此刻”。',
+    '当思绪再次跑远，可以借助手中真实的温度和质地，把注意力带回身体。',
+    '气味让一段普通时刻变得清晰。他开始明白，稳定不一定来自想通，也可以来自感受。',
+    '出门走一段路，留意脚步、呼吸和周围的声音，把注意力带回正在发生的生活。',
+    '他开始把开心小事写进记录。那些事没有变大，只是终于没再被忽略。',
+    '记下已经做到的事，把“还不够”改成“我正在往前”。',
+    '他回顾这一周的感官练习，给自己留下一张“回到当下”的路线图。',
+    '用名称、强度和持续时间描述情绪，比一句“我不好”更具体。',
+    '把情绪视为信号，并尝试理解它正在提醒什么。',
+    '他把一次情绪起伏拆成事件、想法、身体反应和行为，终于看见了它的来路。',
+    '持续记录可以帮助我们看见：情绪会被某些念头和行为维持，也会因新的选择而变化。',
+    '给反复出现的“一定会搞砸”起一个名字，有助于区分念头与事实。',
+    '这一阶段的终点不是让内心安静，而是能够看见所有体验，并允许它们暂时存在。',
+    '观察哪些行为只带来短暂轻松，哪些行为能让生活靠近真正重视的方向。',
+    '当期待变得具体，选择也开始清楚。他不再只问“怎样才不难受”，而是问“我想怎样回应”。',
+    '他为自己重视的关系、成长和生活方式写下了方向。这是旅程中第一枚真正的罗盘。',
+    '方向不能代替行动，把价值改写成今天和本周能完成的具体动作。',
+    '面对压力时，他开始按强度和处境选择工具：先觉察，必要时调节，然后决定下一步。',
+    '把重要的事放进真实日程，让价值落实为时间和精力的具体安排。',
+    '他不再期待一次掌握所有方法，而是把每次练习当作为能力系统添加的一个新连接。',
+    '幸福不只意味着情绪高涨，也包括投入、关系、意义和成长。',
+    '他再次翻开情绪记录，这次看到的不是故障清单，而是一封封关于处境与需要的来信。',
+    '觉察是看清，接纳是不再否认；不必先达到理想状态，才允许自己生活。',
+    '这一阶段没有标准答案，重要的是更清楚地理解自己并选择适合自己的方法。'
+  ],
+  cbt: [
+    '情绪出现时，先判断强度和问题性质，再选择合适的应对方式。',
+    '他学会把情绪的保护作用和现实代价同时放上天平，而不再只问它是好是坏。',
+    '第三天，模糊的“很难受”被改写成可观察的强度读数，也让选择工具有了依据。',
+    '当情绪强度过高，先放下分析，用温和触碰帮助身体恢复安全感。',
+    '他为自己准备了一组五感资源。它们不负责消除情绪，只帮他先稳住当下。',
+    '练习先绷紧、再放松不同肌群，通过对比重新识别身体里的紧张。',
+    '一次适度运动让他看见：身体不只承受压力，也可以参与调节压力。',
+    '他把降温作为高强度情绪时的紧急入口：先让身体回到可承受范围，再处理问题。',
+    '在事件和情绪之间，留意“我如何解释它”这一环节。',
+    '他练习像摄像机一样重述事件，把可观察的事实与头脑中的判断分开。',
+    '结合更多事实线索，检查情绪的类型和强度是否与现实相符。',
+    '当头脑只剩“全好”或“全坏”，他把判断放回连续刻度，找回了中间的细节。',
+    '面对不理想的结果，重新评估各项影响因素，避免把全部责任归于自己。',
+    '他开始用证据、其他视角和对朋友的标准追问旧想法，让新解释有机会出现。',
+    '那些熟悉的自我批评被他识别为“旧磁带”。它们可以播放，却不再拥有最终解释权。',
+    '把自己放在观察念头的位置：想法仍会出现，但不必跟随每一个想法。',
+    '为了修正负面偏向，他主动收集曾被忽略的积极证据，让评价回到更完整的现实。',
+    '当念头催促立即反应时，尝试稍后再回应，给想法和情绪留出变化时间。',
+    '他把一团模糊的烦恼改写成一个具体问题，也因此分清了哪些部分能行动。',
+    '问题不需要一次解决，可以先把方案缩小到今天能够完成的第一步。',
+    '第二段旅程结束时，那棵决策树已经变成工具库：先看清处境，再选择方法，最后回到行动。'
+  ],
+  act: [
+    '把关注点从“如何不焦虑”转向“我想过怎样的生活”。',
+    '他为焦虑画了一张四部分地图：外界、身体、想法与行为，每一部分都可以被观察。',
+    '识别回避的循环：它带来短暂轻松，却也让危险感长期得不到更新。',
+    '当焦虑同时高估风险、低估能力，他开始要求自己把两边的证据都写下来。',
+    '他检查每一段担忧：它是在准备一个行动，还是只让思绪在原地打转？',
+    '对于能够解决的问题，停止继续预演，把担忧转化成一个清晰的下一步。',
+    '对于无法完全确定的事，他不再等待绝对安心，而是设计了第一个可承受的小实验。',
+    '识别那些带来暂时安心、却妨碍新证据出现的安全行为。',
+    '他把一个长期避开的场景拆小，往前靠近一步，为现实结果留出更新旧预测的机会。',
+    '面对反复确认的冲动，尝试少确认一次，练习相信自己的判断。',
+    '直面焦虑不是证明无所畏惧，而是带着可承受的不适继续靠近真正重视的事。',
+    '为了让练习可持续，他把挑战按难度排成阶梯，每一级都明确到可以执行。',
+    '实验后不只记录“我有多焦虑”，也记录真实发生了什么以及自己如何应对。',
+    '当担忧指向未来，他把预测写成可验证的命题，再让现实给出答案。',
+    '当危险感来自心跳、呼吸或眩晕，可以在安全且可承受的范围内接触这些感觉，重新理解它们。',
+    '走进社交场景时，他将注意力从“我表现得怎么样”移回对方、对话和正在发生的互动。',
+    '一次成功不足以改变旧规律，需要重复练习，并在可承受的范围内逐步升级。',
+    '完美主义要求万无一失，他却选择了一次“足够好”的完成，并让结果留在现实中。',
+    '像研究者一样记录实验：预测、行动、结果与应对，而不是只留下成败结论。',
+    '一次挫折出现后，他没有把它当作退回原点的证明，而是用新数据调整了下一次练习。',
+    '不必等待焦虑完全消失后才开始行动，可以带着有效方法继续进入真实生活。'
   ]
 };
 
@@ -291,16 +309,19 @@ function getCardKnowledge(courseId, day) {
   return items[day - 1] || '完成练习后，记住今天对自己最有帮助的一点。';
 }
 
+function getCardStory(courseId, day) {
+  const items = CARD_STORIES[courseId] || [];
+  return items[day - 1] || '这一天的练习，为整段旅程留下了一个新坐标。';
+}
+
 function getCardCompanion(courseId, day) {
   const item = (CARD_COMPANIONS[courseId] || [])[day - 1] || ['陪伴芽','今日陪伴','陪你记住今天最有帮助的一点。'];
-  const lore = getCompanionLore(courseId, day);
   return {
-    name: lore.nickname,
+    name: '',
     title: item[0],
-    skill: item[1],
-    help: item[2],
-    message: '“' + STORY_LEADS.hero + '，' + item[2] + ' 今天不必做到完美；' + STORY_LEADS.heroine + '和我都会陪着你，愿意继续练习就已经很珍贵了。”',
-    ...lore
+    skill: '课程重点',
+    help: getCardKnowledge(courseId, day),
+    story: ''
   };
 }
 
@@ -314,14 +335,17 @@ function renderDailyReview(container, progress, context, available, onSave, onFi
   container.hidden = !available;
   const companion = getCardCompanion(context.courseId, context.day);
   const artwork = getCardArtwork(context.courseId, context.day, companion.name);
+  const course = getCourseConfig(context.courseId);
+  const dailyData = getCourseData(context.courseId, context.day) || {};
+  const dailyTheme = dailyData.theme || `第 ${context.day} 天练习`;
 
   function renderClosed() {
     container.innerHTML = `<div class="encounter-intro">
       <span class="recovery-kicker">今天的练习完成了</span>
-      <h2>有一位伙伴来到这里</h2>
-      <p>你认真走过的这一段，被它悄悄看见了。</p>
-      <button type="button" class="encounter-capsule" aria-label="打开今日心灵胶囊"><span></span><i>✦</i></button>
-      <button type="button" class="btn btn-primary encounter-open">看看是谁</button>
+      <h2>查看今日练习回顾</h2>
+      <p>回顾课程重点，也可以记下今天对你最有帮助的内容。</p>
+      <button type="button" class="encounter-capsule" aria-label="查看今日练习回顾"><span></span><i>✓</i></button>
+      <button type="button" class="btn btn-primary encounter-open">查看练习回顾</button>
     </div>`;
     const open = async () => {
       const openBtn = container.querySelector('.encounter-open');
@@ -339,7 +363,7 @@ function renderDailyReview(container, progress, context, available, onSave, onFi
         await onSave();
       } catch (error) {
         openBtn.disabled = false;
-        showToast('伙伴暂时没有保存成功，请再试一次', 'error');
+        showToast('成果卡暂时没有保存成功，请再试一次', 'error');
         return;
       }
       container.classList.add('encounter-opening');
@@ -357,20 +381,17 @@ function renderDailyReview(container, progress, context, available, onSave, onFi
   function renderRevealed() {
     const savedCard = recovery.card || card;
     container.innerHTML = `<div class="encounter-revealed">
-      <span class="recovery-kicker">今日相遇</span>
-      <div class="encounter-halo"><img src="${artwork.src}" alt="${recoveryEscape(companion.name)}" style="--art-hue:${artwork.hue}deg"></div>
-      <h2>${recoveryEscape(companion.name)}来陪你了</h2>
-      <span class="encounter-character-title">${recoveryEscape(companion.title)} · 来自${recoveryEscape(companion.home)}</span>
-      <strong>${recoveryEscape(companion.skill)}</strong>
+      <span class="recovery-kicker">练习回顾</span>
+      <div class="encounter-halo"><img src="${artwork.src}" alt="第 ${context.day} 天练习配图" style="--art-hue:${artwork.hue}deg"></div>
+      <h2>${recoveryEscape(dailyTheme)}</h2>
+      <span class="encounter-character-title">${recoveryEscape(course.name)} · 第 ${context.day} 天</span>
+      <strong>课程重点</strong>
       <p>${recoveryEscape(companion.help)}</p>
-      <div class="encounter-story"><span>相遇故事</span><p>${recoveryEscape(companion.story)}</p></div>
-      <div class="encounter-duo"><span>田田练习时，缓缓陪伴的日常</span><p>${recoveryEscape(companion.duo)}</p></div>
-      <blockquote class="encounter-message">${recoveryEscape(companion.message)}</blockquote>
-      <div class="encounter-collected">✓ 已收进我的图鉴</div>
+      <div class="encounter-collected">✓ 已保存至练习图鉴</div>
       <details class="encounter-note"${savedCard.takeaway ? ' open' : ''}>
-        <summary>留下一句今天想记住的话 <span>可选</span></summary>
-        <textarea rows="3" maxlength="160" placeholder="一句理解、一点感受，或一句想记住的话">${recoveryEscape(savedCard.takeaway || '')}</textarea>
-        <button type="button" class="btn btn-secondary btn-small">保存这句话</button>
+        <summary>记录今天想保留的内容 <span>可选</span></summary>
+        <textarea rows="3" maxlength="160" placeholder="可以记录一项理解、感受或提醒">${recoveryEscape(savedCard.takeaway || '')}</textarea>
+        <button type="button" class="btn btn-secondary btn-small">保存记录</button>
       </details>
     </div>`;
     const note = container.querySelector('.encounter-note textarea');
@@ -378,7 +399,7 @@ function renderDailyReview(container, progress, context, available, onSave, onFi
       recovery.card.takeaway = note.value.trim();
       recovery.card.saved_at = new Date().toISOString();
       await onSave();
-      showToast('已经替你收好了', 'success');
+      showToast('记录已保存', 'success');
     });
   }
 
@@ -410,7 +431,7 @@ async function renderCardCollection(container) {
   container.innerHTML = `
     <div class="collection-summary">
       <div class="collection-emblem" style="--collection-progress:${completion * 3.6}deg"><div><strong>${completion}<small>%</small></strong><span>图鉴进度</span></div></div>
-      <div class="collection-summary-copy"><span class="collection-eyebrow">MY COLLECTION</span><h3>我的图鉴</h3><p>记录每一次认真练习，也收藏生活里慢慢长出的力量。</p></div>
+      <div class="collection-summary-copy"><span class="collection-eyebrow">MY COLLECTION</span><h3>我的图鉴</h3><p>回顾每天的课程重点，也看见一条从觉察到行动的完整路径。</p></div>
       <div class="collection-counts">${COURSES.map(course => {
         const count = unlocked.filter(item => item.course.id === course.id).length;
         return '<div class="collection-course-count" style="--course-color:' + course.color + '"><i></i><span>' + recoveryEscape(course.name) + '</span><b>' + count + '<small>/' + course.totalDays + '</small></b></div>';
@@ -434,8 +455,8 @@ async function renderCardCollection(container) {
       const artwork = getCardArtwork(item.course.id, item.day, item.companion.name);
       return `<button class="album-card ${unlockedCard ? 'unlocked' : 'locked'}" data-course="${item.course.id}" data-day="${item.day}" style="--card-color:${item.course.color}">
         <span class="album-card-head"><span class="album-card-code">NO.${String(item.day).padStart(2, '0')}</span></span>
-        <span class="album-card-art"><span class="album-card-orbit"></span>${unlockedCard ? '<img class="album-card-creature" src="' + artwork.src + '" alt="' + recoveryEscape(item.companion.name) + '" style="--art-hue:' + artwork.hue + 'deg">' : '<span class="album-card-silhouette">✦</span>'}</span>
-        <span class="album-card-info"><strong>${unlockedCard ? recoveryEscape(item.companion.name) : '尚未相遇'}</strong><span class="album-card-theme">${unlockedCard ? recoveryEscape(item.theme) : '等待与你见面'}</span><small>${unlockedCard ? '技能 · ' + recoveryEscape(item.companion.skill) : '完成第 ' + item.day + ' 天后发现'}</small></span>
+        <span class="album-card-art"><span class="album-card-orbit"></span>${unlockedCard ? '<img class="album-card-creature" src="' + artwork.src + '" alt="第 ' + item.day + ' 天练习配图" style="--art-hue:' + artwork.hue + 'deg">' : '<span class="album-card-silhouette">—</span>'}</span>
+        <span class="album-card-info"><strong>${unlockedCard ? recoveryEscape(item.theme) : '尚未完成'}</strong><span class="album-card-theme">${unlockedCard ? recoveryEscape(item.course.name) + ' · 第 ' + item.day + ' 天' : '完成课程后查看'}</span><small>${unlockedCard ? '查看课程重点' : '完成第 ' + item.day + ' 天后查看'}</small></span>
       </button>`;
     }).join('');
   }
@@ -467,31 +488,16 @@ function renderUnlockedCard(item) {
   const artwork = getCardArtwork(item.course.id, item.day, item.companion.name);
   return `<article class="achievement-card" style="--card-color:${item.course.color}">
     <div class="achievement-card-shine"></div>
-    <div class="achievement-card-top"><span>${getCardCode(item.course.id, item.day)}</span><span>✦ ${recoveryEscape(item.companion.skill)}</span></div>
-    <div class="achievement-card-visual"><span class="achievement-card-halo"></span><span class="achievement-stars">✦ · ✧ · ✦</span><img class="achievement-card-creature" src="${artwork.src}" alt="${recoveryEscape(item.companion.name)}" style="--art-hue:${artwork.hue}deg"></div>
-    <div class="achievement-card-course">${recoveryEscape(item.course.name)} · 第 ${item.day} 天 · ${recoveryEscape(item.companion.title)}</div>
-    <div class="achievement-card-skill-name">${recoveryEscape(item.companion.skill)}</div>
-    <h3>✦ ${recoveryEscape(item.companion.name)} ✦</h3>
-    <p class="achievement-card-help">${recoveryEscape(item.companion.help)}</p>
-    <div class="achievement-card-profile">
-      <div><small>住在</small><p>${recoveryEscape(item.companion.home)}</p></div>
-      <div><small>性格</small><p>${recoveryEscape(item.companion.personality)}</p></div>
-      <div><small>喜欢</small><p>${recoveryEscape(item.companion.favorite)}</p></div>
-    </div>
+    <div class="achievement-card-top"><span>${getCardCode(item.course.id, item.day)}</span><span>课程重点</span></div>
+    <div class="achievement-card-visual"><span class="achievement-card-halo"></span><img class="achievement-card-creature" src="${artwork.src}" alt="第 ${item.day} 天练习配图" style="--art-hue:${artwork.hue}deg"></div>
+    <div class="achievement-card-course">${recoveryEscape(item.course.name)} · 第 ${item.day} 天</div>
+    <h3>${recoveryEscape(item.theme)}</h3>
     <div class="achievement-card-theme">${recoveryEscape(item.theme)}</div>
     <div class="achievement-card-knowledge"><i>✦</i><div><small>今日重点</small><p>${recoveryEscape(item.knowledge || getCardKnowledge(item.course.id, item.day))}</p></div></div>
     ${item.card.takeaway ? '<div class="achievement-card-copy"><i>◇</i><div><small>今天留下了</small><p>' + recoveryEscape(item.card.takeaway) + '</p></div></div>' : ''}
-    <div class="achievement-card-moods">${(item.card.moods || []).map(mood => '<span>' + recoveryEscape(mood) + '</span>').join('')}</div>
-    <div class="achievement-card-lore">
-      <div class="achievement-card-lore-title"><span>✦ 伙伴故事 ✦</span><small>相遇 · 日常 · 朋友 · 寄语</small></div>
-      <div class="achievement-card-story"><small>相遇故事</small><p>${recoveryEscape(item.companion.story)}</p></div>
-      <div class="achievement-card-duo"><small>田田练习时，缓缓陪伴的日常</small><p>${recoveryEscape(item.companion.duo)}</p></div>
-      <div class="achievement-card-relationship"><i>♡</i><div><small>朋友关系</small><p>${recoveryEscape(item.companion.relation)}</p></div></div>
-      <blockquote class="achievement-card-message">${recoveryEscape(item.companion.message)}</blockquote>
-    </div>
     <footer>${date} · 我的练习收藏</footer>
   </article>
-  <div class="achievement-card-actions"><button type="button" class="achievement-save"><span>⇩</span> 保存完整卡片图片</button><small>图片会包含全部故事内容</small></div>`;
+  <div class="achievement-card-actions"><button type="button" class="achievement-save"><span>⇩</span> 保存练习卡片图片</button><small>图片会包含课程重点与个人记录</small></div>`;
 }
 
 function recoveryCanvasRoundRect(ctx, x, y, width, height, radius) {
@@ -559,7 +565,7 @@ function recoveryLoadImage(src) {
   return new Promise((resolve, reject) => {
     const image = new Image();
     image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error('伙伴图片加载失败'));
+    image.onerror = () => reject(new Error('练习配图加载失败'));
     image.src = src;
   });
 }
@@ -614,53 +620,23 @@ async function createCompanionCardCanvas(item) {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#76652f';
   ctx.font = '700 24px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
-  ctx.fillText(item.course.name + ' · 第 ' + item.day + ' 天 · ' + item.companion.title, 540, 555);
+  ctx.fillText(item.course.name + ' · 第 ' + item.day + ' 天', 540, 555);
   recoveryCanvasRoundRect(ctx, 375, 580, 330, 62, 31);
   ctx.fillStyle = accent;
   ctx.fill();
   ctx.fillStyle = '#fff9dc';
   ctx.font = '700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
-  ctx.fillText(item.companion.skill, 540, 621);
+  ctx.fillText('课程重点', 540, 621);
   ctx.fillStyle = '#314b3c';
   ctx.font = '600 52px Georgia, "Songti SC", serif';
-  ctx.fillText('✦ ' + item.companion.name + ' ✦', 540, 704);
-  ctx.fillStyle = '#5c7166';
-  ctx.font = '30px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
-  recoveryCanvasText(ctx, item.companion.help, 540, 755, 850, 44, 2);
-
-  const profile = [
-    ['住在', item.companion.home],
-    ['性格', item.companion.personality],
-    ['喜欢', item.companion.favorite]
-  ];
-  profile.forEach((entry, index) => {
-    const x = 70 + index * 320;
-    recoveryCanvasRoundRect(ctx, x, 835, 300, 112, 24);
-    ctx.fillStyle = '#ffffffaa';
-    ctx.fill();
-    ctx.fillStyle = '#8a7b57';
-    ctx.font = '23px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(entry[0], x + 150, 872);
-    ctx.fillStyle = '#40564c';
-    ctx.font = '700 25px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif';
-    recoveryCanvasText(ctx, entry[1], x + 150, 915, 250, 34, 1);
-  });
+  ctx.fillText(item.theme, 540, 704);
 
   ctx.textAlign = 'left';
-  let sectionY = 978;
-  sectionY = recoveryCanvasSection(ctx, '相遇故事', item.companion.story, sectionY, accent, { height: 188, maxLines: 3 });
-  sectionY += 16;
-  sectionY = recoveryCanvasSection(ctx, '田田练习时，缓缓陪伴的日常', item.companion.duo, sectionY, accent, { height: 188, maxLines: 3 });
-  sectionY += 16;
-  sectionY = recoveryCanvasSection(ctx, '朋友关系', item.companion.relation, sectionY, '#c0857a', { height: 156, maxLines: 2 });
-  sectionY += 16;
-  sectionY = recoveryCanvasSection(ctx, '精灵寄语', item.companion.message, sectionY, '#b58b36', { height: 188, maxLines: 3, background: '#fff8e8' });
-  sectionY += 16;
-  sectionY = recoveryCanvasSection(ctx, '今日重点', item.knowledge || getCardKnowledge(item.course.id, item.day), sectionY, accent, { height: 168, maxLines: 2 });
+  let sectionY = 790;
+  sectionY = recoveryCanvasSection(ctx, '今日重点', item.knowledge || getCardKnowledge(item.course.id, item.day), sectionY, accent, { height: 248, maxLines: 4 });
   if (item.card.takeaway) {
     sectionY += 16;
-    recoveryCanvasSection(ctx, '今天留下了', item.card.takeaway, sectionY, '#8b769d', { height: 150, maxLines: 2 });
+    recoveryCanvasSection(ctx, '今天留下了', item.card.takeaway, sectionY, '#8b769d', { height: 204, maxLines: 3 });
   }
 
   const date = item.card.unlocked_at ? new Date(item.card.unlocked_at).toLocaleDateString('zh-CN') : '';
@@ -680,11 +656,11 @@ async function saveCompanionCardImage(item, button) {
     const blob = await new Promise((resolve, reject) => {
       canvas.toBlob(value => value ? resolve(value) : reject(new Error('图片生成失败')), 'image/png');
     });
-    const filename = '我的图鉴-' + getCardCode(item.course.id, item.day) + '-' + item.companion.name + '.png';
+    const filename = '我的图鉴-' + getCardCode(item.course.id, item.day) + '.png';
     const file = typeof File === 'function' ? new File([blob], filename, { type: 'image/png' }) : null;
     if (file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
       try {
-        await navigator.share({ files: [file], title: item.companion.name + '的疗愈卡片' });
+        await navigator.share({ files: [file], title: item.course.name + '第' + item.day + '天练习卡' });
       } catch (error) {
         if (error && error.name === 'AbortError') return;
         throw error;
